@@ -17,22 +17,19 @@ datasource db {
 }
 
 model equipo {
-  id          String @id @default(cuid())
-  codigo      String @unique @db.VarChar(20)
-  descripcion String @db.VarChar(60)
-  modelo      String @db.VarChar(40)
-  serie       String @db.VarChar(40)
-  datos_metrologicos datos_metrologicos_equipos?
-  responsable    responsable @relation(fields: [responsable_id], references: [id])
-  responsable_id String      @unique
-  marca                       marca                         @relation(fields: [marca_id], references: [id])
-  marca_id                    String                        @unique
-  
-  fecha_creacion              DateTime                      @default(now())
-  fecha_actualizacion         DateTime                      @updatedAt
-  fecha_inactivacion          DateTime?
-  ubicacion                   ubicacion?                    @relation(fields: [ubicacionId], references: [id])
-  ubicacionId                 String?
+  id                  String                      @id @default(cuid())
+  codigo              String                      @unique @db.VarChar(20)
+  descripcion         String                      @db.VarChar(60)
+  modelo              String                      @db.VarChar(40)
+  serie               String                      @db.VarChar(40)
+  datos_metrologicos  datos_metrologicos_equipos?               
+  marca               marca                       @relation(fields: [marca_id], references: [id])
+  marca_id            String                      
+  fecha_creacion      DateTime                    @default(now())
+  fecha_actualizacion DateTime                    @updatedAt
+  fecha_inactivacion  DateTime?
+  ubicacion           ubicacion                   @relation(fields: [ubicacion_id], references: [id])
+  ubicacion_id        String                      
 }
 
 model responsable {
@@ -44,14 +41,13 @@ model responsable {
   fecha_creacion      DateTime    @default(now())
   fecha_actualizacion DateTime    @updatedAt
   fecha_inactivacion  DateTime?
-  equipo              equipo?
   patron              patrones?
 }
 
 model ubicacion {
   id                  String      @id @default(cuid())
   nombre              String      @db.VarChar(40)
-  equipo              equipo[]
+  equipos             equipo[]
   responsable         responsable @relation(fields: [responsable_id], references: [id])
   responsable_id      String      @unique
   fecha_creacion      DateTime    @default(now())
@@ -64,7 +60,7 @@ model marca {
   id                 String    @id @default(cuid())
   identificacion     String
   descripcion        String
-  equipo             equipo[]
+  equipos            equipo[]
   fechaCreacion      DateTime  @default(now())
   fechaactualizacion DateTime  @updatedAt
   fecha_inactivacion DateTime?
@@ -72,22 +68,20 @@ model marca {
 }
 
 model tipo_actividad {
-  id                          String                      @id @default(cuid())
-  descripcion                 String
-  fecha_creacion              DateTime                    @default(now())
-  fecha_actualizacion         DateTime                    @updatedAt
-  fecha_inactivacion          DateTime?
+  id                  String    @id @default(cuid())
+  descripcion         String
+  fecha_creacion      DateTime  @default(now())
+  fecha_actualizacion DateTime  @updatedAt
+  fecha_inactivacion  DateTime?
 }
 
-
-
 model frecuencia {
-  id_frecuencia               String                      @id @default(cuid())
-  descripcion                 String
-  cantidad_dias               Int                         @db.Integer
-  fecha_creacion              DateTime                    @default(now())
-  fecha_actualizacion         DateTime                    @updatedAt
-  fecha_inactivacion          DateTime?
+  id_frecuencia       String    @id @default(cuid())
+  descripcion         String
+  cantidad_dias       Int       @db.Integer
+  fecha_creacion      DateTime  @default(now())
+  fecha_actualizacion DateTime  @updatedAt
+  fecha_inactivacion  DateTime?
 }
 
 model usuario {
@@ -96,7 +90,7 @@ model usuario {
   nombre              String    @db.VarChar(40)
   apellido            String    @db.VarChar(40)
   cargo               String    @db.VarChar(40)
-  rol                 Role
+  rol                 Role      @default(Consulta)
   correo              String    @unique @db.VarChar(50)
   password            String    @db.VarChar(50)
   fecha_creacion      DateTime  @default(now())
@@ -126,28 +120,28 @@ model variable {
 }
 
 model patrones {
-  id          String @id @default(cuid())
-  codigo      String @unique @db.VarChar(20)
-  descripcion String @db.VarChar(60)
-  modelo      String @db.VarChar(40)
-  serie       String @db.VarChar(40)
-  datos_metrologicos datos_metrologicos_patrones?
-  responsable_patron responsable @relation(fields: [responsable_id], references: [id])
-  responsable_id     String      @unique
-  marca                         marca                         @relation(fields: [marca_id], references: [id])
-  marca_id                      String                        @unique
-  fecha_creacion                DateTime                      @default(now())
-  fecha_actualizacion           DateTime                      @updatedAt
+  id                            String                       @id @default(cuid())
+  codigo                        String                       @unique @db.VarChar(20)
+  descripcion                   String                       @db.VarChar(60)
+  modelo                        String                       @db.VarChar(40)
+  serie                         String                       @db.VarChar(40)
+  datos_metrologicos            datos_metrologicos_patrones?
+  responsable_patron            responsable                  @relation(fields: [responsable_id], references: [id])
+  responsable_id                String                       @unique
+  marca                         marca                        @relation(fields: [marca_id], references: [id])
+  marca_id                      String                       @unique
+  fecha_creacion                DateTime                     @default(now())
+  fecha_actualizacion           DateTime                     @updatedAt
   fecha_inactivacion            DateTime?
-  ubicacion                     ubicacion?                    @relation(fields: [ubicacionId], references: [id])
+  ubicacion                     ubicacion?                   @relation(fields: [ubicacionId], references: [id])
   ubicacionId                   String?
   datos_metrologicos_patronesId String?
 }
 
 model datos_metrologicos_equipos {
-  id                  String    @id @default(cuid())
-  equipo              equipo    @relation(fields: [equipo_id], references: [id])
-  
+  id     String @id @default(cuid())
+  equipo equipo @relation(fields: [equipo_id], references: [id])
+
   equipo_id           String    @unique
   emp                 Float     @db.DoublePrecision()
   division_escala     Float

@@ -13,7 +13,7 @@ Table equipo {
   fecha_creacion DateTime [default: `now()`, not null]
   fecha_actualizacion DateTime [not null]
   fecha_inactivacion DateTime
-  ubicacionId String
+  ubicacionId String [not null]
 }
 
 Table responsable {
