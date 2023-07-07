@@ -22,14 +22,14 @@ model equipo {
   descripcion         String                      @db.VarChar(60)
   modelo              String                      @db.VarChar(40)
   serie               String                      @db.VarChar(40)
-  datos_metrologicos  datos_metrologicos_equipos?               
+  datos_metrologicos  datos_metrologicos_equipos?
   marca               marca                       @relation(fields: [marca_id], references: [id])
-  marca_id            String                      
+  marca_id            String
   fecha_creacion      DateTime                    @default(now())
   fecha_actualizacion DateTime                    @updatedAt
   fecha_inactivacion  DateTime?
   ubicacion           ubicacion                   @relation(fields: [ubicacion_id], references: [id])
-  ubicacion_id        String                      
+  ubicacion_id        String
 }
 
 model responsable {
@@ -177,6 +177,27 @@ model tipo_patron {
   fecha_inactivacion  DateTime?
 }
 
+model novedades_equipos {
+  id                  String    @id @default(cuid())
+  numero_certificado  String?
+  Descripcion         String
+  instructivo         String
+  resultado           String //verificar si el tipo de dato es el adecuado
+  fecha_creacion      DateTime  @default(now())
+  fecha_actualizacion DateTime  @updatedAt
+  fecha_inactivacion  DateTime?
+}
+
+model novedades_patrones {
+  id                  String    @id @default(cuid())
+  numero_certificado  String?
+  Descripcion         String
+  instructivo         String
+  resultado           String //verificar si el tipo de dato es el adecuado
+  fecha_creacion      DateTime  @default(now())
+  fecha_actualizacion DateTime  @updatedAt
+  fecha_inactivacion  DateTime?
+}
 // Lugar para los Enum
 
 enum Role {
