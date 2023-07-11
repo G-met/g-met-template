@@ -135,7 +135,7 @@ model patrones {
   fecha_inactivacion            DateTime?
   ubicacion                     ubicacion?                   @relation(fields: [ubicacionId], references: [id])
   ubicacionId                   String?
-  datos_metrologicos_patronesId String?
+  
 }
 
 model datos_metrologicos_equipos {
@@ -198,6 +198,7 @@ model novedades_patrones {
   fecha_actualizacion DateTime  @updatedAt
   fecha_inactivacion  DateTime?
 }
+
 // Lugar para los Enum
 
 enum Role {

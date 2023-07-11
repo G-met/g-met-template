@@ -8,12 +8,11 @@ Table equipo {
   descripcion String [not null]
   modelo String [not null]
   serie String [not null]
-  responsable_id String [unique, not null]
-  marca_id String [unique, not null]
+  marca_id String [not null]
   fecha_creacion DateTime [default: `now()`, not null]
   fecha_actualizacion DateTime [not null]
   fecha_inactivacion DateTime
-  ubicacionId String [not null]
+  ubicacion_id String [not null]
 }
 
 Table responsable {
@@ -67,7 +66,7 @@ Table usuario {
   nombre String [not null]
   apellido String [not null]
   cargo String [not null]
-  rol Role [not null]
+  rol Role [not null, default: 'Consulta']
   correo String [unique, not null]
   password String [not null]
   fecha_creacion DateTime [default: `now()`, not null]
@@ -106,7 +105,6 @@ Table patrones {
   fecha_actualizacion DateTime [not null]
   fecha_inactivacion DateTime
   ubicacionId String
-  datos_metrologicos_patronesId String
 }
 
 Table datos_metrologicos_equipos {
@@ -145,6 +143,28 @@ Table tipo_patron {
   fecha_inactivacion DateTime
 }
 
+Table novedades_equipos {
+  id String [pk]
+  numero_certificado String
+  Descripcion String [not null]
+  instructivo String [not null]
+  resultado String [not null]
+  fecha_creacion DateTime [default: `now()`, not null]
+  fecha_actualizacion DateTime [not null]
+  fecha_inactivacion DateTime
+}
+
+Table novedades_patrones {
+  id String [pk]
+  numero_certificado String
+  Descripcion String [not null]
+  instructivo String [not null]
+  resultado String [not null]
+  fecha_creacion DateTime [default: `now()`, not null]
+  fecha_actualizacion DateTime [not null]
+  fecha_inactivacion DateTime
+}
+
 Enum Role {
   Admin
   Metrologo
@@ -153,11 +173,9 @@ Enum Role {
   Cordinador
 }
 
-Ref: equipo.responsable_id - responsable.id
-
 Ref: equipo.marca_id > marca.id
 
-Ref: equipo.ubicacionId > ubicacion.id
+Ref: equipo.ubicacion_id > ubicacion.id
 
 Ref: ubicacion.responsable_id > responsable.id
 
