@@ -120,22 +120,21 @@ model variable {
 }
 
 model patrones {
-  id                            String                       @id @default(cuid())
-  codigo                        String                       @unique @db.VarChar(20)
-  descripcion                   String                       @db.VarChar(60)
-  modelo                        String                       @db.VarChar(40)
-  serie                         String                       @db.VarChar(40)
-  datos_metrologicos            datos_metrologicos_patrones?
-  responsable_patron            responsable                  @relation(fields: [responsable_id], references: [id])
-  responsable_id                String                       @unique
-  marca                         marca                        @relation(fields: [marca_id], references: [id])
-  marca_id                      String                       @unique
-  fecha_creacion                DateTime                     @default(now())
-  fecha_actualizacion           DateTime                     @updatedAt
-  fecha_inactivacion            DateTime?
-  ubicacion                     ubicacion?                   @relation(fields: [ubicacionId], references: [id])
-  ubicacionId                   String?
-  
+  id                  String                       @id @default(cuid())
+  codigo              String                       @unique @db.VarChar(20)
+  descripcion         String                       @db.VarChar(60)
+  modelo              String                       @db.VarChar(40)
+  serie               String                       @db.VarChar(40)
+  datos_metrologicos  datos_metrologicos_patrones?
+  responsable_patron  responsable                  @relation(fields: [responsable_id], references: [id])
+  responsable_id      String                       @unique
+  marca               marca                        @relation(fields: [marca_id], references: [id])
+  marca_id            String                       @unique
+  fecha_creacion      DateTime                     @default(now())
+  fecha_actualizacion DateTime                     @updatedAt
+  fecha_inactivacion  DateTime?
+  ubicacion           ubicacion?                   @relation(fields: [ubicacionId], references: [id])
+  ubicacionId         String?
 }
 
 model datos_metrologicos_equipos {
@@ -199,6 +198,27 @@ model novedades_patrones {
   fecha_inactivacion  DateTime?
 }
 
+model especificacion_instalacion {
+  id                  String    @id @default(cuid())
+  descripcion         String
+  cumple_requisito    cumple
+  fecha_creacion      DateTime  @default(now())
+  fecha_actualizacion DateTime  @updatedAt
+  fecha_inactivacion  DateTime?
+}
+
+model componente_software {
+  id                  String    @id @default(cuid())
+  descripcion         String
+  firware             String?
+  version             String?
+  observaciones       String?
+  utiliza_software    cumple
+  fecha_creacion      DateTime  @default(now())
+  fecha_actualizacion DateTime  @updatedAt
+  fecha_inactivacion  DateTime?
+}
+
 // Lugar para los Enum
 
 enum Role {
@@ -207,4 +227,9 @@ enum Role {
   Auxiliar
   Consulta
   Cordinador
+}
+
+enum cumple {
+  Si
+  No
 }
