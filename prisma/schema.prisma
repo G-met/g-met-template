@@ -233,3 +233,8 @@ enum cumple {
   Si
   No
 }
+
+enum tipo_distribucion {
+  A
+  B
+}
