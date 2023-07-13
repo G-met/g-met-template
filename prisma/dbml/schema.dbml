@@ -13,6 +13,7 @@ Table equipo {
   fecha_actualizacion DateTime [not null]
   fecha_inactivacion DateTime
   ubicacion_id String [not null]
+  componente_softwareId String
 }
 
 Table responsable {
@@ -165,12 +166,45 @@ Table novedades_patrones {
   fecha_inactivacion DateTime
 }
 
+Table especificacion_instalacion {
+  id String [pk]
+  descripcion String [not null]
+  cumple_requisito cumple [not null]
+  equipo_id String [unique, not null]
+  fecha_creacion DateTime [default: `now()`, not null]
+  fecha_actualizacion DateTime [not null]
+  fecha_inactivacion DateTime
+}
+
+Table componente_software {
+  id String [pk]
+  descripcion String [not null]
+  firware String
+  version String
+  observaciones String
+  utiliza_software cumple [not null]
+  equipo_id String [unique, not null]
+  fecha_creacion DateTime [default: `now()`, not null]
+  fecha_actualizacion DateTime [not null]
+  fecha_inactivacion DateTime
+}
+
 Enum Role {
   Admin
   Metrologo
   Auxiliar
   Consulta
   Cordinador
+}
+
+Enum cumple {
+  Si
+  No
+}
+
+Enum tipo_distribucion {
+  A
+  B
 }
 
 Ref: equipo.marca_id > marca.id
@@ -190,3 +224,7 @@ Ref: patrones.ubicacionId > ubicacion.id
 Ref: datos_metrologicos_equipos.equipo_id - equipo.id
 
 Ref: datos_metrologicos_patrones.patrones_id - patrones.id
+
+Ref: especificacion_instalacion.equipo_id - equipo.id
+
+Ref: componente_software.equipo_id - equipo.id
