@@ -1,5 +1,7 @@
+import { calcularPagina } from "@/lib/queryUtils";
 import { ResponsableRepositorio } from ".";
 import { CrearResponsableDto } from "../dtos/crearResponsable.dto";
+import { ListaResponsableDTO } from "../dtos/listarResponsable.dto";
 import { Responsable } from "../types";
 import { prisma } from "@/lib/prisma";
 
@@ -18,8 +20,10 @@ const crearResponsable = async (
   });
 };
 
-const obtenerResponsables = (): Promise<Responsable[]> => {
-  return prisma.responsable.findMany({});
+const obtenerResponsables = (clienteId: string): Promise<Responsable[]> => {
+  return prisma.responsable.findMany({
+    where: { cliente_id: clienteId },
+  });
 };
 const obtenerResponsableIdent = async (
   identificacion: string,
@@ -48,4 +52,34 @@ export const responsableRepositorio: ResponsableRepositorio = {
   obtenerResponsables,
   obtenerResponsableIdent: obtenerResponsableIdent,
   obtenerResponsableID: obtenerResponsableID,
+  obtenerResponsablesPaginado: async function (
+    clienteId: string,
+    page: number
+  ): Promise<ListaResponsableDTO> {
+    const { porPagina, skip } = calcularPagina(page);
+    const responsables = await prisma.responsable.findMany({
+      where: {
+        cliente_id: clienteId,
+      },
+      skip,
+      take: porPagina,
+    });
+
+    const nextpagecount = await prisma.responsable.count({
+      skip: skip + porPagina,
+      take: porPagina,
+    });
+
+    const existeSiguientePagina = nextpagecount !== 0 ? true : false;
+
+    return {
+      responsables: responsables.map((responsable) => ({
+        apellido: responsable.apellido,
+        id: responsable.id,
+        identificacion: responsable.identificacion,
+        nombre: responsable.nombre,
+      })),
+      existeSiguientePagina
+    };
+  },
 };
