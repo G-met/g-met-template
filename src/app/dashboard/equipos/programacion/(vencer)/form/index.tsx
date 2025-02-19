@@ -42,6 +42,7 @@ import { ComboboxForm } from "./Combobox";
 import { useState } from "react";
 import { Role } from "@/app/api/usuarios/dominio/entity";
 import { TipoEjecutor } from "@/app/api/common/types";
+import { disabledDays } from "@/lib/helpers/dates";
 const FormSchema = z.object({
   fechaEjecucion: z.date({ required_error: "fechaInicio requerida" }),
   observaciones: z
@@ -147,9 +148,9 @@ export function FormEjecucionEquipo({
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    disabled={(date) => date <= new Date()}
                     initialFocus
                     locale={es}
+                    disabled={disabledDays}
                   />
                 </PopoverContent>
               </Popover>

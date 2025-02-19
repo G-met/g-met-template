@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -43,6 +43,7 @@ import { useState } from "react";
 import { useListadoProvedores } from "@/app/dashboard/hooks/useProveedor";
 import { useListadoUsuarios } from "@/app/dashboard/hooks/useUsuario";
 import { Role } from "@/app/api/usuarios/dominio/entity";
+import { disabledDays } from "@/lib/helpers/dates";
 
 const FormSchema = z.object({
   fechaEjecucion: z.date({ required_error: "fechaInicio requerida" }),
@@ -147,7 +148,7 @@ export function FormEjecucionPatron({
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    disabled={(date) => date <= new Date()}
+                    disabled={disabledDays}
                     initialFocus
                     locale={es}
                   />
