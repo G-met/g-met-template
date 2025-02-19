@@ -18,7 +18,7 @@ export const schema = z.object({
   archivos: z.any().refine(validateFileListSize, {
     message: "Los archivos no deben pensar mas de 4 MB",
   }),
-  ejecutorId: z.string({ description: "ejecutorId" }).uuid(),
+  ejecutorId: z.string({ description: "ejecutorId" }),
   tipoEjecutor: z.nativeEnum(TipoEjecutor),
 });
 export const validarCrearEjecucionEquipo = (ejecucion: CrearEjecucionDTO) => {

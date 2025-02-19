@@ -1,4 +1,4 @@
-import { Documentos } from "../../dominio/entity";
+import { Documentos } from "@/app/api/common/types";
 
 export interface ListarEjecucionDTO {
   codigo: string;

@@ -1,13 +1,12 @@
 "use client";
 import { columns } from "./columns";
 import { DataTable } from "@/components/data-table";
-import { obtenerEjecucionPatrones } from "@/app/dashboard/hooks/useEjecucionPatron";
+import { useObtenerEjecucionPatrones } from "@/app/dashboard/hooks/useEjecucionPatron";
 export default function EjecucionPatrones() {
-  
-  const {ejecuciones} = obtenerEjecucionPatrones()
+  const { ejecuciones, isLoading } = useObtenerEjecucionPatrones();
   return (
     <>
-      <DataTable columns={columns} data={ejecuciones} />
+      <DataTable isLoading={isLoading} columns={columns} data={ejecuciones} />
     </>
   );
 }

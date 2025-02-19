@@ -12,13 +12,13 @@ import { EquipoWriteRepositoryImp } from "../../equipos/infrastructure/writer/eq
 import { ListarEjecucionEquipos } from "../application/use-cases/reader/listarEjecucionEquipos";
 import { EjecucionEquiposReadRepositoryImp } from "../infrastructure/reader/ejecucionEquiposReadRepositoryImp";
 import { SaveFilesVercel } from "../../common/files/saveFiles";
-import { TipoEjecutor } from "../dominio/entity";
 import { ProveedorService } from "../../proveedor/dominio/service/index";
 import { UsuarioService } from "../../usuarios/dominio/service";
 import { UsuarioReadRepositoryImp } from "../../usuarios/infrastructure/read/usuarioReadRepositoryImp";
 import { UsuarioWriteRepositoryImp } from "../../usuarios/infrastructure/write/usuarioWriteRepositoryImp";
 import { ProveedorReadRepositoryImp } from "../../proveedor/infrastructure/reader/proveedorReadRepositoryImp";
 import { ProveedorWriteRepositoryImp } from "../../proveedor/infrastructure/writer/proveedorWriteRepositoryImp";
+import { TipoEjecutor } from "../../common/types";
 
 const ejecucionRepo = new EjecucionEquipoWriteRepositoryImp();
 const equipoRepo = new EquipoReadRepositoryImp();

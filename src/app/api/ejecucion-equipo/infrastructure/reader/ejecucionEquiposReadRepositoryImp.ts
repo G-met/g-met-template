@@ -1,15 +1,14 @@
 import { prisma } from "@/lib/prisma";
-import { Documentos, EjecucionEquipo } from "../../dominio/entity";
+import { EjecucionEquipo } from "../../dominio/entity";
 import { EjecucionEquipoReadRepository } from "../../dominio/repository";
-import { Cliente } from "../../../cliente/dominio/entity/index";
 import {
   EstadoProgramacion,
   ProgramacionEquipos,
 } from "@/app/api/equipos/dominio";
-import { Responsable } from "@/app/api/responsables/domain/entity";
 import { Equipo } from "../../../equipos/dominio/index";
 import { Proveedor } from "@/app/api/proveedor/dominio/entity";
-import { Usuario } from "@/app/api/usuarios/dominio/entity";
+import { Role, Usuario } from "@/app/api/usuarios/dominio/entity";
+import { Documentos } from "@/app/api/common/types";
 
 export class EjecucionEquiposReadRepositoryImp
   implements EjecucionEquipoReadRepository
@@ -65,7 +64,7 @@ export class EjecucionEquiposReadRepositoryImp
             nombre: res.usuario?.nombre ?? "",
             apellido: res.usuario?.apellido ?? "",
             correo: res.usuario?.correo ?? "",
-            rol: res.usuario?.rol ?? "",
+            rol: (res.usuario?.rol as Role) ?? Role.Consulta,
             cargo: res.usuario?.cargo ?? "",
           }),
         })

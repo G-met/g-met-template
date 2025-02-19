@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Documentos, EjecucionPatron } from "../../dominio/entity";
+import {  EjecucionPatron } from "../../dominio/entity";
 import { EjecucionPatronWriteRepository } from "../../dominio/repository";
 import { Prisma } from "@prisma/client";
 
@@ -12,7 +12,8 @@ export class EjecucionPatronWriteRepositoryImp
         id: ejecucionPatron.id,
         observaciones: ejecucionPatron.observaciones,
         clienteId: ejecucionPatron.cliente.id,
-        ejecutorId: ejecucionPatron.responsable.id,
+        tipoEjecutor: ejecucionPatron.tipoEjecutor,
+        proveedorId: ejecucionPatron.proveedor?.id,
         fechaEjecucion: ejecucionPatron.fechaEjecucion,
         documentos: ejecucionPatron.documentos as Prisma.JsonArray,
         programacionPatronId: ejecucionPatron.programacionPatron.id,

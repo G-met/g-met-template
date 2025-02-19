@@ -1,14 +1,16 @@
 import { prisma } from "@/lib/prisma";
-import { Documentos, EjecucionPatron } from "../../dominio/entity";
+import { EjecucionPatron } from "../../dominio/entity";
 import { EjecucionPatronReadRepository } from "../../dominio/repository";
 
-import { Responsable } from "@/app/api/responsables/domain/entity";
 import { EstadoProgramacion } from "../../../equipos/dominio/index";
 import { ProgramacionPatrones } from "@/app/api/programacion-patrones/domain/entity";
 import { Patron } from "@/app/api/patrones/dominio";
 import { Cliente } from "@/app/api/cliente/dominio/entity";
 import { Frecuencia } from "@/app/api/frecuencia/dominio";
 import { Actividad } from "@/app/api/actividad/dominio";
+import { Documentos } from "@/app/api/common/types";
+import { Role, Usuario } from "@/app/api/usuarios/dominio/entity";
+import { Proveedor } from "@/app/api/proveedor/dominio/entity";
 
 export class EjecucionPatronesReadRepositoryImp
   implements EjecucionPatronReadRepository
@@ -22,7 +24,8 @@ export class EjecucionPatronesReadRepositoryImp
             patron: true,
           },
         },
-        responsable: true,
+        proveedor: true,
+        usuario: true,
       },
     });
 
@@ -56,11 +59,17 @@ export class EjecucionPatronesReadRepositoryImp
             cliente: new Cliente(),
             frecuencia: new Frecuencia(),
           }),
-          responsable: new Responsable({
-            id: res.responsable.id,
-            apellido: res.responsable.apellido,
-            identificacion: res.responsable.identificacion,
-            nombre: res.responsable.nombre,
+          proveedor: new Proveedor({
+            id: res.proveedor?.id ?? "",
+            nombre: res.proveedor?.nombre ?? "",
+          }),
+          usuario: new Usuario({
+            id: res.usuario?.id ?? "",
+            nombre: res.usuario?.nombre ?? "",
+            apellido: res.usuario?.apellido ?? "",
+            correo: res.usuario?.correo ?? "",
+            rol: (res.usuario?.rol as Role) ?? Role.Consulta,
+            cargo: res.usuario?.cargo ?? "",
           }),
         })
     );

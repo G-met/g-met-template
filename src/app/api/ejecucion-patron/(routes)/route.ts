@@ -4,23 +4,46 @@ import { errorHandler } from "../../common/errors/error.handler";
 import { CrearEjecucionPatrones } from "../application/use-cases/writer/crearEjecucionPatron";
 import { EjecucionPatronWriteRepositoryImp } from "../infrastructure/writer/ejecucionEquipoWriteRepositoryImp";
 import { ResponsableReaderRepoImp } from "../../responsables/infrastructure/reader/responsableReaderRepoImp";
-import { CrearEjecucionDTO, validarCrearEjecucionPatron } from "../application/dto/crearEjecucionPatron";
+import {
+  CrearEjecucionDTO,
+  validarCrearEjecucionPatron,
+} from "../application/dto/crearEjecucionPatron";
 import { ListarEjecucionPatrones } from "../application/use-cases/reader/listarEjecucionPatrones";
 import { EjecucionPatronesReadRepositoryImp } from "../infrastructure/reader/ejecucionEquiposReadRepositoryImp";
 import { ProgramacionPatronesRepositoryReadImp } from "../../programacion-patrones/infraestructure/read/programacionPatronesRepoImp";
 import { ProgramacionPatronesWriteRepoImp } from "../../programacion-patrones/infraestructure/write/programacionPatronesWriteRepoImp";
 import { SaveFilesVercel } from "../../common/files/saveFiles";
+import { TipoEjecutor } from "../../common/types";
+import { ProveedorReadRepositoryImp } from "../../proveedor/infrastructure/reader/proveedorReadRepositoryImp";
+import { ProveedorWriteRepositoryImp } from "../../proveedor/infrastructure/writer/proveedorWriteRepositoryImp";
+import { ProveedorService } from "../../proveedor/dominio/service";
+import { UsuarioReadRepositoryImp } from "../../usuarios/infrastructure/read/usuarioReadRepositoryImp";
+import { UsuarioWriteRepositoryImp } from "../../usuarios/infrastructure/write/usuarioWriteRepositoryImp";
+import { UsuarioService } from "../../usuarios/dominio/service";
 
 const ejecucionRepo = new EjecucionPatronWriteRepositoryImp();
-const repoResponsable = new ResponsableReaderRepoImp();
 const programacionRepoRead = new ProgramacionPatronesRepositoryReadImp();
 const programacionRepoWrite = new ProgramacionPatronesWriteRepoImp();
 const fileService = new SaveFilesVercel();
+const proveedorReadRepositoryImp = new ProveedorReadRepositoryImp();
+const proveedorWriteRepositoryImp = new ProveedorWriteRepositoryImp();
+const proveedorService = new ProveedorService(
+  proveedorWriteRepositoryImp,
+  proveedorReadRepositoryImp
+);
+const usuarioReadRepositoryImp = new UsuarioReadRepositoryImp();
+const usuarioWriteRepositoryImp = new UsuarioWriteRepositoryImp();
+const usuarioService = new UsuarioService(
+  usuarioReadRepositoryImp,
+  usuarioWriteRepositoryImp
+);
+
 const crearEjecucionEquipos = new CrearEjecucionPatrones(
   ejecucionRepo,
   programacionRepoRead,
   programacionRepoWrite,
-  repoResponsable,
+  usuarioService,
+  proveedorService,
   fileService
 );
 const ejecucionRepoRead = new EjecucionPatronesReadRepositoryImp();
@@ -34,6 +57,7 @@ export async function POST(request: Request) {
       ejecutorId: formData.get("ejecutorId") as string,
       programacionPatronId: formData.get("programacionPatronId") as string,
       archivos: formData.getAll("archivos") as File[],
+      tipoEjecutor: formData.get("tipoEjecutor") as TipoEjecutor,
     };
     validarCrearEjecucionPatron(body);
     const session = await auth();

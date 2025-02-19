@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -32,17 +31,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { obtenerResponsables } from "@/app/dashboard/hooks/useResponsables";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { crearEjecucionPatron } from "@/app/dashboard/hooks/useEjecucionPatron";
+import { useCrearEjecucionPatron } from "@/app/dashboard/hooks/useEjecucionPatron";
 import { useRouter } from "next/navigation";
 import { validateFileListSize } from "@/app/api/common/files/filesSize";
 import { Input } from "@/components/ui/input";
+import { TipoEjecutor } from "@/app/api/common/types";
+import { ComboboxForm } from "./Combobox";
+import { useState } from "react";
+import { useListadoProvedores } from "@/app/dashboard/hooks/useProveedor";
+import { useListadoUsuarios } from "@/app/dashboard/hooks/useUsuario";
+import { Role } from "@/app/api/usuarios/dominio/entity";
 
 const FormSchema = z.object({
   fechaEjecucion: z.date({ required_error: "fechaInicio requerida" }),
-  responsable: z.string({ required_error: "Seleccione un responsable" }),
   observaciones: z
     .string()
     .min(10, {
@@ -57,6 +60,8 @@ const FormSchema = z.object({
       message: "Los archivos no deben pensar mas de 4 MB",
     })
     .optional(),
+  ejecutorId: z.string(),
+  tipoEjecutor: z.nativeEnum(TipoEjecutor),
 });
 interface Props {
   programacionPatronId: string;
@@ -68,19 +73,34 @@ export function FormEjecucionPatron({
   closeModal,
 }: Props) {
   const router = useRouter();
-  const { responsables } = obtenerResponsables();
-  const { crear, error, errorMsg, isLoading } = crearEjecucionPatron();
+  const { proveedores } = useListadoProvedores();
+  const listValuesProveedores = proveedores.map((proveedor) => ({
+    value: proveedor.id,
+    label: proveedor.nombre,
+  }));
+
+  const { usuarios } = useListadoUsuarios({
+    roles: [Role.Metrologo, Role.Auxiliar],
+  });
+  const listValuesUsuarios = usuarios.map((usuario) => ({
+    value: usuario.id,
+    label: usuario.nombre,
+  }));
+  const { crear, error, errorMsg, isLoading } = useCrearEjecucionPatron();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
+  console.log(form.formState.errors);
+
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     await crear({
-      ejecutorId: data.responsable,
+      ejecutorId: data.ejecutorId,
       fechaEjecucion: data.fechaEjecucion.toISOString(),
       observaciones: data.observaciones,
       programacionPatronId: programacionPatronId,
       archivos: data.archivos,
+      tipoEjecutor: data.tipoEjecutor,
     });
     toast({
       title: "Patron ejecutado corrrectamente",
@@ -89,7 +109,11 @@ export function FormEjecucionPatron({
     closeModal();
     router.push("/dashboard/patrones/ejecucion");
   }
-
+  const [tipoProvider, setTipoProvider] = useState("");
+  const tipoProveedor = (field: (...event: any[]) => void, e: string) => {
+    field(e);
+    setTipoProvider(e);
+  };
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -139,30 +163,46 @@ export function FormEjecucionPatron({
 
         <FormField
           control={form.control}
-          name="responsable"
+          name="tipoEjecutor"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Responsable</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
+              <FormLabel>Tipo de ejecutor</FormLabel>
+              <Select
+                onValueChange={(e) => tipoProveedor(field.onChange, e)}
+                value={field.value}
+              >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Seleccione un responsable" />
+                    <SelectValue placeholder="Seleccione un Tipo de ejecutor" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {responsables.map((res) => (
-                    <>
-                      <SelectItem value={res.id} key={res.id}>
-                        {res.nombre}
-                      </SelectItem>
-                    </>
-                  ))}
+                  <SelectItem value={TipoEjecutor.EXTERNO}>Externo</SelectItem>
+                  <SelectItem value={TipoEjecutor.INTERNO}>Interno</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
             </FormItem>
           )}
         />
+        {tipoProvider === TipoEjecutor.EXTERNO && (
+          <ComboboxForm
+            form={form}
+            listValues={listValuesProveedores}
+            label="Proveedores"
+            name="ejecutorId"
+            placeholder="Seleccione un proveedor"
+          />
+        )}
+        {tipoProvider === TipoEjecutor.INTERNO && (
+          <ComboboxForm
+            form={form}
+            listValues={listValuesUsuarios}
+            label="Usuarios"
+            name="ejecutorId"
+            placeholder="Seleccione un usuario"
+          />
+        )}
         <FormField
           control={form.control}
           name="observaciones"

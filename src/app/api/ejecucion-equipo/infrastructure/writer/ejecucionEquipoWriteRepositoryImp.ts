@@ -1,11 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import {
-  Documentos,
   EjecucionEquipo,
-  TipoEjecutor,
 } from "../../dominio/entity";
 import { EjecucionEquipoWriteRepository } from "../../dominio/repository";
 import { Prisma } from "@prisma/client";
+import { Documentos, TipoEjecutor } from "@/app/api/common/types";
 
 export class EjecucionEquipoWriteRepositoryImp
   implements EjecucionEquipoWriteRepository
