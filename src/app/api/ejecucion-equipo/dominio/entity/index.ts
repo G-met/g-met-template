@@ -10,7 +10,7 @@ export class EjecucionEquipo {
   observaciones: string;
   cliente: Cliente;
   programacionEquipo: ProgramacionEquipos;
-  documentos?: Documentos[];
+  documentos: Documentos[];
   proveedor?: Proveedor;
   usuario?: Usuario;
   tipoEjecutor: TipoEjecutor;
