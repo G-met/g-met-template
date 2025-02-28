@@ -68,7 +68,13 @@ export const columns: ColumnDef<ListarEjecucionDTO>[] = [
                     {documentos?.map((e) => (
                       <>
                         <DropdownMenuItem>
-                          <Link rel="noopener noreferrer" target="_blank" href={e.url ?? ""}>{e.name}</Link>
+                          <Link
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            href={e.url ?? ""}
+                          >
+                            {e.name}
+                          </Link>
                         </DropdownMenuItem>
                       </>
                     ))}
@@ -78,6 +84,7 @@ export const columns: ColumnDef<ListarEjecucionDTO>[] = [
                 <DropdownMenuItem>No hay Documentos</DropdownMenuItem>
               )}
             </DropdownMenuSub>
+            <DropdownMenuItem> + Agregar Documentos</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
