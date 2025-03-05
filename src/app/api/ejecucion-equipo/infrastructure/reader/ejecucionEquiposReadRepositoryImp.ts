@@ -22,6 +22,13 @@ export class EjecucionEquiposReadRepositoryImp
     });
 
     if (!res) return null;
+    return new EjecucionEquipo({
+      id: res.id,
+      fechaEjecucion: res.fechaEjecucion,
+      observaciones: res.observaciones,
+      cliente: { id: clienteId, nombre: clienteId },
+      documentos: res.documentos as Documentos[],
+    });
   }
   async listar(clienteId: string): Promise<EjecucionEquipo[]> {
     const res = await prisma.ejecucionEquipos.findMany({
@@ -79,49 +86,5 @@ export class EjecucionEquiposReadRepositoryImp
           }),
         })
     );
-  }
-
-  mapToDomainEjecucionEquipo(
-    ejecucionPrisma: EjecucionEquiposPrisma
-  ): EjecucionEquipo {
-    return new EjecucionEquipo({
-      id: ejecucionPrisma.id,
-      fechaEjecucion: ejecucionPrisma.fechaEjecucion,
-      observaciones: ejecucionPrisma.observaciones,
-      cliente: { id: ejecucionPrisma.clienteId, nombre: ejecucionPrisma.clienteId },
-      documentos: ejecucionPrisma.documentos as Documentos[],
-      programacionEquipo: new ProgramacionEquipos({
-        id: ejecucionPrisma.programacionEquipoId,
-        estado: ejecucionPrisma.estado as EstadoProgramacion,
-        fechaActualizacion: ejecucionPrisma.programacionEquipo.fechaActualizacion,
-        fechaCreacion: ejecucionPrisma.programacionEquipo.fechaCreacion,
-        fechaProgramacion: ejecucionPrisma.programacionEquipo.fechaProgramacion,
-        equipo: new Equipo({
-          id: ejecucionPrisma.programacionEquipo.equipo.id,
-          descripcion: ejecucionPrisma.programacionEquipo.equipo.descripcion,
-          codigo: ejecucionPrisma.programacionEquipo.equipo.codigo,
-          cliente_id: clienteId,
-          modelo: ejecucionPrisma.programacionEquipo.equipo.modelo,
-          fecha_actualizacion:
-            ejecucionPrisma.programacionEquipo.equipo.fecha_actualizacion,
-          fecha_creacion: ejecucionPrisma.programacionEquipo.equipo.fecha_creacion,
-          serie: ejecucionPrisma.programacionEquipo.equipo.serie,
-          marca_id: ejecucionPrisma.programacionEquipo.equipo.marca_id,
-          ubicacion_id: ejecucionPrisma.programacionEquipo.equipo.ubicacion_id,
-        }),
-      }),
-      proveedor: new Proveedor({
-        id: res.proveedor?.id ?? "",
-        nombre: res.proveedor?.nombre ?? "",
-      }),
-      usuario: new Usuario({
-        id: res.usuario?.id ?? "",
-        nombre: res.usuario?.nombre ?? "",
-        apellido: res.usuario?.apellido ?? "",
-        correo: res.usuario?.correo ?? "",
-        rol: (res.usuario?.rol as Role) ?? Role.Consulta,
-        cargo: res.usuario?.cargo ?? "",
-      }),
-    });
   }
 }

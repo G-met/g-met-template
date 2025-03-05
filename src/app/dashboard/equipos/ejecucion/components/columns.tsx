@@ -2,18 +2,8 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { ListarEjecucionDTO } from "@/app/api/ejecucion-equipo/application/dto/listarEjecucionEquipos.dto";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+
+import DropdownMenuEjecucion from "./DropdownMenuEjecucion";
 export const columns: ColumnDef<ListarEjecucionDTO>[] = [
   {
     accessorKey: "codigo",
@@ -51,42 +41,9 @@ export const columns: ColumnDef<ListarEjecucionDTO>[] = [
     id: "actions",
     cell: ({ row }) => {
       const documentos = row.original?.documentos;
-
+      const id = row.original?.id ?? "unknown";
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuSub>
-              {documentos?.length ? (
-                <>
-                  <DropdownMenuSubTrigger>Documentos</DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent>
-                    {documentos?.map((e) => (
-                      <>
-                        <DropdownMenuItem>
-                          <Link
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            href={e.url ?? ""}
-                          >
-                            {e.name}
-                          </Link>
-                        </DropdownMenuItem>
-                      </>
-                    ))}
-                  </DropdownMenuSubContent>
-                </>
-              ) : (
-                <DropdownMenuItem>No hay Documentos</DropdownMenuItem>
-              )}
-            </DropdownMenuSub>
-            <DropdownMenuItem> + Agregar Documentos</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <DropdownMenuEjecucion documentos={documentos} ejecucionEquipoId={id} />
       );
     },
   },
