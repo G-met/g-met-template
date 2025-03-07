@@ -1,12 +1,10 @@
 import { EjecucionPatronWriteRepository } from "../../../dominio/repository";
-import { ResponsableNoExiste } from "@/app/api/responsables/errors";
 
 import {
   ProgramacionNoExiste,
   ProgramacionYaCompletada,
 } from "@/app/api/equipos/dominio/errors";
 import { EstadoProgramacion } from "@/app/api/equipos/dominio";
-import { ResponsableRepositoryReader } from "@/app/api/responsables/domain/repository";
 import { CrearEjecucionDTO } from "../../dto/crearEjecucionPatron";
 import {
   ProgramacionPatronesRepositoryRead,
@@ -14,23 +12,31 @@ import {
 } from "@/app/api/programacion-patrones/domain/repository";
 import { IFilesAdaptor } from "@/app/api/common/files/saveFiles";
 import { randomUUID } from "crypto";
-import { Documentos } from "../../../dominio/entity";
+import { Documentos, TipoEjecutor } from "@/app/api/common/types";
+import { UsuarioService } from "@/app/api/usuarios/dominio/service";
+import { ProveedorService } from "@/app/api/proveedor/dominio/service";
+import { Usuario } from "@/app/api/usuarios/dominio/entity";
+import { Proveedor } from "@/app/api/proveedor/dominio/entity";
 
 export class CrearEjecucionPatrones {
   constructor(
     private ejecucionRepo: EjecucionPatronWriteRepository,
     private programacionRepoRead: ProgramacionPatronesRepositoryRead,
     private programacionRepoWrite: ProgramacionPatronesRepositoryWrite,
-    private responsableRepo: ResponsableRepositoryReader,
+    private usuarioService: UsuarioService,
+    private proveedorService: ProveedorService,
     private saveFilesAdaptor: IFilesAdaptor
   ) {}
   async execute(clienteId: string, dto: CrearEjecucionDTO) {
-    const responsable = await this.responsableRepo.obtenerResponsablePorID(
-      clienteId,
-      dto.ejecutorId
-    );
-    if (!responsable) {
-      throw new ResponsableNoExiste();
+    let usuario: Usuario | undefined;
+    let proveedor: Proveedor | undefined;
+    if (dto.tipoEjecutor === TipoEjecutor.INTERNO) {
+      usuario = await this.usuarioService.validarUsuarioPorId(dto.ejecutorId);
+    } else {
+      proveedor = await this.proveedorService.validarPorId(
+        dto.ejecutorId,
+        clienteId
+      );
     }
     const programacionPatron =
       await this.programacionRepoRead.obtenerProgramacionPorId(
@@ -55,13 +61,15 @@ export class CrearEjecucionPatrones {
       id: ejecucionPatronId,
       observaciones: dto.observaciones,
       fechaEjecucion: dto.fechaEjecucion,
-      responsable: responsable,
       cliente: {
         id: clienteId,
         nombre: clienteId,
       },
       programacionPatron: programacionPatron,
       documentos: archivosUrls,
+      tipoEjecutor: dto.tipoEjecutor,
+      proveedor: proveedor,
+      usuario: usuario,
     });
     await this.programacionRepoWrite.cambiarProgramacionEstado(
       dto.programacionPatronId,

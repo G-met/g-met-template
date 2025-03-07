@@ -4,24 +4,11 @@ import useSWRMutation from "swr/mutation";
 import useSWR from "swr";
 import { CrearEjecucionDTO } from "@/app/api/ejecucion-patron/application/dto/crearEjecucionPatron";
 import { ListarEjecucionDTO } from "@/app/api/ejecucion-patron/application/dto/listarEjecucionPatrones.dto";
+import { createFormData } from "@/lib/helpers/formData";
 
-export const crearEjecucionPatron = () => {
-  const fetcher = async (url: string, { arg }: { arg: CrearEjecucionDTO }) =>{
-    const formData = new FormData();
-
-    // Agregar los datos del DTO al FormData
-    formData.append("ejecutorId", arg.ejecutorId);
-    formData.append("fechaEjecucion", arg.fechaEjecucion.toString());
-    formData.append("observaciones", arg.observaciones);
-    formData.append("programacionPatronId", arg.programacionPatronId);
-
-    // Agregar los archivos al FormData
-    if (arg.archivos) {
-      for (let i = 0; i < arg.archivos.length; i++) {
-        formData.append("archivos", arg.archivos[i]);
-      }
-    }
-
+export const useCrearEjecucionPatron = () => {
+  const fetcher = async (url: string, { arg }: { arg: CrearEjecucionDTO }) => {
+    const formData = createFormData(arg);
     const response = await httpBase.post(url, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -29,8 +16,7 @@ export const crearEjecucionPatron = () => {
     });
 
     return response.data;
-  }
-    
+  };
 
   const { data, error, trigger, isMutating } = useSWRMutation(
     "/ejecucion-patron",
@@ -46,7 +32,7 @@ export const crearEjecucionPatron = () => {
   };
 };
 
-export const obtenerEjecucionPatrones = () => {
+export const useObtenerEjecucionPatrones = () => {
   const fetcher = (url: string) => httpBase.get(url).then((res) => res.data);
   const { data, error, isLoading } = useSWR<ListarEjecucionDTO[]>(
     "/ejecucion-patron",

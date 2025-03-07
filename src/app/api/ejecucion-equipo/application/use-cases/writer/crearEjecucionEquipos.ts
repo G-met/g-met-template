@@ -1,5 +1,4 @@
 import { EjecucionEquipoWriteRepository } from "../../../dominio/repository";
-import { ResponsableNoExiste } from "@/app/api/responsables/errors";
 import {
   EquipoReadRepository,
   EquipoWriteRepository,
@@ -9,16 +8,14 @@ import {
   ProgramacionYaCompletada,
 } from "@/app/api/equipos/dominio/errors";
 import { EstadoProgramacion } from "@/app/api/equipos/dominio";
-import { ResponsableRepositoryReader } from "@/app/api/responsables/domain/repository";
 import { CrearEjecucionDTO } from "../../dto/crearEjecucionEquipo";
 import { IFilesAdaptor } from "@/app/api/common/files/saveFiles";
 import { randomUUID } from "crypto";
-import { Documentos, TipoEjecutor } from "../../../dominio/entity";
 import { UsuarioService } from "../../../../usuarios/dominio/service/index";
 import { ProveedorService } from "../../../../proveedor/dominio/service/index";
-import { U } from "@vercel/blob/dist/create-folder-Oa5wYhFM.cjs";
 import { Usuario } from "@/app/api/usuarios/dominio/entity";
 import { Proveedor } from "@/app/api/proveedor/dominio/entity";
+import { Documentos, TipoEjecutor } from "@/app/api/common/types";
 
 export class CrearEjecucionEquipos {
   constructor(

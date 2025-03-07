@@ -26,6 +26,7 @@ import {
   Estatus,
   PatronProgramacionDto,
 } from "@/app/api/programacion-patrones/application/dto/listadoPatronesProgramados.dto";
+import { DropDownMenuEjecucionPatron } from "./DropDownMenu";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
@@ -79,54 +80,12 @@ export const columns: ColumnDef<PatronProgramacionDto>[] = [
     cell: ({ row }) => {
       const isCompleted =
         row.original.estado === EstadoProgramacion.COMPLETADO ? true : false;
-      const [isOpenModal, setIsOpenModal] = useState(false);
-      const [isClickOpenModal, setIsClickOpenModal] = useState(false);
-      const clickOpenModal = () => {
-        setIsClickOpenModal(true);
-      };
-
-      const onOpenChange = (value: boolean) => {
-        if (isClickOpenModal && value === false) {
-          setIsOpenModal(true);
-        }
-      };
-
-      const closeModal = () => {
-        setIsOpenModal(false);
-      };
 
       return (
-        <>
-          <DropdownMenu onOpenChange={onOpenChange}>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={clickOpenModal} disabled={isCompleted}>
-                Ejecutar
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Dialog
-            open={isOpenModal}
-            onOpenChange={(value) => setIsOpenModal(value)}
-          >
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Ejecucion de la programacion</DialogTitle>
-                <DialogDescription>
-                  Ingresa la informacion solicitada
-                </DialogDescription>
-              </DialogHeader>
-              <FormEjecucionPatron
-                programacionPatronId={row.original.id}
-                closeModal={closeModal}
-              />
-            </DialogContent>
-          </Dialog>
-        </>
+        <DropDownMenuEjecucionPatron
+          isCompleted={isCompleted}
+          programacionPatronId={row.original.id}
+        />
       );
     },
   },

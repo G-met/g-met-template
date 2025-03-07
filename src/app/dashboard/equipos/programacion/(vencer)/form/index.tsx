@@ -1,5 +1,3 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -38,12 +36,13 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { validateFileListSize } from "@/app/api/common/files/filesSize";
-import { TipoEjecutor } from "@/app/api/ejecucion-equipo/dominio/entity";
 import { useListadoProvedores } from "../../../../hooks/useProveedor";
 import { useListadoUsuarios } from "../../../../hooks/useUsuario";
 import { ComboboxForm } from "./Combobox";
 import { useState } from "react";
 import { Role } from "@/app/api/usuarios/dominio/entity";
+import { TipoEjecutor } from "@/app/api/common/types";
+import { disabledDays } from "@/lib/helpers/dates";
 const FormSchema = z.object({
   fechaEjecucion: z.date({ required_error: "fechaInicio requerida" }),
   observaciones: z
@@ -99,6 +98,7 @@ export function FormEjecucionEquipo({
   };
 
   async function onSubmit(data: FormValues) {
+    console.log(form.formState);
     await crear({
       ejecutorId: data.ejecutorId,
       fechaEjecucion: data.fechaEjecucion.toISOString(),
@@ -148,9 +148,9 @@ export function FormEjecucionEquipo({
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    disabled={(date) => date <= new Date()}
                     initialFocus
                     locale={es}
+                    disabled={disabledDays}
                   />
                 </PopoverContent>
               </Popover>

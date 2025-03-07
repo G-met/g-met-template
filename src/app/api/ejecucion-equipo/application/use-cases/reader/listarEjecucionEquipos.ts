@@ -13,6 +13,7 @@ export class ListarEjecucionEquipos {
 
   private convertToDto(listado: EjecucionEquipo[]): ListarEjecucionDTO[] {
     return listado.map((e) => ({
+      id: e.id,
       codigo: e.programacionEquipo.equipo?.codigo ?? "knonw",
       observaciones: e.observaciones,
       equipoDescripcion: e.programacionEquipo.equipo?.descripcion ?? "",

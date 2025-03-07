@@ -1,15 +1,20 @@
 import { prisma } from "@/lib/prisma";
-import {
-  Documentos,
-  EjecucionEquipo,
-  TipoEjecutor,
-} from "../../dominio/entity";
+import { EjecucionEquipo } from "../../dominio/entity";
 import { EjecucionEquipoWriteRepository } from "../../dominio/repository";
 import { Prisma } from "@prisma/client";
+import { Documentos, TipoEjecutor } from "@/app/api/common/types";
 
 export class EjecucionEquipoWriteRepositoryImp
   implements EjecucionEquipoWriteRepository
 {
+  async actualizar(ejecucionEquipo: EjecucionEquipo): Promise<void> {
+    await prisma.ejecucionEquipos.update({
+      where: { clienteId: ejecucionEquipo.cliente.id, id: ejecucionEquipo.id },
+      data: {
+        documentos: ejecucionEquipo.documentos as Prisma.JsonArray,
+      },
+    });
+  }
   async crear(
     ejecucionEquipo: EjecucionEquipo
   ): Promise<Omit<EjecucionEquipo, "cliente" | "programacionEquipo">> {

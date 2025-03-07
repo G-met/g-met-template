@@ -17,7 +17,7 @@ export class ListarEjecucionPatrones {
       observaciones: e.observaciones,
       patronDescripcion: e.programacionPatron.patron?.descripcion ?? "",
       fechaEjecucion: format(new Date(e.fechaEjecucion), "dd-MM-yyyy"),
-      responsable: e.responsable.nombre + " " + e.responsable.apellido,
+      responsable: e?.proveedor ? e.proveedor.nombre : e.usuario?.nombre ?? "",
       documentos: e.documentos,
     }));
   }

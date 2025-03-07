@@ -12,15 +12,21 @@ import { EquipoWriteRepositoryImp } from "../../equipos/infrastructure/writer/eq
 import { ListarEjecucionEquipos } from "../application/use-cases/reader/listarEjecucionEquipos";
 import { EjecucionEquiposReadRepositoryImp } from "../infrastructure/reader/ejecucionEquiposReadRepositoryImp";
 import { SaveFilesVercel } from "../../common/files/saveFiles";
-import { TipoEjecutor } from "../dominio/entity";
 import { ProveedorService } from "../../proveedor/dominio/service/index";
 import { UsuarioService } from "../../usuarios/dominio/service";
 import { UsuarioReadRepositoryImp } from "../../usuarios/infrastructure/read/usuarioReadRepositoryImp";
 import { UsuarioWriteRepositoryImp } from "../../usuarios/infrastructure/write/usuarioWriteRepositoryImp";
 import { ProveedorReadRepositoryImp } from "../../proveedor/infrastructure/reader/proveedorReadRepositoryImp";
 import { ProveedorWriteRepositoryImp } from "../../proveedor/infrastructure/writer/proveedorWriteRepositoryImp";
+import { TipoEjecutor } from "../../common/types";
+import {
+  AgregarArchivosEjecucionDTO,
+  validarAgregarArchivos,
+} from "../application/dto/agregarArchivosEjecucion";
+import { container } from "../../common/dependencyContainer";
 
-const ejecucionRepo = new EjecucionEquipoWriteRepositoryImp();
+const ejecucionEquipoWriteRepositoryImp =
+  new EjecucionEquipoWriteRepositoryImp();
 const equipoRepo = new EquipoReadRepositoryImp();
 const equipoRepoWrite = new EquipoWriteRepositoryImp();
 const fileService = new SaveFilesVercel();
@@ -37,15 +43,17 @@ const proveedorService = new ProveedorService(
   proveedorReadRepositoryImp
 );
 const crearEjecucionEquipos = new CrearEjecucionEquipos(
-  ejecucionRepo,
+  ejecucionEquipoWriteRepositoryImp,
   equipoRepo,
   equipoRepoWrite,
   usuarioService,
   proveedorService,
   fileService
 );
+
 const ejecucionRepoRead = new EjecucionEquiposReadRepositoryImp();
 const listarEjecucionEquipos = new ListarEjecucionEquipos(ejecucionRepoRead);
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -76,6 +84,27 @@ export async function GET(request: Request) {
       session.user.clienteId
     );
     return NextResponse.json(listado);
+  } catch (error: any) {
+    return errorHandler(error);
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const formData = await request.formData();
+    const body: AgregarArchivosEjecucionDTO = {
+      ejecucionId: formData.get("ejecucionId") as string,
+      archivos: formData.getAll("archivos") as File[],
+    };
+
+    const dto = validarAgregarArchivos(body);
+    const session = await auth();
+
+    await container.ejecucion.agregarArchivosEjecucionUseCase.execute(
+      session.user.clienteId,
+      dto
+    );
+    return NextResponse.json({ msg: "ejecucion creada" });
   } catch (error: any) {
     return errorHandler(error);
   }
