@@ -18,6 +18,8 @@ export class EditarProveedorImp implements EditarProveedor {
       numeroIdentificacion: dto.numeroIdentificacion,
       telefono: dto.telefono,
       tipoIdetificacion: dto.tipoIdetificacion,
+      nombreContacto: dto.nombreContacto,
+      telefonoContacto: dto.telefonoContacto,
     });
     await this.proveedorService.editar(proveedorToCreate);
   }

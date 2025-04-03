@@ -11,13 +11,22 @@ export const columns: ColumnDef<ListarProveedoresDTO>[] = [
     header: "Nombre empresa",
   },
   {
-    accessorKey: "numeroIdentificacion",
-    header: "Numero Identificacion",
+    accessorKey: "tipoIdentificacion",
+    header: "Tipo Identificacion",
   },
   {
     accessorKey: "numeroIdentificacion",
     header: "Numero Identificacion",
   },
+  {
+    accessorKey: "nombreContacto",
+    header: "Nombre contacto",
+  },
+  {
+    accessorKey: "telefonoContacto",
+    header: "Telefono contacto",
+  },
+
   {
     id: "actions",
     cell: ({ row }) => {
@@ -30,6 +39,8 @@ export const columns: ColumnDef<ListarProveedoresDTO>[] = [
         direccion: row.original.direccion,
         telefono: row.original.telefono,
         email: row.original.email,
+        nombreContacto: row.original.nombreContacto,
+        telefonoContacto: row.original.telefonoContacto,
       };
       return <DropDownMenuProveedor proveedorDto={proveedorDto} />;
     },

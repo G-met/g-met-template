@@ -9,30 +9,38 @@ import {
   useListadoProvedores,
   useCrearProveedor,
 } from "../../hooks/useProveedor";
-import { DialogWrapper } from "@/components/dialogWrapper";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { ProveedorForm } from "./form";
 
 export default function Proveedor() {
-  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [open, SetOpen] = useState(false);
+  const closeModal = () => SetOpen(false);
   const { proveedores, isLoading } = useListadoProvedores();
-  const closeModal = () => {
-    setIsOpenModal(false);
-  };
   return (
     <>
-      <h2 className="text-center my-4 font-semibold">Consultar Proveedores</h2>
-      <div className="flex justify-end mb-3">
-        <Button onClick={() => setIsOpenModal(true)}>Crear Proveedor</Button>
-      </div>
-      <DataTable columns={columns} data={proveedores} isLoading={isLoading} />
-      <DialogWrapper
-        isOpen={isOpenModal}
-        onOpenChange={setIsOpenModal}
-        title="Crear Proveedor"
-        description="Ingresa la informacion solicitada"
-      >
-        <ProveedorForm closeModal={closeModal} />
-      </DialogWrapper>
+      <Dialog open={open} onOpenChange={SetOpen}>
+        <h2 className="text-center my-4 font-semibold">
+          Consultar Proveedores
+        </h2>
+        <div className="flex justify-end mb-3">
+          <DialogTrigger asChild>
+            <Button>Crear Proveedor</Button>
+          </DialogTrigger>
+        </div>
+        <DataTable columns={columns} data={proveedores} isLoading={isLoading} />
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Crear proveedor</DialogTitle>
+            <ProveedorForm closeModal={closeModal} />
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
