@@ -37,6 +37,8 @@ const formSchema = z.object({
   direccion: z.string(),
   telefono: z.string(),
   email: z.string().email(),
+  nombreContacto: z.string(),
+  telefonoContacto: z.string(),
 });
 
 interface Props {
@@ -50,7 +52,6 @@ export function ProveedorForm({
   proveedorDto,
   closeModal,
 }: Props) {
-  console.log({ proveedorDto });
   const labelform = isEditing ? "Editar Proveedor" : "Crear Proveedor";
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,7 +61,8 @@ export function ProveedorForm({
       nombre: proveedorDto?.nombre ?? "",
       numeroIdentificacion: proveedorDto?.numeroIdentificacion ?? "",
       telefono: proveedorDto?.telefono ?? "",
-      tipoIdetificacion: proveedorDto?.tipoIdetificacion as Identificacion ?? "",
+      tipoIdetificacion:
+        (proveedorDto?.tipoIdetificacion as Identificacion) ?? "",
     },
   });
 
@@ -86,6 +88,8 @@ export function ProveedorForm({
         numeroIdentificacion: values.numeroIdentificacion,
         telefono: values.telefono,
         tipoIdetificacion: values.tipoIdetificacion as Identificacion,
+        nombreContacto: values.nombreContacto,
+        telefonoContacto: values.telefonoContacto,
       });
     } else {
       await crear({
@@ -95,6 +99,8 @@ export function ProveedorForm({
         numeroIdentificacion: values.numeroIdentificacion,
         telefono: values.telefono,
         tipoIdetificacion: values.tipoIdetificacion as Identificacion,
+        nombreContacto: values.nombreContacto,
+        telefonoContacto: values.telefonoContacto,
       });
     }
 
@@ -203,6 +209,38 @@ export function ProveedorForm({
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input placeholder="Ingrese email de la empresa" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="nombreContacto"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nombre de contacto</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Ingrese el nombre de contacto directo"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="telefonoContacto"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Telefono de contacto</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Ingrese el telefono de contacto directo"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
