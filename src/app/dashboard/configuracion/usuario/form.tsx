@@ -27,8 +27,6 @@ import { useEditarProveedor } from "../../hooks/useProveedor";
 import { Role } from "@/app/api/usuarios/dominio/entity";
 import { useCrearUsuario } from "../../hooks/useUsuario";
 import { crearUsuarioDTOschema } from "@/app/api/usuarios/use-cases/dto/crearUsuario.DTO";
-import { auth } from "../../../../lib/getSession";
-import { useSession } from "next-auth/react";
 
 interface Props {
   isEditing?: boolean;
@@ -43,8 +41,7 @@ export function UsuarioForm({
   //proveedorDto,
   closeModal,
 }: Props) {
-  const { data: session } = useSession();
-  const isValidRole = session?.user?.rol === Role.Admin;
+  const isValidRole = true
 
   const labelform = isEditing ? "Editar Usuario" : "Crear Usuario";
   const form = useForm<FormValues>({

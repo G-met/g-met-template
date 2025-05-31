@@ -1,7 +1,6 @@
 "use client";
 
 import { Bell, ChevronsUpDown, LogOut } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -30,14 +29,10 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-  const { data: session } = useSession();
   const sighOutUser = async () => {
-    await signOut();
   };
 
-  const getIniciales =
-    (session?.user?.nombre?.[0]?.toUpperCase() ?? "") +
-    (session?.user?.apellido?.[0]?.toUpperCase() ?? "");
+  const getIniciales = ""
 
   return (
     <SidebarMenu>
@@ -49,16 +44,16 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src="" alt={session?.user.correo} />
+                <AvatarImage src="" alt={""} />
                 <AvatarFallback className="rounded-lg">
                   {getIniciales}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">
-                  {session?.user.nombre}
+                  {""}
                 </span>
-                <span className="truncate text-xs">{session?.user.correo}</span>
+                <span className="truncate text-xs">{""}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -79,10 +74,10 @@ export function NavUser({
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
-                    {session?.user.nombre}
+                    {""}
                   </span>
                   <span className="truncate text-xs">
-                    {session?.user.correo}
+                    {""}
                   </span>
                 </div>
               </div>

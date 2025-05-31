@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000 -H micliente.my-domain.test",
+    "dev": "next dev -p 3000",
     "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint"
@@ -12,6 +12,8 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
+    "@clerk/localizations": "^3.16.3",
+    "@clerk/nextjs": "^6.20.2",
     "@hookform/resolvers": "^3.1.0",
     "@prisma/client": "^5.22.0",
     "@radix-ui/react-accordion": "^1.1.1",

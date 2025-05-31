@@ -1,11 +1,10 @@
-import { authOptions } from "./auth";
 import { NoAutorizado } from "./errors";
-import { getServerSession } from "next-auth";
+import { currentUser } from "@clerk/nextjs/server";
 export const auth = async () => {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    throw new NoAutorizado();
-  }
-  return session;
+  const user = await currentUser();
+  return {
+    user: {
+      clienteId: user?.publicMetadata?.company?.id ?? "",
+    },
+  };
 };
-
