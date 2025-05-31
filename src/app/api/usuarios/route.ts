@@ -8,12 +8,8 @@ import { auth } from "../../../lib/getSession";
 import { ListarUsuariosImp } from "./use-cases/read/listarUsurios";
 import { EmailService } from "../common/email/index";
 import { validarCrearUsuarioDto } from "./use-cases/dto/crearUsuario.DTO";
-import { AuthService } from "../auth/service";
 import { ClienteService } from "../cliente/dominio/service/index";
 import { ClienteReadRepositoryImp } from "../cliente/infrastructure/read/clienteReadRepositoryImp";
-import { PasswordResetTokenService } from "../auth/service/passwordResetTokenService";
-import { PasswordResetTokenRepository } from "../auth/repository";
-import { PasswordResetTokenRepositoryImp } from "../auth/repository/passwordResetTokenRepositoryIm";
 import { Cliente } from "../cliente/dominio/entity";
 import { rolesGuard } from "@/lib/roles-guard";
 import { Role } from "./dominio/entity";
@@ -27,23 +23,9 @@ const usuarioService = new UsuarioService(
 const clienteReadRepositoryImp = new ClienteReadRepositoryImp();
 const clienteService = new ClienteService(clienteReadRepositoryImp);
 const emailService = new EmailService();
-const passwordResetTokenRepository = new PasswordResetTokenRepositoryImp();
-const passwordResetTokenService = new PasswordResetTokenService(
-  passwordResetTokenRepository
-);
 
-const authService = new AuthService(
-  usuarioService,
-  clienteService,
-  passwordResetTokenService,
-  emailService
-);
-const crearUsuarioImp = new CrearUsuarioImp(
-  usuarioService,
-  emailService,
-  authService,
-  passwordResetTokenService
-);
+
+
 const listarUsuariosImp = new ListarUsuariosImp(usuarioService);
 
 export async function POST(request: Request) {
@@ -56,7 +38,7 @@ export async function POST(request: Request) {
       id: session.user.clienteId,
       nombre: session.user.nombreCliente,
     };
-    await crearUsuarioImp.execute(cliente, dto);
+    //await crearUsuarioImp.execute(cliente, dto);
     return NextResponse.json({ msg: "usuario creado" });
   } catch (error: any) {
     return errorHandler(error);

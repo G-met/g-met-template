@@ -5,6 +5,8 @@ export const auth = async () => {
   return {
     user: {
       clienteId: user?.publicMetadata?.company?.id ?? "",
+      rol: user?.publicMetadata?.rol ?? "",
+      nombreCliente: user?.publicMetadata?.company?.name ?? "",
     },
   };
 };
