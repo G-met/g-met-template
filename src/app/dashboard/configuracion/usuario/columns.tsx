@@ -1,41 +1,31 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ListarProveedoresDTO } from "@/app/api/proveedor/application/dto/listarProveedore.DTO";
-import { DropDownMenuProveedor } from "./dropDownMenu";
-import { EditarProveedorDTO } from "@/app/api/proveedor/application/dto/editarProveedorDTO";
-import { ListarUsuriosDTO } from "@/app/api/usuarios/use-cases/dto/listarUsuarios.DTO";
+import { UserResponse } from "./types";
 
-export const columns: ColumnDef<ListarUsuriosDTO>[] = [
+export const columns: ColumnDef<UserResponse>[] = [
   {
-    accessorKey: "nombre",
+    accessorKey: "username",
+    header: "Usuario",
+  },
+  {
+    accessorKey: "firstName",
     header: "Nombre",
   },
   {
-    accessorKey: "correo",
+    accessorKey: "lastName",
+    header: "Apellido",
+  },
+  {
+    accessorKey: "email",
     header: "Correo",
   },
   {
-    accessorKey: "rol",
+    accessorKey: "role",
     header: "Rol",
   },
   {
-    accessorKey: "cargo",
+    accessorKey: "position",
     header: "Cargo",
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      // const proveedorDto: EditarProveedorDTO = {
-      //   id: row.original.id,
-      //   nombre: row.original.nombre,
-      //   tipoIdetificacion: row.original.tipoIdentificacion,
-      //   numeroIdentificacion: row.original.numeroIdentificacion,
-      //   direccion: row.original.direccion,
-      //   telefono: row.original.telefono,
-      //   email: row.original.email,
-      // };
-      // return <DropDownMenuProveedor proveedorDto={proveedorDto} />;
-    },
   },
 ];

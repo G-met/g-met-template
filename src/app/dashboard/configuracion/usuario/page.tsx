@@ -8,12 +8,11 @@ import { useState } from "react";
 
 import { DialogWrapper } from "@/components/dialogWrapper";
 import { UsuarioForm } from "./form";
-import { useListadoUsuarios } from "../../hooks/useUsuario";
-import { Role } from "@/app/api/usuarios/dominio/entity";
+import { useGetAllUsers } from "./hook/useUser";
 
 export default function Proveedor() {
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const { usuarios, isLoading } = useListadoUsuarios();
+  const { users, isLoading } = useGetAllUsers();
   const closeModal = () => {
     setIsOpenModal(false);
   };
@@ -23,7 +22,7 @@ export default function Proveedor() {
       <div className="flex justify-end mb-3">
         <Button onClick={() => setIsOpenModal(true)}>Crear Usuario</Button>
       </div>
-      <DataTable columns={columns} data={usuarios} isLoading={isLoading} />
+      <DataTable columns={columns} data={users} isLoading={isLoading} />
       <DialogWrapper
         isOpen={isOpenModal}
         onOpenChange={setIsOpenModal}
