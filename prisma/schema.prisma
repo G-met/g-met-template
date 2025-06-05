@@ -122,7 +122,6 @@ model usuario {
   cargo              String              @db.VarChar(40)
   rol                Role                @default(Consulta)
   correo             String              @unique @db.VarChar(50)
-  password           String              @db.VarChar(250)
   correoVerificado   Boolean             @default(false) @map("correo_verificado")
   fechaCreacion      DateTime            @default(now()) @map("fecha_creacion")
   fechaActualizacion DateTime            @updatedAt @map("fecha_actualizacion")
