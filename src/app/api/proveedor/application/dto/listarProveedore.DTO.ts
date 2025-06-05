@@ -8,6 +8,8 @@ export class ListarProveedoresDTO {
   telefono: string;
   email: string;
   direccion: string;
+  nombreContacto: string;
+  telefonoContacto: string;
 
   static entityToDto(proveedor: Proveedor): ListarProveedoresDTO {
     return {
@@ -18,6 +20,8 @@ export class ListarProveedoresDTO {
       telefono: proveedor.telefono,
       email: proveedor.email,
       direccion: proveedor.direccion,
+      nombreContacto: proveedor.nombreContacto,
+      telefonoContacto: proveedor.telefonoContacto,
     };
   }
 }

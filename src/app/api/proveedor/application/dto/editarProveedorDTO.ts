@@ -9,6 +9,8 @@ export interface EditarProveedorDTO {
   direccion: string;
   telefono: string;
   email: string;
+  nombreContacto: string;
+  telefonoContacto: string;
 }
 
 export const schema = z.object({

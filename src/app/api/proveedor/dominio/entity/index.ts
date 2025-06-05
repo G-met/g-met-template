@@ -13,6 +13,8 @@ export class Proveedor {
   telefono: string;
   email: string;
   cliente: Cliente;
+  nombreContacto: string;
+  telefonoContacto: string;
 
   constructor(attributes: Partial<Proveedor> = {}) {
     this.id = attributes.id ?? "";
@@ -23,5 +25,7 @@ export class Proveedor {
     this.telefono = attributes.telefono ?? "";
     this.email = attributes.email ?? "";
     this.cliente = attributes.cliente ?? new Cliente();
+    this.nombreContacto = attributes.nombreContacto ?? "";
+    this.telefonoContacto = attributes.telefonoContacto ?? "";
   }
 }

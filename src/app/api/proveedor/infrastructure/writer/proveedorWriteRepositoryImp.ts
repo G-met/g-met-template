@@ -16,6 +16,8 @@ export class ProveedorWriteRepositoryImp implements ProveedorWriteRepository {
         numeroIdentificacion: proveedor.numeroIdentificacion,
         telefono: proveedor.telefono,
         tipoIdetificacion: proveedor.tipoIdetificacion,
+        nombreContacto: proveedor.nombreContacto,
+        telefonoContacto: proveedor.telefonoContacto,
       },
     });
   }
@@ -29,6 +31,8 @@ export class ProveedorWriteRepositoryImp implements ProveedorWriteRepository {
         telefono: proveedor.telefono,
         tipoIdetificacion: proveedor.tipoIdetificacion,
         clienteId: proveedor.cliente.id,
+        nombreContacto: proveedor.nombreContacto,
+        telefonoContacto: proveedor.telefonoContacto,
       },
     });
   }

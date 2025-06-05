@@ -225,6 +225,8 @@ Table proveedor {
   direccion String
   telefono String
   email String
+  nombreContacto String
+  telefonoContacto String
   clienteId String [not null]
 }
 
