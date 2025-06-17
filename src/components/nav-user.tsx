@@ -2,6 +2,8 @@
 
 import { Bell, ChevronsUpDown, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useUser, useClerk } from "@clerk/nextjs";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,11 +19,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useUser } from "@clerk/nextjs";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const sighOutUser = async () => {};
+  const { signOut } = useClerk();
+  const sighOutUser = async () => {
+    await signOut();
+  };
   const { user } = useUser();
   const getIniciales = "AB"; // Placeholder for initials, replace with actual logic if needed
   const name = user?.firstName || "known";

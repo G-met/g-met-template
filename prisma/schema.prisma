@@ -115,21 +115,22 @@ model frecuencia {
 }
 
 model usuario {
-  id                 String              @id @default(cuid())
-  usuario            String              @db.VarChar(40)
-  nombre             String              @db.VarChar(40)
-  apellido           String              @db.VarChar(40)
-  cargo              String              @db.VarChar(40)
-  rol                Role                @default(Consulta)
-  correo             String              @unique @db.VarChar(50)
-  correoVerificado   Boolean             @default(false) @map("correo_verificado")
-  fechaCreacion      DateTime            @default(now()) @map("fecha_creacion")
-  fechaActualizacion DateTime            @updatedAt @map("fecha_actualizacion")
-  fechaInactivacion  DateTime?           @map("fecha_inactivacion")
-  clienteId          String              @map("cliente_id")
-  cliente            cliente             @relation(fields: [clienteId], references: [id])
-  EjecucionEquipos   EjecucionEquipos[]
-  EjecucionPatrones  EjecucionPatrones[]
+  id                    String              @id @default(cuid())
+  usuario               String              @db.VarChar(40)
+  nombre                String              @db.VarChar(40)
+  apellido              String              @db.VarChar(40)
+  cargo                 String              @db.VarChar(40)
+  rol                   Role                @default(Consulta)
+  correo                String              @unique @db.VarChar(50)
+  correoVerificado      Boolean             @default(false) @map("correo_verificado")
+  fechaCreacion         DateTime            @default(now()) @map("fecha_creacion")
+  fechaActualizacion    DateTime            @updatedAt @map("fecha_actualizacion")
+  fechaInactivacion     DateTime?           @map("fecha_inactivacion")
+  clienteId             String              @map("cliente_id")
+  cliente               cliente             @relation(fields: [clienteId], references: [id])
+  EjecucionEquipos      EjecucionEquipos[]
+  EjecucionPatrones     EjecucionPatrones[]
+  codigo_identificacion String?             @unique @map("codigo_identificacion") @db.VarChar(25)
 
   @@index([clienteId, correo])
 }

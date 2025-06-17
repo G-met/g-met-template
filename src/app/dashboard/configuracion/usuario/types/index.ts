@@ -24,5 +24,5 @@ export interface CreateUser {
   position: string;
   email: string;
   role: Role;
-  clientId: string;
+  idCode?: string;
 }

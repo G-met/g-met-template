@@ -5,8 +5,8 @@ import { UserResponse } from "./types";
 
 export const columns: ColumnDef<UserResponse>[] = [
   {
-    accessorKey: "username",
-    header: "Usuario",
+    accessorKey: "idCode",
+    header: "Código Identificacion",
   },
   {
     accessorKey: "firstName",

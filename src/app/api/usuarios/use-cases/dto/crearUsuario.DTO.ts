@@ -2,7 +2,6 @@ import { z } from "zod";
 import { Role } from "../../dominio/entity";
 
 export interface CrearUsuarioDTO {
-  usuario: string;
   nombre: string;
   apellido: string;
   cargo: string;
@@ -11,7 +10,6 @@ export interface CrearUsuarioDTO {
 }
 
 export const crearUsuarioDTOschema = z.object({
-  usuario: z.string(),
   nombre: z.string(),
   apellido: z.string(),
   cargo: z.string(),

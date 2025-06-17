@@ -80,6 +80,7 @@ Table usuario {
   fechaActualizacion DateTime [not null]
   fechaInactivacion DateTime
   clienteId String [not null]
+  codigo_identificacion String [unique]
 }
 
 Table magnitud {
