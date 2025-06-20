@@ -131,8 +131,15 @@ model usuario {
   EjecucionEquipos      EjecucionEquipos[]
   EjecucionPatrones     EjecucionPatrones[]
   codigo_identificacion String?             @unique @map("codigo_identificacion") @db.VarChar(25)
-
+  status                UserStatus          @default(PENDING_ACTIVATION) @map("status")
   @@index([clienteId, correo])
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING_ACTIVATION
+  DISABLED
+  DELETED
 }
 
 model magnitud {

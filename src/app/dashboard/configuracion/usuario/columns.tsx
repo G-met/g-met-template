@@ -28,4 +28,8 @@ export const columns: ColumnDef<UserResponse>[] = [
     accessorKey: "position",
     header: "Cargo",
   },
+  {
+    accessorKey: "status",
+    header: "Estatus",
+  }
 ];
