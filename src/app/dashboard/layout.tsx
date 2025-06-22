@@ -13,15 +13,15 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { SignedIn } from "@clerk/nextjs";
 
-import AuthProvider from "./components/AuthProvider";
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <AuthProvider>
+    <SignedIn>
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
@@ -45,6 +45,6 @@ export default function DashboardLayout({
           <main className="col-start-2 p-4">{children}</main>
         </SidebarInset>
       </SidebarProvider>
-    </AuthProvider>
+    </SignedIn>
   );
 }

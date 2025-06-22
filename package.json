@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000 -H micliente.my-domain.test",
+    "dev": "next dev -p 3000",
     "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint"
@@ -12,6 +12,8 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
+    "@clerk/localizations": "^3.16.3",
+    "@clerk/nextjs": "^6.20.2",
     "@hookform/resolvers": "^3.1.0",
     "@prisma/client": "^5.22.0",
     "@radix-ui/react-accordion": "^1.1.1",
@@ -28,6 +30,8 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-toast": "^1.1.4",
     "@radix-ui/react-tooltip": "^1.1.3",
+    "@tanstack/react-query": "^5.80.2",
+    "@tanstack/react-query-devtools": "^5.80.2",
     "@tanstack/react-table": "^8.10.0",
     "@types/react": "18.0.35",
     "@types/react-dom": "18.0.11",
@@ -42,7 +46,6 @@
     "eslint-config-next": "^14.0.4",
     "lucide-react": "^0.456.0",
     "next": "^14.0.4",
-    "next-auth": "^4.24.5",
     "react": "^18.2.0",
     "react-day-picker": "^8.8.2",
     "react-dom": "^18.2.0",

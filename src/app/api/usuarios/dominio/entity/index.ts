@@ -1,7 +1,6 @@
 import { Cliente } from "@/app/api/cliente/dominio/entity";
 export class Usuario {
   id: string;
-  usuario: string;
   nombre: string;
   apellido: string;
   cargo: string;
@@ -16,7 +15,6 @@ export class Usuario {
 
   constructor(attributtes: Partial<Usuario> = {}) {
     this.id = attributtes.id ?? "";
-    this.usuario = attributtes.usuario ?? "";
     this.nombre = attributtes.nombre ?? "";
     this.apellido = attributtes.apellido ?? "";
     this.cargo = attributtes.cargo ?? "";

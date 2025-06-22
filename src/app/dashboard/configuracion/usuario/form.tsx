@@ -25,10 +25,8 @@ import {
 } from "@/components/ui/select";
 import { useEditarProveedor } from "../../hooks/useProveedor";
 import { Role } from "@/app/api/usuarios/dominio/entity";
-import { useCrearUsuario } from "../../hooks/useUsuario";
 import { crearUsuarioDTOschema } from "@/app/api/usuarios/use-cases/dto/crearUsuario.DTO";
-import { auth } from "../../../../lib/getSession";
-import { useSession } from "next-auth/react";
+import { useCreateUser } from "./hook/useUser";
 
 interface Props {
   isEditing?: boolean;
@@ -36,29 +34,36 @@ interface Props {
   closeModal?: () => void;
 }
 
-type FormValues = z.infer<typeof crearUsuarioDTOschema>;
+const formSchema = z.object({
+  firstName: z.string().min(1, "El nombre es requerido"),
+  lastName: z.string().min(1, "El apellido es requerido"),
+  position: z.string().min(1, "El puesto es requerido"),
+  role: z.string().min(1, "El rol es requerido"),
+  email: z
+    .string()
+    .email("Correo electrónico inválido")
+    .min(1, "El correo electrónico es requerido"),
+  idCode: z.string(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export function UsuarioForm({
   isEditing = false,
   //proveedorDto,
   closeModal,
 }: Props) {
-  const { data: session } = useSession();
-  const isValidRole = session?.user?.rol === Role.Admin;
+  const isValidRole = true;
 
   const labelform = isEditing ? "Editar Usuario" : "Crear Usuario";
   const form = useForm<FormValues>({
-    resolver: zodResolver(crearUsuarioDTOschema),
+    resolver: zodResolver(formSchema),
     defaultValues: {},
   });
 
   const { toast } = useToast();
-  const {
-    crear,
-    error,
-    errorMsg: errorMsgCreated,
-    isLoading: isLoadingCreated,
-  } = useCrearUsuario();
+  const { isError, isLoading, createUser, error, errorMessage } =
+    useCreateUser();
   const {
     editar,
     isLoading: isLoadingEdit,
@@ -76,15 +81,13 @@ export function UsuarioForm({
       //   tipoIdetificacion: values.tipoIdetificacion as Identificacion,
       // });
     } else {
-      console.log(form.formState);
-      console.log(form.setError);
-      await crear({
-        usuario: values.usuario,
-        nombre: values.nombre,
-        apellido: values.apellido,
-        correo: values.correo,
-        cargo: values.cargo,
-        rol: values.rol as Role,
+      await createUser({
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        position: values.position,
+        role: values.role as Role,
+        idCode: values.idCode, // Assuming 'nombre' is used as idCode, adjust as necessary
       });
     }
 
@@ -104,13 +107,13 @@ export function UsuarioForm({
         <div className="grid grid-cols-2 grid-rows-1 gap-2">
           <FormField
             control={form.control}
-            name="usuario"
+            name="idCode"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Usuario</FormLabel>
+                <FormLabel>Codigo Identificacion</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Ingrese un nombre de usuario"
+                    placeholder="Ingrese el codigo de identificacion"
                     {...field}
                   />
                 </FormControl>
@@ -120,7 +123,7 @@ export function UsuarioForm({
           />
           <FormField
             control={form.control}
-            name="nombre"
+            name="firstName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nombre</FormLabel>
@@ -134,9 +137,10 @@ export function UsuarioForm({
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
-            name="apellido"
+            name="lastName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Apellido</FormLabel>
@@ -153,7 +157,7 @@ export function UsuarioForm({
 
           <FormField
             control={form.control}
-            name="correo"
+            name="email"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Correo</FormLabel>
@@ -169,7 +173,7 @@ export function UsuarioForm({
           />
           <FormField
             control={form.control}
-            name="cargo"
+            name="position"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Cargo</FormLabel>
@@ -186,7 +190,7 @@ export function UsuarioForm({
 
           <FormField
             control={form.control}
-            name="rol"
+            name="role"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Rol del usuario</FormLabel>
@@ -221,13 +225,13 @@ export function UsuarioForm({
         </div>
         <Button
           type="submit"
-          disabled={!isValidRole || isLoadingEdit || isLoadingCreated}
+          disabled={!isValidRole || isLoadingEdit || isLoading}
           className="mx-auto"
         >
           <Loader2
             className={
               "mr-2 h-4 w-4 animate-spin " +
-              (isLoadingCreated || isLoadingEdit ? "" : "hidden")
+              (isLoading || isLoadingEdit ? "" : "hidden")
             }
           />
           {labelform}
@@ -237,9 +241,7 @@ export function UsuarioForm({
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
-            <AlertDescription>
-              {erroMsgEdit || errorMsgCreated}
-            </AlertDescription>
+            <AlertDescription>{erroMsgEdit || errorMessage}</AlertDescription>
           </Alert>
         )}
       </form>

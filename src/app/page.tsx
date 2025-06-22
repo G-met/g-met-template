@@ -1,14 +1,5 @@
-import { LoginButton } from './BtnAuth'
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../lib/auth';
+import { redirect } from "next/navigation";
 
-export default async function Home () {
-  const session = await getServerSession(authOptions);
-  return (
-    <main>
-      <h1>Pagina Principal</h1>
-      <p>Aqui debe estar el login</p>
-      <LoginButton/>
-    </main>
-  )
+export default function Home() {
+  redirect("/dashboard");
 }

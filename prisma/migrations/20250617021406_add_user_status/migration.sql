@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'PENDING_ACTIVATION', 'DISABLED', 'DELETED');
+
+-- AlterTable
+ALTER TABLE "usuario" ADD COLUMN     "status" "UserStatus" NOT NULL DEFAULT 'PENDING_ACTIVATION';

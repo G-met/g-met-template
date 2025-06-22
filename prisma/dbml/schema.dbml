@@ -75,12 +75,13 @@ Table usuario {
   cargo String [not null]
   rol Role [not null, default: 'Consulta']
   correo String [unique, not null]
-  password String [not null]
   correoVerificado Boolean [not null, default: false]
   fechaCreacion DateTime [default: `now()`, not null]
   fechaActualizacion DateTime [not null]
   fechaInactivacion DateTime
   clienteId String [not null]
+  codigo_identificacion String [unique]
+  status UserStatus [not null, default: 'PENDING_ACTIVATION']
 }
 
 Table magnitud {
@@ -268,6 +269,13 @@ Table password_reset_token {
   token String [unique, not null]
   expires DateTime [default: `now()`, not null]
   clienteId String [not null]
+}
+
+Enum UserStatus {
+  ACTIVE
+  PENDING_ACTIVATION
+  DISABLED
+  DELETED
 }
 
 Enum TipoIdentificacion {
