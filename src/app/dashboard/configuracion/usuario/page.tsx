@@ -9,10 +9,15 @@ import { useState } from "react";
 import { DialogWrapper } from "@/components/dialogWrapper";
 import { UsuarioForm } from "./form";
 import { useGetAllUsers } from "./hook/useUser";
+import { rolesGuard } from "@/lib/auth/roles-guard";
+import { useUser } from "@clerk/nextjs";
+import { Role } from "@/app/api/usuarios/dominio/entity";
+import { useIsAuthorized } from "../../../../hooks/useIsAuthorized";
 
 export default function Proveedor() {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const { users, isLoading } = useGetAllUsers();
+  const isAuthorized = useIsAuthorized([Role.Admin]);
   const closeModal = () => {
     setIsOpenModal(false);
   };
@@ -20,7 +25,9 @@ export default function Proveedor() {
     <>
       <h2 className="text-center my-4 font-semibold">Consultar Usuarios</h2>
       <div className="flex justify-end mb-3">
-        <Button onClick={() => setIsOpenModal(true)}>Crear Usuario</Button>
+        <Button disabled={!isAuthorized} onClick={() => setIsOpenModal(true)}>
+          Crear Usuario
+        </Button>
       </div>
       <DataTable columns={columns} data={users} isLoading={isLoading} />
       <DialogWrapper
