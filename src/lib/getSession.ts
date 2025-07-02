@@ -1,12 +1,22 @@
-import { NoAutorizado } from "./errors";
 import { currentUser } from "@clerk/nextjs/server";
+type CompanyMetadata = {
+  id?: string;
+  name?: string;
+};
+
+type UserMetadata = {
+  company?: CompanyMetadata;
+  rol?: string;
+};
+
 export const auth = async () => {
   const user = await currentUser();
+  const publicMetadata = user?.publicMetadata as UserMetadata | undefined;
   return {
     user: {
-      clienteId: user?.publicMetadata?.company?.id ?? "",
-      rol: user?.publicMetadata?.rol ?? "",
-      nombreCliente: user?.publicMetadata?.company?.name ?? "",
+      clienteId: publicMetadata?.company?.id ?? "",
+      rol: publicMetadata?.rol ?? "",
+      nombreCliente: publicMetadata?.company?.name ?? "",
     },
   };
 };
