@@ -3,7 +3,6 @@ import { EquipoInformacionBasicaDTO } from "../../dtos/obtenerEquipos.dto.output
 import { queryValuesDTO } from "@/app/api/common/types";
 import { EquipoReadRepository } from "../../../dominio/repository/index";
 import { calcularPagina, paginaSiguienteExiste } from "@/lib/pagination";
-import { EquipoEntity } from "../../../dominio/entity";
 
 interface ListarEquiposUseCase {
   execute(
