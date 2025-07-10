@@ -9,7 +9,8 @@ interface UploadFilesArg {
 }
 
 export const uploadFiles = async (
-  arg: UploadFilesArg
+  arg: UploadFilesArg,
+  sessionToken: string
 ): Promise<DocumentsFiles[]> => {
   const formData = createFormData(arg);
 
@@ -19,6 +20,8 @@ export const uploadFiles = async (
     {
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${sessionToken}`,
+        Cookie: `__session=${sessionToken}`, // <-- así lo espera tu backend
       },
     }
   );
