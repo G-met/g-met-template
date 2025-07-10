@@ -3,7 +3,6 @@ import { ProgramacionEquipos } from "../../domain/entity";
 import { ProgramacionEquiposRepositoryRead } from "../../domain/repository/indext";
 import { Actividad } from "../../../actividad/dominio/index";
 import { Frecuencia } from "@/app/api/frecuencia/dominio";
-import { calcularPagina } from "@/lib/pagination";
 
 export class ProgramacionEquiposRepositoryReadImp
   implements ProgramacionEquiposRepositoryRead
