@@ -7,16 +7,6 @@ async function main() {
       nombre: "micliente",
     },
   });
-  // await crearUsuario({
-  //   clienteId: cliente.id,
-  //   apellido: "luis",
-  //   cargo: "admin",
-  //   correo: "luis@micliente.com",
-  //   nombre: "luis",
-  //   password: "luis1234",
-  //   usuario: "luistejada10$",
-  //   rol: Role.Admin,
-  // });
 }
 main()
   .then(async () => {
