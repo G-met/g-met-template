@@ -11,7 +11,7 @@ import { validarCrearUsuarioDto } from "./use-cases/dto/crearUsuario.DTO";
 import { ClienteService } from "../cliente/dominio/service/index";
 import { ClienteReadRepositoryImp } from "../cliente/infrastructure/read/clienteReadRepositoryImp";
 import { Cliente } from "../cliente/dominio/entity";
-import { rolesGuard } from "@/lib/auth/roles-guard";
+import { isRoleAuthorized } from "@/lib/auth/roles-guard";
 import { Role } from "./dominio/entity";
 
 const usuarioWriteRepositoryImp = new UsuarioWriteRepositoryImp();
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const dto = validarCrearUsuarioDto(body);
     const session = await auth();
-    rolesGuard([Role.Admin], session.user.rol as Role);
+    isRoleAuthorized([Role.Admin], session.user.rol as Role);
     const cliente: Cliente = {
       id: session.user.clienteId,
       nombre: session.user.nombreCliente,
