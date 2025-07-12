@@ -15,7 +15,7 @@ import { UbicacionRepositoryReadImp } from "../../ubicaciones/infrastructure/rea
 import { CrearDatosBasicosUseCaseImp } from "../application/use-cases/write/crearDatosBasicos";
 import { PatronWriteRepositoryImp } from "../infraestructure/repository/write/PatronRepositoryWriteImpl";
 
-import { SaveFilesVercel } from "../../common/files/saveFiles";
+import { SaveFiles } from "../../common/files/saveFiles";
 import { PatronService } from "../dominio/service";
 import { formDataToDto } from "@/lib/helpers/formData";
 import { ListarEquipoTerminoUseCaseImp } from "../../equipos/application/use-cases/reader/listarEquiposPorTermino";
@@ -27,7 +27,7 @@ const patronReadRepository = new PatronRepositoryReadImp();
 const patronWriteRepositoryImp = new PatronWriteRepositoryImp();
 const patronService = new PatronService(patronReadRepository);
 const listarPatronsUseCase = new ListarPatronesUseCaseImp(patronReadRepository);
-const fileService = new SaveFilesVercel();
+const fileService = new SaveFiles();
 const crearDatosBasicosUseCaseImp = new CrearDatosBasicosUseCaseImp(
   patronWriteRepositoryImp,
   patronService,

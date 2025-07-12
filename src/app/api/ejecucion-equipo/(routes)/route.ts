@@ -11,7 +11,7 @@ import { EquipoReadRepositoryImp } from "../../equipos/infrastructure/reader/equ
 import { EquipoWriteRepositoryImp } from "../../equipos/infrastructure/writer/equipoWriteRepository";
 import { ListarEjecucionEquipos } from "../application/use-cases/reader/listarEjecucionEquipos";
 import { EjecucionEquiposReadRepositoryImp } from "../infrastructure/reader/ejecucionEquiposReadRepositoryImp";
-import { SaveFilesVercel } from "../../common/files/saveFiles";
+import { SaveFiles } from "../../common/files/saveFiles";
 import { ProveedorService } from "../../proveedor/dominio/service/index";
 import { UsuarioService } from "../../usuarios/dominio/service";
 import { UsuarioReadRepositoryImp } from "../../usuarios/infrastructure/read/usuarioReadRepositoryImp";
@@ -29,7 +29,7 @@ const ejecucionEquipoWriteRepositoryImp =
   new EjecucionEquipoWriteRepositoryImp();
 const equipoRepo = new EquipoReadRepositoryImp();
 const equipoRepoWrite = new EquipoWriteRepositoryImp();
-const fileService = new SaveFilesVercel();
+const fileService = new SaveFiles();
 const usuarioReadRepositoryImp = new UsuarioReadRepositoryImp();
 const usuarioWriteRepositoryImp = new UsuarioWriteRepositoryImp();
 const usuarioService = new UsuarioService(

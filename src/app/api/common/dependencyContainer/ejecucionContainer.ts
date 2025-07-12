@@ -1,4 +1,4 @@
-import { SaveFilesVercel } from "../../common/files/saveFiles";
+import { SaveFiles } from "../../common/files/saveFiles";
 
 import type { UsuariosContainer } from "./usuariosContainer";
 import type { EquiposContainer } from "./equiposContainer";
@@ -33,7 +33,7 @@ export class EjecucionContainer {
     equipos: EquiposContainer,
     proveedores: ProveedoresContainer
   ) {
-    const fileService = new SaveFilesVercel();
+    const fileService = new SaveFiles();
 
     this.crearEjecucionEquipos = new CrearEjecucionEquipos(
       this.ejecucionEquipoWriteRepository,

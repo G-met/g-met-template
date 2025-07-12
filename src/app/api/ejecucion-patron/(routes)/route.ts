@@ -12,7 +12,7 @@ import { ListarEjecucionPatrones } from "../application/use-cases/reader/listarE
 import { EjecucionPatronesReadRepositoryImp } from "../infrastructure/reader/ejecucionEquiposReadRepositoryImp";
 import { ProgramacionPatronesRepositoryReadImp } from "../../programacion-patrones/infraestructure/read/programacionPatronesRepoImp";
 import { ProgramacionPatronesWriteRepoImp } from "../../programacion-patrones/infraestructure/write/programacionPatronesWriteRepoImp";
-import { SaveFilesVercel } from "../../common/files/saveFiles";
+import { SaveFiles } from "../../common/files/saveFiles";
 import { TipoEjecutor } from "../../common/types";
 import { ProveedorReadRepositoryImp } from "../../proveedor/infrastructure/reader/proveedorReadRepositoryImp";
 import { ProveedorWriteRepositoryImp } from "../../proveedor/infrastructure/writer/proveedorWriteRepositoryImp";
@@ -24,7 +24,7 @@ import { UsuarioService } from "../../usuarios/dominio/service";
 const ejecucionRepo = new EjecucionPatronWriteRepositoryImp();
 const programacionRepoRead = new ProgramacionPatronesRepositoryReadImp();
 const programacionRepoWrite = new ProgramacionPatronesWriteRepoImp();
-const fileService = new SaveFilesVercel();
+const fileService = new SaveFiles();
 const proveedorReadRepositoryImp = new ProveedorReadRepositoryImp();
 const proveedorWriteRepositoryImp = new ProveedorWriteRepositoryImp();
 const proveedorService = new ProveedorService(

@@ -8,7 +8,7 @@ export interface IFilesAdaptor {
   saveFiles(pathName: string, files: File[]): Promise<DocumentsFiles[]>;
 }
 
-export class SaveFilesVercel implements IFilesAdaptor {
+export class SaveFiles implements IFilesAdaptor {
   async saveFiles(pathName: string, files: File[]) {
     const session = await auth();
     if (!session) {

@@ -17,14 +17,14 @@ import { MarcaReadRepositoryImp } from "../../marca/infrastructure/reader/marcaR
 import { UbicacionRepositoryReadImp } from "../../ubicaciones/infrastructure/read/ubicacionRepositoryReadImp";
 import { EquipoService } from "../dominio/service";
 import { formDataToDto } from "@/lib/helpers/formData";
-import { SaveFilesVercel } from "../../common/files/saveFiles";
+import { SaveFiles } from "../../common/files/saveFiles";
 const equipoReadRepository = new EquipoReadRepositoryImp();
 const equipoWriteRepository = new EquipoWriteRepositoryImp();
 const marcaReadRepository = new MarcaReadRepositoryImp();
 const ubicacionReadRepository = new UbicacionRepositoryReadImp();
 const listarEquiposUseCase = new ListarEquiposUseCaseImp(equipoReadRepository);
 const equipoService = new EquipoService(equipoReadRepository);
-const fileService = new SaveFilesVercel();
+const fileService = new SaveFiles();
 const crearDatosBasicosUseCase = new CrearDatosBasicosUseCaseImp(
   equipoWriteRepository,
   equipoService,
