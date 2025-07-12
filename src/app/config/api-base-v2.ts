@@ -5,7 +5,8 @@ axios.defaults.withCredentials = true;
 const isServer = typeof window === "undefined";
 
 const baseURL = isServer ? process.env.API_DOMAIN : process.env.NEXT_API_DOMAIN;
-
+console.log("Base URL:", baseURL);
+console.log("Is Server:", isServer);
 export const httpBaseV2 = axios.create({
   baseURL,
 });
