@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createUser, getUsers } from "../service";
-import { create } from "zustand";
 import { AxiosError } from "axios";
 import { CreateUser, UserStatus } from "../types";
 import { UserResponse } from "../types/index";

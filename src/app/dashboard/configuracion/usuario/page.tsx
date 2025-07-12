@@ -9,8 +9,6 @@ import { useState } from "react";
 import { DialogWrapper } from "@/components/dialogWrapper";
 import { UsuarioForm } from "./form";
 import { useGetAllUsers } from "./hook/useUser";
-import { rolesGuard } from "@/lib/auth/roles-guard";
-import { useUser } from "@clerk/nextjs";
 import { Role } from "@/app/api/usuarios/dominio/entity";
 import { useIsAuthorized } from "../../../../hooks/useIsAuthorized";
 
