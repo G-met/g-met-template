@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/select";
 import { useEditarProveedor } from "../../hooks/useProveedor";
 import { Role } from "@/app/api/usuarios/dominio/entity";
-import { crearUsuarioDTOschema } from "@/app/api/usuarios/use-cases/dto/crearUsuario.DTO";
 import { useCreateUser } from "./hook/useUser";
 
 interface Props {

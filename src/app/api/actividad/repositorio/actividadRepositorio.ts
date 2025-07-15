@@ -25,4 +25,15 @@ export const actividadRepositorio: ActividadRepositorio = {
   obtenerActividades: function (clienteId: string): Promise<Actividad[]> {
     return prisma.tipo_actividad.findMany({ where: { cliente_id: clienteId } });
   },
+  obtenerActividadPorDescripcion: function (
+    descripcion: string,
+    clienteId: string
+  ): Promise<Actividad | null> {
+    return prisma.tipo_actividad.findFirst({
+      where: {
+        descripcion: descripcion.toLowerCase(),
+        cliente_id: clienteId,
+      },
+    });
+  },
 };
