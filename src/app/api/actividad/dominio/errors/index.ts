@@ -7,3 +7,13 @@ export class ActividadNoExiste extends Error {
     this.status = 400;
   }
 }
+
+export class ActividadYaExiste extends Error {
+  status: number;
+  constructor() {
+    super();
+    this.message = "Ya existe una actividad con esa descripción";
+    this.cause = "negocio";
+    this.status = 400;
+  }
+}

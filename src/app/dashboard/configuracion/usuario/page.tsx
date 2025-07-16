@@ -12,7 +12,7 @@ import { useGetAllUsers } from "./hook/useUser";
 import { Role } from "@/app/api/usuarios/dominio/entity";
 import { useIsAuthorized } from "../../../../hooks/useIsAuthorized";
 
-export default function Proveedor() {
+export default function Usuario() {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const { users, isLoading } = useGetAllUsers();
   const isAuthorized = useIsAuthorized([Role.Admin]);

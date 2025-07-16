@@ -7,4 +7,8 @@ export interface ActividadRepositorio {
     clienteId: string
   ) => Promise<Actividad>;
   obtenerActividades: (clienteId: string) => Promise<Actividad[]>;
+  obtenerActividadPorDescripcion: (
+    descripcion: string,
+    clienteId: string
+  ) => Promise<Actividad | null>;
 }
