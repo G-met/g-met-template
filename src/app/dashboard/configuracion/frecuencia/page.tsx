@@ -1,109 +1,49 @@
-'use client'
+"use client";
+import { Button } from "@/components/ui/button";
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { Button } from '@/components/ui/button'
+import { DataTable } from "@/components/data-table";
+import { columns } from "./columns";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { useForm } from 'react-hook-form'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { AlertCircle, Loader2 } from 'lucide-react'
-import { useToast } from '@/components/ui/use-toast'
-import { crearFrecuencia } from '../../hooks/useFrecuencia'
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
-const formSchema = z.object({
-  descripcion: z
-    .string()
-    .min(2, { message: 'requerido' })
-    .max(20, 'los caracteres maximos son 20'),
-  cantidadDias :z.string().transform((val)=>Number(val))
-})
+import { DialogDescription } from "@radix-ui/react-dialog";
+import { useState } from "react";
+import { obtenerFrecuencias } from "../../hooks/useFrecuencia";
+import FrecuenciaForm from "./form";
 
-export default function Marca () {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      descripcion: '',
-      cantidadDias: 0,
-    }
-  })
-
-  const { toast } = useToast()
-
-  const { crear, isLoading, error, errorMsg } = crearFrecuencia()
-
-  async function onSubmit (values: z.infer<typeof formSchema>) {
-    await crear({
-      descripcion: values.descripcion,
-      cantidadDias:values.cantidadDias
-    })
-
-    form.reset()
-    toast({
-      title: 'Frecuencia se guardo correctamente',
-      variant: 'success'
-    })
-  }
-
+export default function Frecuencia() {
+  const { frecuencias, isLoading } = obtenerFrecuencias();
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const closeModal = () => {
+    setIsOpenModal(false);
+  };
   return (
     <>
-      <h2 className='text-center mb-4 font-semibold'>Crear Frecuencia</h2>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-          <div className='grid grid-cols-2 grid-rows-1 gap-2'>
-            <FormField
-              control={form.control}
-              name='descripcion'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descripcion</FormLabel>
-                  <FormControl>
-                    <Input placeholder='Ingrese una descripcion' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='cantidadDias'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cantidad Dias</FormLabel>
-                  <FormControl>
-                    <Input placeholder='Ingrese una cantidad en dias' {...field} type='number' />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-          </div>
-          <Button type='submit' disabled={isLoading} className='mx-auto'>
-            <Loader2
-              className={
-                'mr-2 h-4 w-4 animate-spin ' + (!isLoading ? 'hidden' : '')
-              }
-            />
-            Crear Frecuencia
-          </Button>
-
-          {error && (
-            <Alert variant='destructive'>
-              <AlertCircle className='h-4 w-4' />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
-            </Alert>
-          )}
-        </form>
-      </Form>
+      <Dialog
+        open={isOpenModal}
+        onOpenChange={(value) => setIsOpenModal(value)}
+      >
+        <h2 className="text-center my-4 font-semibold">
+          Consultar Frecuencias
+        </h2>
+        <div className="flex justify-end mb-3">
+          <Button onClick={() => setIsOpenModal(true)}>Crear Frecuencia</Button>
+        </div>
+        <DataTable columns={columns} data={frecuencias} isLoading={isLoading} />
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Crear Frecuencia</DialogTitle>
+            <DialogDescription>
+              Ingresa la informacion solicitada
+            </DialogDescription>
+          </DialogHeader>
+          <FrecuenciaForm closeModal={closeModal} />
+        </DialogContent>
+      </Dialog>
     </>
-  )
+  );
 }
