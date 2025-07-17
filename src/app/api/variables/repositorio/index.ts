@@ -6,4 +6,5 @@ export interface VariableRespositorio {
     dto: CrearVariableDto,
     clienteId: string
   ) => Promise<Variable>;
+  obtenerTodasVariables: (clienteId: string) => Promise<Variable[]>;
 }
