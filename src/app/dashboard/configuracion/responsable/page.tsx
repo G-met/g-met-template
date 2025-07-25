@@ -1,128 +1,45 @@
-'use client'
-
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { Button } from '@/components/ui/button'
+'use client';
+import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/data-table";
+import { columns } from "./columns";
+import { useState } from "react";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { useForm } from 'react-hook-form'
-import { crearResponsable } from '../../hooks/useResponsables'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { AlertCircle, Loader2 } from 'lucide-react'
-import { useToast } from '@/components/ui/use-toast'
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { obtenerResponsables } from "../../hooks/useResponsables";
+import ResponsableForm from "./form";
 
-const formSchema = z.object({
-  nombre: z
-    .string()
-    .min(2, { message: 'requerido' })
-    .max(20, 'los caracteres maximos son 20'),
-  identificacion: z.string().min(2, { message: 'requerido' }),
-  apellido: z.string().min(2, { message: 'requerido' })
-})
-
-export default function Responsable () {
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      nombre: '',
-      identificacion: '',
-      apellido: ''
-    }
-  })
-
-  const { toast } = useToast()
-
-  const { crear, isLoading, error,  errorMsg } =
-    crearResponsable()
-
-  async function onSubmit (values: z.infer<typeof formSchema>) {
-    await crear({
-      nombre: values.nombre,
-      identificacion: values.identificacion,
-      apellido: values.apellido
-    })
-
-    form.reset()
-    toast({
-      title: 'Responsable se guardo correctamente',
-      variant: 'success'
-    })
-  }
-
-
-
+export default function ResponsablePage() {
+  const [open, setOpen] = useState(false);
+  const closeModal = () => setOpen(false);
+  const { responsables, isLoading } = obtenerResponsables();
   return (
     <>
-      <h2 className='text-center mb-4 font-semibold'>Crear Responsables</h2>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-          <div className='grid grid-cols-2 grid-rows-1 gap-2'>
-            <FormField
-              control={form.control}
-              name='nombre'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nombre</FormLabel>
-                  <FormControl>
-                    <Input placeholder='Ingrese su nombre' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='apellido'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Apellido</FormLabel>
-                  <FormControl>
-                    <Input placeholder='Ingrese su Apellido' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='identificacion'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Identificacion</FormLabel>
-                  <FormControl>
-                    <Input placeholder='Ingrese su Identificaciòn' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <Button type='submit' disabled={isLoading} className='mx-auto'>
-            <Loader2
-              className={
-                'mr-2 h-4 w-4 animate-spin ' + (!isLoading ? 'hidden' : '')
-              }
-            />
-            Crear Responsable
-          </Button>
-
-          {error && (
-            <Alert variant='destructive'>
-              <AlertCircle className='h-4 w-4' />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
-            </Alert>
-          )}
-        </form>
-      </Form>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <h2 className="text-center my-4 font-semibold">
+          Consultar Responsables
+        </h2>
+        <div className="flex justify-end mb-3">
+          <DialogTrigger asChild>
+            <Button>Crear Responsable</Button>
+          </DialogTrigger>
+        </div>
+        <DataTable
+          columns={columns}
+          data={responsables}
+          isLoading={isLoading}
+        />
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Crear Responsable</DialogTitle>
+            <ResponsableForm closeModal={closeModal} />
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </>
-  )
+  );
 }
