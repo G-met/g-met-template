@@ -11,42 +11,30 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { useToast } from "@/components/ui/use-toast";
+import { crearResponsable } from "../../hooks/useResponsables";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { useCrearVariable } from "../../hooks/useVariables";
-import { obtenerMagnitudes } from "../../hooks/useMagnitud";
+import { useToast } from "@/components/ui/use-toast";
+import { crearMagnitud } from "../../hooks/useMagnitud";
 
 const formSchema = z.object({
-  alias: z.string().min(1, { message: "requerido" }),
-  descripcion: z
-    .string({ required_error: "Seleccione un responsable" })
-    .min(1, { message: "requerido" }),
-  magnitud_id: z.string({
-    required_error: "Please select an email to display.",
-  }),
+  alias: z
+    .string()
+    .min(2, { message: "requerido" })
+    .max(20, "los caracteres maximos son 20"),
+  descripcion: z.string().min(2, { message: "requerido" }),
 });
 
-type FormSchema = z.infer<typeof formSchema>;
+export type FormValues = z.infer<typeof formSchema>;
 
-interface VariableFormProps {
+interface FromMagnitudeProps {
   closeModal: () => void;
 }
 
-export default function VariableForm({ closeModal }: VariableFormProps) {
-  const { isError, magnitudes: responsables } = obtenerMagnitudes();
-  const { crear, error, errorMsg, isLoading } = useCrearVariable();
-
-  const form = useForm<FormSchema>({
+export default function FromMagnitude({ closeModal }: FromMagnitudeProps) {
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       alias: "",
@@ -56,15 +44,17 @@ export default function VariableForm({ closeModal }: VariableFormProps) {
 
   const { toast } = useToast();
 
-  async function onSubmit(values: FormSchema) {
+  const { crear, isLoading, error, errorMsg } = crearMagnitud();
+
+  async function onSubmit(values: FormValues) {
     await crear({
       alias: values.alias,
       descripcion: values.descripcion,
-      magnitud_id: values.magnitud_id,
     });
+
     form.reset();
     toast({
-      title: "La variable se guardo correctamente",
+      title: "La Magnitud se guardo correctamente",
       variant: "success",
     });
     closeModal();
@@ -72,8 +62,7 @@ export default function VariableForm({ closeModal }: VariableFormProps) {
 
   return (
     <>
-      <h2 className="text-center mb-4 font-semibold">Crear Variables</h2>
-
+      <h2 className="text-center mb-4 font-semibold">Crear Magnitud</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="grid grid-cols-2 grid-rows-1 gap-2">
@@ -95,40 +84,10 @@ export default function VariableForm({ closeModal }: VariableFormProps) {
               name="alias"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>alias</FormLabel>
+                  <FormLabel>Alias</FormLabel>
                   <FormControl>
                     <Input placeholder="Ingrese un alias" {...field} />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="magnitud_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Magnitud</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccione una Magnitud" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {responsables.map((res) => (
-                        <>
-                          <SelectItem value={res.id} key={res.id}>
-                            {res.descripcion}
-                          </SelectItem>
-                        </>
-                      ))}
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -140,7 +99,7 @@ export default function VariableForm({ closeModal }: VariableFormProps) {
                 "mr-2 h-4 w-4 animate-spin " + (!isLoading ? "hidden" : "")
               }
             />
-            Crear Variable
+            Crear Magnitud
           </Button>
 
           {error && (
