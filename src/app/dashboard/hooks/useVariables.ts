@@ -13,7 +13,7 @@ export const useObtenerVariables = () => {
     fetcher
   );
   return {
-    responsables: data ?? [],
+    variables: data ?? [],
     isLoading,
     isError: error,
   };

@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
@@ -11,29 +9,28 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import UbicacionForm from "./form";
-import { obtenerUbicaciones } from "../../hooks/useUbicaciones";
+import { obtenerResponsables } from "../../hooks/useResponsables";
+import ResponsableForm from "./form";
+import { ResponsableResponse } from "./types";
 
-export default function UbicacionTable() {
+export default function ResponsablePage() {
   const [open, setOpen] = useState(false);
   const closeModal = () => setOpen(false);
-  const { ubicaciones, isLoading } = obtenerUbicaciones(); // Implementa el hook
+  const { responsables, isLoading } = obtenerResponsables();
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <h2 className="text-center my-4 font-semibold">
-          Consultar Ubicaciones
-        </h2>
+        <h2 className="text-center my-4 font-semibold">Consultar Responsables</h2>
         <div className="flex justify-end mb-3">
           <DialogTrigger asChild>
-            <Button>Crear Ubicación</Button>
+            <Button>Crear Responsable</Button>
           </DialogTrigger>
         </div>
-        <DataTable columns={columns} data={ubicaciones} isLoading={isLoading} />
+        <DataTable columns={columns} data={responsables} isLoading={isLoading} />
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Crear Ubicación</DialogTitle>
-            <UbicacionForm closeModal={closeModal} />
+            <DialogTitle>Crear Responsable</DialogTitle>
+            <ResponsableForm closeModal={closeModal} />
           </DialogHeader>
         </DialogContent>
       </Dialog>

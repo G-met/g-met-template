@@ -3,6 +3,7 @@ import { errorHandler } from "../common/errors/error.handler";
 import { validarCrearVariable } from "./dtos/crear";
 import { crearVariable } from "./servicios/crearVariable";
 import { auth } from "@/lib/getSession";
+import { obtenerVariables } from "./servicios/obtenerVariables";
 
 export async function POST(request: Request) {
   try {
@@ -18,6 +19,9 @@ export async function POST(request: Request) {
 
 export async function GET(_request: Request) {
   try {
+    const session = await auth();
+    const variables = await obtenerVariables(session.user.clienteId);
+    return NextResponse.json(variables);
   } catch (error: any) {
     return errorHandler(error);
   }

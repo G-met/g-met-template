@@ -17,4 +17,10 @@ export const variableRepositorio: VariableRespositorio = {
       },
     });
   },
+  obtenerTodasVariables: function (clienteId: string): Promise<Variable[]> {
+    return prisma.variable.findMany({
+      where: { cliente_id: clienteId },
+      orderBy: { fecha_creacion: "desc" },
+    });
+  },
 };

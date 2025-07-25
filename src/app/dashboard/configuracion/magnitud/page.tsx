@@ -1,109 +1,41 @@
-'use client'
+"use client";
+import { Button } from "@/components/ui/button";
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { Button } from '@/components/ui/button'
+import { DataTable } from "@/components/data-table";
+import { columns } from "./columns";
+
+import { useState } from "react";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { useForm } from 'react-hook-form'
-import { crearResponsable } from '../../hooks/useResponsables'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { AlertCircle, Loader2 } from 'lucide-react'
-import { useToast } from '@/components/ui/use-toast'
-import { crearMagnitud } from '../../hooks/useMagnitud'
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { obtenerMagnitudes } from "../../hooks/useMagnitud";
+import FromMagnitude from "./form";
 
-const formSchema = z.object({
-  alias: z
-    .string()
-    .min(2, { message: 'requerido' })
-    .max(20, 'los caracteres maximos son 20'),
-  descripcion: z.string().min(2, { message: 'requerido' })
-})
-
-export default function Magnitud () {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      alias: '',
-      descripcion: ''
-    }
-  })
-
-  const { toast } = useToast()
-
-  const { crear, isLoading, error, errorMsg } = crearMagnitud()
-
-  async function onSubmit (values: z.infer<typeof formSchema>) {
-    await crear({
-      alias: values.alias,
-      descripcion: values.descripcion
-    })
-
-    form.reset()
-    toast({
-      title: 'La Magnitud se guardo correctamente',
-      variant: 'success'
-    })
-  }
-
+export default function Magnitude() {
+  const [open, SetOpen] = useState(false);
+  const closeModal = () => SetOpen(false);
+  const { magnitudes, isLoading } = obtenerMagnitudes();
   return (
     <>
-      <h2 className='text-center mb-4 font-semibold'>Crear Magnitud</h2>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-          <div className='grid grid-cols-2 grid-rows-1 gap-2'>
-            <FormField
-              control={form.control}
-              name='descripcion'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descripcion</FormLabel>
-                  <FormControl>
-                    <Input placeholder='Ingrese una descripcion' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='alias'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Alias</FormLabel>
-                  <FormControl>
-                    <Input placeholder='Ingrese un alias' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <Button type='submit' disabled={isLoading} className='mx-auto'>
-            <Loader2
-              className={
-                'mr-2 h-4 w-4 animate-spin ' + (!isLoading ? 'hidden' : '')
-              }
-            />
-            Crear Magnitud
-          </Button>
-
-          {error && (
-            <Alert variant='destructive'>
-              <AlertCircle className='h-4 w-4' />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
-            </Alert>
-          )}
-        </form>
-      </Form>
+      <Dialog open={open} onOpenChange={SetOpen}>
+        <h2 className="text-center my-4 font-semibold">Consultar Magnitudes</h2>
+        <div className="flex justify-end mb-3">
+          <DialogTrigger asChild>
+            <Button>Crear Magnitud</Button>
+          </DialogTrigger>
+        </div>
+        <DataTable columns={columns} data={magnitudes} isLoading={isLoading} />
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Crear Magnitud</DialogTitle>
+            <FromMagnitude closeModal={closeModal} />
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </>
-  )
+  );
 }
