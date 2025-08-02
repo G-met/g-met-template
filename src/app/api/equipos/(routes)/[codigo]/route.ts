@@ -3,10 +3,8 @@ import { errorHandler } from "../../../common/errors/error.handler";
 import { obtenerPorCodigo } from "../../application/servicios/ObtenerPorCodigo";
 import { auth } from "@/lib/getSession";
 
-export async function GET(
-  _request: Request,
-  { params }: { params: { codigo: string } }
-) {
+export async function GET(_request: Request, props: { params: Promise<{ codigo: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     const equipo = await obtenerPorCodigo(

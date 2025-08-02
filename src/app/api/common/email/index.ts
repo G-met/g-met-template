@@ -1,5 +1,7 @@
 import { Resend } from "resend";
 
+import type { JSX } from "react";
+
 interface EmailOptions {
   from: string;
   to: string[];

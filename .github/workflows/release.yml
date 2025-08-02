@@ -1,0 +1,101 @@
+# name: Release and Tag
+
+# on:
+#   pull_request:
+#     types: [closed]
+#     branches: [develop, main]
+
+# jobs:
+#   release:
+#     if: github.event.pull_request.merged == true
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Set up Node
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 20
+
+#       - name: Install dependencies
+#         run: npm ci
+
+#       - name: Get last tag
+#         run: |
+#           git fetch --tags
+#           echo "LAST_TAG=$(git tag --sort=-v:refname | head -n 1)" >> $GITHUB_ENV
+
+#       - name: Detect release type
+#         run: |
+#           if [[ "${{ github.base_ref }}" == "main" ]]; then
+#             echo "TYPE=stable" >> $GITHUB_ENV
+#           else
+#             echo "TYPE=beta" >> $GITHUB_ENV
+#           fi
+#           echo "SOURCE_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
+
+#       - name: Calculate next version
+#         run: |
+#           TAG=${LAST_TAG:-v0.1.0}
+#           TYPE=${TYPE}
+#           SOURCE_BRANCH=${SOURCE_BRANCH}
+
+#           MAJOR=$(echo $TAG | cut -d'.' -f1 | sed 's/v//')
+#           MINOR=$(echo $TAG | cut -d'.' -f2)
+#           PATCH=$(echo $TAG | cut -d'.' -f3 | cut -d'-' -f1)
+#           BETA=$(echo $TAG | grep -oP '(?<=-beta\.)\d+' || echo "0")
+
+#           if [[ "$SOURCE_BRANCH" == feature/* ]]; then
+#             MINOR=$((MINOR+1))
+#             PATCH=0
+#           elif [[ "$SOURCE_BRANCH" == fix/* || "$SOURCE_BRANCH" == hotfix/* ]]; then
+#             PATCH=$((PATCH+1))
+#           elif [[ "$SOURCE_BRANCH" == release/* ]]; then
+#             MAJOR=$((MAJOR+1))
+#             MINOR=0
+#             PATCH=0
+#           else
+#             echo "Error: La rama debe ser feature/, fix/, hotfix/ o release/. Rama actual: $SOURCE_BRANCH" >&2
+#             exit 1
+#           fi
+
+#           if [[ "$TYPE" == "beta" ]]; then
+#             BETA=$((BETA+1))
+#             VERSION="v${MAJOR}.${MINOR}.${PATCH}-beta.${BETA}"
+#             echo "PRERELEASE=true" >> $GITHUB_ENV
+#           else
+#             VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+#             echo "PRERELEASE=false" >> $GITHUB_ENV
+#           fi
+
+#           echo "NEXT_VERSION=$VERSION" >> $GITHUB_ENV
+
+#       - name: Update version in package.json and package-lock.json
+#         run: |
+#           VERSION_CLEAN=$(echo "$NEXT_VERSION" | sed -E 's/^v//; s/-beta\.[0-9]+//')
+#           jq ".version = \"$VERSION_CLEAN\"" package.json > package.json.tmp && mv package.json.tmp package.json
+#           npm install --package-lock-only
+#           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+#           git config --global user.name "github-actions[bot]"
+#           git add package.json package-lock.json
+#           git commit -m "chore: update version to $VERSION_CLEAN [skip ci]"
+#           git push
+
+#       - name: Create tag (only for stable releases)
+#         if: env.TYPE == 'stable'
+#         run: |
+#           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+#           git config --global user.name "github-actions[bot]"
+#           git tag $NEXT_VERSION
+#           git push origin $NEXT_VERSION
+
+#       - name: Create GitHub Release
+#         uses: softprops/action-gh-release@v2
+#         with:
+#           tag_name: ${{ env.NEXT_VERSION }}
+#           prerelease: ${{ env.PRERELEASE }}
+#           name: Release ${{ env.NEXT_VERSION }}
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

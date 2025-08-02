@@ -1,0 +1,32 @@
+# name: Validate PR
+
+# on:
+#   pull_request:
+#     branches: [develop, main]
+
+# jobs:
+#   validate:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Set up Node
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 18
+
+#       - name: Install dependencies
+#         run: npm ci
+
+#       - name: Run Lint
+#         run: npm run lint
+
+#       - name: Run Tests
+#         run: npm test
+
+#       - name: Ensure CHANGELOG.md was updated
+#         run: |
+#           git fetch origin ${{ github.base_ref }}
+#           git diff --name-only origin/${{ github.base_ref }} HEAD | grep -q "^CHANGELOG.md$" || (echo "Debes actualizar CHANGELOG.md en este PR." && exit 1)
