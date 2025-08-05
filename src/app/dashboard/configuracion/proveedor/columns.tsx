@@ -30,7 +30,6 @@ export const columns: ColumnDef<ListarProveedoresDTO>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      console.log(row.original);
       const proveedorDto: EditarProveedorDTO = {
         id: row.original.id,
         nombre: row.original.nombre,

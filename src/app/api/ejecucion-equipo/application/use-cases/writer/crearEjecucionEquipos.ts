@@ -51,7 +51,7 @@ export class CrearEjecucionEquipos {
     }
     const ejecucionEquipoId = randomUUID().toString();
     let archivosUrls: Documentos[] = [];
-    if (dto.archivos) {
+    if (dto.archivos && dto.archivos.length > 0) {
       // /ejecucion-equipos/clienteID/ejecucionID
       const pathName = `ejecucion-equipos/${clienteId}/${ejecucionEquipoId}`;
       const res = await this.saveFilesAdaptor.saveFiles(pathName, dto.archivos);

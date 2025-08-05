@@ -1,5 +1,7 @@
 import { uploadFiles } from "@/app/dashboard/common/service/files";
+import { getLogger } from "@/lib/logger";
 import { currentUser, auth } from "@clerk/nextjs/server";
+import { Logger } from "pino";
 interface DocumentsFiles {
   name: string;
   url: string;
@@ -9,9 +11,17 @@ export interface IFilesAdaptor {
 }
 
 export class SaveFiles implements IFilesAdaptor {
+  
+
   async saveFiles(pathName: string, files: File[]) {
+    const logger = await getLogger();
     const session = await auth();
+    if (files.length === 0) {
+      logger.error("No files to upload");
+      throw new Error("No files to upload");
+    }
     if (!session) {
+      logger.error("No active session found");
       throw new Error("No hay sesión activa");
     }
     const token = await session.getToken();

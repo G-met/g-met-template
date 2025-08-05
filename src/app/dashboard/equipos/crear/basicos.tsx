@@ -65,7 +65,6 @@ function CrearEquiposBasicos() {
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log({ values });
     await crear({
       codigo: values.codigo,
       descripcion: values.descripcion,

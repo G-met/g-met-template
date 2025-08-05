@@ -92,8 +92,6 @@ export function FormEjecucionPatron({
     resolver: zodResolver(FormSchema),
   });
 
-  console.log(form.formState.errors);
-
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     await crear({
       ejecutorId: data.ejecutorId,
