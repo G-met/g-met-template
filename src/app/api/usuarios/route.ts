@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { errorHandler } from "../common/errors/error.handler";
-import { CrearUsuarioImp } from "./use-cases/write/crearUsuario";
 import { UsuarioService } from "./dominio/service/index";
 import { UsuarioReadRepositoryImp } from "./infrastructure/read/usuarioReadRepositoryImp";
 import { UsuarioWriteRepositoryImp } from "./infrastructure/write/usuarioWriteRepositoryImp";
@@ -20,11 +19,6 @@ const usuarioService = new UsuarioService(
   usuarioReadRepositoryImp,
   usuarioWriteRepositoryImp
 );
-const clienteReadRepositoryImp = new ClienteReadRepositoryImp();
-const clienteService = new ClienteService(clienteReadRepositoryImp);
-const emailService = new EmailService();
-
-
 
 const listarUsuariosImp = new ListarUsuariosImp(usuarioService);
 

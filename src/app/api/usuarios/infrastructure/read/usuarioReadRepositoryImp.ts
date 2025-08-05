@@ -42,13 +42,11 @@ export class UsuarioReadRepositoryImp implements UsuarioReadRepository {
   private mapToDomainUsuario(usuarioPrisma: UsuarioPrisma): Usuario {
     return new Usuario({
       id: usuarioPrisma.id,
-      usuario: usuarioPrisma.usuario,
       nombre: usuarioPrisma.nombre,
       apellido: usuarioPrisma.apellido,
       cargo: usuarioPrisma.cargo,
-      rol: usuarioPrisma.rol,
+      rol: usuarioPrisma.rol as Role,
       correo: usuarioPrisma.correo,
-      password: usuarioPrisma.password,
       fechaCreacion: usuarioPrisma.fechaCreacion,
       fechaActualizacion: usuarioPrisma.fechaActualizacion,
       fechaInactivacion: usuarioPrisma.fechaInactivacion,
