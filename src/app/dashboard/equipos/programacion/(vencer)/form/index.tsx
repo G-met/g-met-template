@@ -98,7 +98,6 @@ export function FormEjecucionEquipo({
   };
 
   async function onSubmit(data: FormValues) {
-    console.log(form.formState);
     await crear({
       ejecutorId: data.ejecutorId,
       fechaEjecucion: data.fechaEjecucion.toISOString(),

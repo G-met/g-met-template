@@ -1,7 +1,9 @@
+import { getLogger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
-export const errorHandler = (error: any) => {
-  console.error("entro al error handler", error);
+export const errorHandler = async (error: any) => {
+  const logger = await getLogger();
+  logger.error("entro al error handler", error);
   if (error.cause === "negocio") {
     return NextResponse.json(
       { error: error.message },
@@ -10,6 +12,7 @@ export const errorHandler = (error: any) => {
   }
 
   if (error.cause === "Unauthorized") {
+    logger.error("Unauthorized access", error);
     return NextResponse.json({ error: error.message }, { status: 401 });
   }
 
@@ -24,7 +27,7 @@ export const errorHandler = (error: any) => {
       { status: 400 }
     );
   }
-
+  logger.error("Unexpected error", error);
   return NextResponse.json(
     { error: "Un error inesperado a ocurrido contactese con su admin" },
     { status: 500 }
