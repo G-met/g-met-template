@@ -11,4 +11,8 @@ export interface MagnitudRepositorio {
     clienteId: string
   ) => Promise<Magnitud | null>;
   obtenerMagnitudes: (clienteId: string) => Promise<Magnitud[]>;
+  obtenerMagnitudPorDescription: (
+    description: string,
+    clienteId: string
+  ) => Promise<Magnitud | null>;
 }

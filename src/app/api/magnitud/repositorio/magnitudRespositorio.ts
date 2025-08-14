@@ -30,4 +30,15 @@ export const magnitudRespositorio: MagnitudRepositorio = {
   obtenerMagnitudes: function (clienteId: string): Promise<Magnitud[]> {
     return prisma.magnitud.findMany({ where: { cliente_id: clienteId } });
   },
+  obtenerMagnitudPorDescription: async function (
+    description: string,
+    clienteId: string
+  ): Promise<Magnitud | null> {
+    return prisma.magnitud.findFirst({
+      where: {
+        descripcion: description,
+        cliente_id: clienteId,
+      },
+    });
+  },
 };
