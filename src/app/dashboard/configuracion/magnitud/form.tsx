@@ -13,18 +13,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { crearResponsable } from "../../hooks/useResponsables";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { crearMagnitud } from "../../hooks/useMagnitud";
+import { useCreateMagnitud } from "./hook/useMagnitud";
 
 const formSchema = z.object({
   alias: z
     .string()
     .min(2, { message: "requerido" })
     .max(20, "los caracteres maximos son 20"),
-  descripcion: z.string().min(2, { message: "requerido" }),
+  name: z.string().min(2, { message: "requerido" }),
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -38,18 +37,18 @@ export default function FromMagnitude({ closeModal }: FromMagnitudeProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       alias: "",
-      descripcion: "",
+      name: "",
     },
   });
 
   const { toast } = useToast();
 
-  const { crear, isLoading, error, errorMsg } = crearMagnitud();
+  const { create, isLoading, error, errorMessage } = useCreateMagnitud();
 
   async function onSubmit(values: FormValues) {
-    await crear({
+    await create({
       alias: values.alias,
-      descripcion: values.descripcion,
+      name: values.name,
     });
 
     form.reset();
@@ -68,7 +67,7 @@ export default function FromMagnitude({ closeModal }: FromMagnitudeProps) {
           <div className="grid grid-cols-2 grid-rows-1 gap-2">
             <FormField
               control={form.control}
-              name="descripcion"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descripcion</FormLabel>
@@ -106,7 +105,7 @@ export default function FromMagnitude({ closeModal }: FromMagnitudeProps) {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
         </form>

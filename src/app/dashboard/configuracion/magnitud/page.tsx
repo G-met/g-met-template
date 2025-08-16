@@ -12,13 +12,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { obtenerMagnitudes } from "../../hooks/useMagnitud";
 import FromMagnitude from "./form";
+import { useGetAllMagnitudes } from "./hook/useMagnitud";
 
 export default function Magnitude() {
   const [open, SetOpen] = useState(false);
   const closeModal = () => SetOpen(false);
-  const { magnitudes, isLoading } = obtenerMagnitudes();
+  const { magnitudes, isLoading } = useGetAllMagnitudes();
   return (
     <>
       <Dialog open={open} onOpenChange={SetOpen}>
