@@ -9,23 +9,23 @@ export const columns: ColumnDef<MagnitudResponse>[] = [
     header: "Alias",
   },
   {
-    accessorKey: "descripcion",
+    accessorKey: "name",
     header: "Descripcion",
   },
-  {
-    accessorKey: "fecha_creacion",
-    header: "Fecha Creacion",
-    cell: ({ row }) => {
-      const fecha = new Date(row.getValue("fecha_creacion"));
-      return (
-        <>
-          {fecha.toLocaleDateString("es-ES", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </>
-      );
-    },
-  },
+  // {
+  //   accessorKey: "fecha_creacion",
+  //   header: "Fecha Creacion",
+  //   cell: ({ row }) => {
+  //     const fecha = new Date(row.getValue("fecha_creacion"));
+  //     return (
+  //       <>
+  //         {fecha.toLocaleDateString("es-ES", {
+  //           year: "numeric",
+  //           month: "long",
+  //           day: "numeric",
+  //         })}
+  //       </>
+  //     );
+  //   },
+  // },
 ];

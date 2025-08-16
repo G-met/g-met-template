@@ -24,7 +24,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useCrearVariable } from "../../hooks/useVariables";
-import { obtenerMagnitudes } from "../../hooks/useMagnitud";
+import { useGetAllMagnitudes } from "../magnitud/hook/useMagnitud";
 
 const formSchema = z.object({
   alias: z.string().min(1, { message: "requerido" }),
@@ -43,7 +43,7 @@ interface VariableFormProps {
 }
 
 export default function VariableForm({ closeModal }: VariableFormProps) {
-  const { isError, magnitudes: responsables } = obtenerMagnitudes();
+  const { isError, magnitudes: responsables } = useGetAllMagnitudes();
   const { crear, error, errorMsg, isLoading } = useCrearVariable();
 
   const form = useForm<FormSchema>({
@@ -123,7 +123,7 @@ export default function VariableForm({ closeModal }: VariableFormProps) {
                       {responsables.map((res) => (
                         <>
                           <SelectItem value={res.id} key={res.id}>
-                            {res.descripcion}
+                            {res.name}
                           </SelectItem>
                         </>
                       ))}
