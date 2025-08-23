@@ -10,12 +10,12 @@ export const columns: ColumnDef<ActivityResponse>[] = [
   },
   {
     accessorKey: "createdAt",
-    header: "Fecha Creacion",
+    header: "Fecha Creación",
     cell: ({ row }) => {
-      const fecha = new Date(row.getValue("createdAt"));
+      const date = new Date(row.getValue("createdAt"));
       return (
         <>
-          {fecha.toLocaleDateString("es-ES", {
+          {date.toLocaleDateString("es-ES", {
             year: "numeric",
             month: "long",
             day: "numeric",

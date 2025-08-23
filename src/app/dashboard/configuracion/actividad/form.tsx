@@ -19,7 +19,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useCreateActivity } from "./hook/useActivity";
 
 const formSchema = z.object({
-  descripcion: z
+  description: z
     .string()
     .min(2, { message: "requerido" })
     .max(20, "los caracteres maximos son 20"),
@@ -31,11 +31,11 @@ interface Props {
   closeModal?: () => void;
 }
 
-export default function ActividadForm({ closeModal }: Props) {
+export default function ActivityForm({ closeModal }: Props) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      descripcion: "",
+      description: "",
     },
   });
 
@@ -45,12 +45,12 @@ export default function ActividadForm({ closeModal }: Props) {
 
   async function onSubmit(values: FormValues) {
     await create({
-      description: values.descripcion.toLowerCase(),
+      description: values.description.toLowerCase(),
     });
 
     form.reset();
     toast({
-      title: "Activity saved successfully",
+      title: "Actividad creada con éxito",
       variant: "success",
     });
     closeModal?.();
@@ -61,10 +61,10 @@ export default function ActividadForm({ closeModal }: Props) {
       <h2 className="text-center mb-4 font-semibold">Crear Actividad</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="grid grid-cols-2 grid-rows-1 gap-2">
+          <div className="grid grid-cols-1 gap-4">
             <FormField
               control={form.control}
-              name="descripcion"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descripción</FormLabel>
