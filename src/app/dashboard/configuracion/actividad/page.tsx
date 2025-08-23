@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useGetAllActivities } from "./hook/useActivity";
-import ActividadForm from "./form";
+import ActivityForm from "./form";
 
 export default function Activity() {
   const { activities, isLoading } = useGetAllActivities();
@@ -35,7 +35,7 @@ export default function Activity() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Crear Actividad</DialogTitle>
-            <ActividadForm closeModal={closeModal} />
+            <ActivityForm closeModal={closeModal} />
           </DialogHeader>
         </DialogContent>
       </Dialog>
