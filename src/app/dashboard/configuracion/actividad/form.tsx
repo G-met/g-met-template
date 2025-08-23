@@ -16,7 +16,7 @@ import { useForm } from "react-hook-form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { crearActividad } from "../../hooks/useActividad";
+import { useCreateActivity } from "./hook/useActivity";
 
 const formSchema = z.object({
   descripcion: z
@@ -41,16 +41,16 @@ export default function ActividadForm({ closeModal }: Props) {
 
   const { toast } = useToast();
 
-  const { crear, isLoading, error, errorMsg } = crearActividad();
+  const { create, isLoading, error, errorMessage } = useCreateActivity();
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    await crear({
-      descripcion: values.descripcion.toLowerCase(),
+  async function onSubmit(values: FormValues) {
+    await create({
+      description: values.descripcion.toLowerCase(),
     });
 
     form.reset();
     toast({
-      title: "Actividad se guardo correctamente",
+      title: "Activity saved successfully",
       variant: "success",
     });
     closeModal?.();
@@ -67,9 +67,12 @@ export default function ActividadForm({ closeModal }: Props) {
               name="descripcion"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descripcion</FormLabel>
+                  <FormLabel>Descripción</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ingrese una descripcion" {...field} />
+                    <Input
+                      placeholder="Ingrese la descripción de la actividad"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -89,7 +92,7 @@ export default function ActividadForm({ closeModal }: Props) {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
         </form>

@@ -13,11 +13,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useGetAllActivities } from "./hook/useActivity";
 import ActividadForm from "./form";
-import { obtenerActividades } from "../../hooks/useActividad";
 
-export default function Actividad() {
-  const { actividades, isLoading } = obtenerActividades();
+export default function Activity() {
+  const { activities, isLoading } = useGetAllActivities();
   const [open, SetOpen] = useState(false);
   const closeModal = () => SetOpen(false);
   return (
@@ -31,7 +31,7 @@ export default function Actividad() {
             <Button>Crear Actividad</Button>
           </DialogTrigger>
         </div>
-        <DataTable columns={columns} data={actividades} isLoading={isLoading} />
+        <DataTable columns={columns} data={activities} isLoading={isLoading} />
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Crear Actividad</DialogTitle>

@@ -1,8 +1,12 @@
 export interface ActivityResponse {
   id: string;
-  descripcion: string;
-  fecha_creacion: string | Date;
-  fecha_actualizacion: string | Date;
-  fecha_inactivacion?: string | Date | null;
-  cliente_id: string;
+  description: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  inactivatedAt?: string | Date | null;
+  clientId: string;
+}
+
+export interface CreateActivity {
+  description: string;
 }
