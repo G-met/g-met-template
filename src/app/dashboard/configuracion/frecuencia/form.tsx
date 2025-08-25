@@ -16,44 +16,45 @@ import { useForm } from "react-hook-form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { crearFrecuencia } from "../../hooks/useFrecuencia";
+import { useCreateFrequency } from "./hook/useFrequency";
+import { errorMapper } from "./error/errorMapper";
 
 const formSchema = z.object({
-  descripcion: z
+  description: z
     .string()
-    .min(2, { message: "requerido" })
-    .max(20, "los caracteres maximos son 20"),
-  cantidadDias: z.string().transform((val) => Number(val)),
+    .min(2, { message: "Descripción es requerida" })
+    .max(20, "Máximo 20 caracteres"),
+  days: z.string().transform((val) => Number(val)),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
 
-interface FrecuenciaFormProps {
+interface FrequencyFormProps {
   closeModal: () => void;
 }
 
-export default function FrecuenciaForm({ closeModal }: FrecuenciaFormProps) {
+export default function FrequencyForm({ closeModal }: FrequencyFormProps) {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      descripcion: "",
-      cantidadDias: 0,
+      description: "",
+      days: 0,
     },
   });
 
   const { toast } = useToast();
 
-  const { crear, isLoading, error, errorMsg } = crearFrecuencia();
+  const { create, isLoading, error, errorMessage } = useCreateFrequency();
 
   async function onSubmit(values: FormSchema) {
-    await crear({
-      descripcion: values.descripcion,
-      cantidadDias: values.cantidadDias,
+    await create({
+      description: values.description,
+      daysQuantity: values.days,
     });
 
     form.reset();
     toast({
-      title: "Frecuencia se guardo correctamente",
+      title: "Frecuencia guardada con éxito",
       variant: "success",
     });
     closeModal();
@@ -67,12 +68,12 @@ export default function FrecuenciaForm({ closeModal }: FrecuenciaFormProps) {
           <div className="grid grid-cols-2 grid-rows-1 gap-2">
             <FormField
               control={form.control}
-              name="descripcion"
+              name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descripcion</FormLabel>
+                  <FormLabel>Descripción</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ingrese una descripcion" {...field} />
+                    <Input placeholder="Ingresa una descripción" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -80,13 +81,13 @@ export default function FrecuenciaForm({ closeModal }: FrecuenciaFormProps) {
             />
             <FormField
               control={form.control}
-              name="cantidadDias"
+              name="days"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Cantidad Dias</FormLabel>
+                  <FormLabel>Número de días</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Ingrese una cantidad en dias"
+                      placeholder="Ingresa una cantidad en días"
                       {...field}
                       type="number"
                     />
@@ -109,7 +110,9 @@ export default function FrecuenciaForm({ closeModal }: FrecuenciaFormProps) {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>
+                {errorMapper[errorMessage] ?? errorMessage}
+              </AlertDescription>
             </Alert>
           )}
         </form>
