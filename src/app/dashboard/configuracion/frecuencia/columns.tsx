@@ -2,22 +2,22 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { FrecuenciaResponse } from "./types";
+import { FrequencyResponse } from "./types";
 
-export const columns: ColumnDef<FrecuenciaResponse>[] = [
+export const columns: ColumnDef<FrequencyResponse>[] = [
   {
-    accessorKey: "descripcion",
-    header: "Descripcion",
+    accessorKey: "description",
+    header: "Descripción",
   },
   {
-    accessorKey: "cantidad_dias",
-    header: "Cantidad Dias",
+    accessorKey: "daysQuantity",
+    header: "Días",
   },
   {
-    accessorKey: "fecha_creacion",
-    header: "Fecha Creacion",
+    accessorKey: "createdAt",
+    header: "Fecha de Creación",
     cell: ({ row }) => {
-      const fecha = new Date(row.getValue("fecha_creacion"));
+      const fecha = new Date(row.getValue("createdAt"));
       return (
         <>
           {fecha.toLocaleDateString("es-ES", {

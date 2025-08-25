@@ -12,11 +12,11 @@ import {
 
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { useState } from "react";
-import { obtenerFrecuencias } from "../../hooks/useFrecuencia";
-import FrecuenciaForm from "./form";
+import { useGetAllFrequencies } from "./hook/useFrequency";
+import FrequencyForm from "./form";
 
-export default function Frecuencia() {
-  const { frecuencias, isLoading } = obtenerFrecuencias();
+export default function Frequency() {
+  const { frequencies, isLoading } = useGetAllFrequencies();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const closeModal = () => {
     setIsOpenModal(false);
@@ -28,20 +28,20 @@ export default function Frecuencia() {
         onOpenChange={(value) => setIsOpenModal(value)}
       >
         <h2 className="text-center my-4 font-semibold">
-          Consultar Frecuencias
+          Configuración de Frecuencias
         </h2>
         <div className="flex justify-end mb-3">
           <Button onClick={() => setIsOpenModal(true)}>Crear Frecuencia</Button>
         </div>
-        <DataTable columns={columns} data={frecuencias} isLoading={isLoading} />
+        <DataTable columns={columns} data={frequencies} isLoading={isLoading} />
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Crear Frecuencia</DialogTitle>
             <DialogDescription>
-              Ingresa la informacion solicitada
+              Ingresa la información solicitada
             </DialogDescription>
           </DialogHeader>
-          <FrecuenciaForm closeModal={closeModal} />
+          <FrequencyForm closeModal={closeModal} />
         </DialogContent>
       </Dialog>
     </>

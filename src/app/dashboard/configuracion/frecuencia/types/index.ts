@@ -1,9 +1,14 @@
-export interface FrecuenciaResponse {
+export interface FrequencyResponse {
   id: string;
-  descripcion: string;
-  cantidad_dias: number;
-  fecha_creacion: Date | string;
-  fecha_actualizacion: Date | string;
-  fecha_inactivacion?: Date | string | null;
-  cliente_id: string;
+  description: string;
+  days: number;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  deletedAt?: Date | string | null;
+  clientId: string;
+}
+
+export type CreateFrequency = {
+  description: string;
+  daysQuantity: number;
 }
