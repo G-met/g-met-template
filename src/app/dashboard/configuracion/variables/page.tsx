@@ -12,11 +12,11 @@ import {
 
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { useState } from "react";
-import { useObtenerVariables } from "../../hooks/useVariables";
+import { useGetAllVariables } from "./hook/useVariable";
 import VariableForm from "./form";
 
 export default function Variable() {
-  const { variables, isLoading } = useObtenerVariables();
+  const { variables, isLoading } = useGetAllVariables();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const closeModal = () => {
     setIsOpenModal(false);
