@@ -23,16 +23,17 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { useCrearVariable } from "../../hooks/useVariables";
+import { useCreateVariable } from "./hook/useVariable";
 import { useGetAllMagnitudes } from "../magnitud/hook/useMagnitud";
+import { error } from "console";
 
 const formSchema = z.object({
   alias: z.string().min(1, { message: "requerido" }),
-  descripcion: z
+  description: z
     .string({ required_error: "Seleccione un responsable" })
     .min(1, { message: "requerido" }),
-  magnitud_id: z.string({
-    required_error: "Please select an email to display.",
+  magnitudeId: z.string({
+    required_error: "Seleccione una magnitud.",
   }),
 });
 
@@ -43,24 +44,24 @@ interface VariableFormProps {
 }
 
 export default function VariableForm({ closeModal }: VariableFormProps) {
-  const { isError, magnitudes: responsables } = useGetAllMagnitudes();
-  const { crear, error, errorMsg, isLoading } = useCrearVariable();
+  const { magnitudes } = useGetAllMagnitudes();
+  const { create, errorMessage, isError, isLoading } = useCreateVariable();
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       alias: "",
-      descripcion: "",
+      description: "",
     },
   });
 
   const { toast } = useToast();
 
   async function onSubmit(values: FormSchema) {
-    await crear({
+    await create({
       alias: values.alias,
-      descripcion: values.descripcion,
-      magnitud_id: values.magnitud_id,
+      description: values.description,
+      magnitudeId: values.magnitudeId,
     });
     form.reset();
     toast({
@@ -79,7 +80,7 @@ export default function VariableForm({ closeModal }: VariableFormProps) {
           <div className="grid grid-cols-2 grid-rows-1 gap-2">
             <FormField
               control={form.control}
-              name="descripcion"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descripcion</FormLabel>
@@ -106,7 +107,7 @@ export default function VariableForm({ closeModal }: VariableFormProps) {
 
             <FormField
               control={form.control}
-              name="magnitud_id"
+              name='magnitudeId'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Magnitud</FormLabel>
@@ -120,7 +121,7 @@ export default function VariableForm({ closeModal }: VariableFormProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {responsables.map((res) => (
+                      {magnitudes.map((res) => (
                         <>
                           <SelectItem value={res.id} key={res.id}>
                             {res.name}
@@ -143,11 +144,11 @@ export default function VariableForm({ closeModal }: VariableFormProps) {
             Crear Variable
           </Button>
 
-          {error && (
+          {isError && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
         </form>
