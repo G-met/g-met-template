@@ -1,17 +1,33 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { ResponsableResponse } from "./types";
+import { Responsible } from "./types";
 
-export const columns: ColumnDef<ResponsableResponse, any>[] = [
+export const columns: ColumnDef<Responsible>[] = [
   {
-    accessorKey: "nombre",
+    accessorKey: "name",
     header: "Nombre",
   },
   {
-    accessorKey: "apellido",
+    accessorKey: "lastName",
     header: "Apellido",
   },
   {
-    accessorKey: "identificacion",
+    accessorKey: "identification",
     header: "Identificación",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Fecha de Creación",
+    cell: ({ row }) => {
+      const fecha = new Date(row.getValue("createdAt"));
+      return (
+        <>
+          {fecha.toLocaleDateString("es-ES", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
+        </>
+      );
+    },
   },
 ];
