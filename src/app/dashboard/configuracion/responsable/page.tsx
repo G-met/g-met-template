@@ -10,13 +10,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { obtenerResponsables } from "../../hooks/useResponsables";
-import ResponsableForm from "./form";
+import ResponsibleForm from "./form";
+import { useGetAllResponsible } from "./hook/useResponsible";
 
-export default function ResponsablePage() {
+export default function ResponsiblePage() {
   const [open, setOpen] = useState(false);
   const closeModal = () => setOpen(false);
-  const { responsables, isLoading } = obtenerResponsables();
+  const { responsables, isLoading } = useGetAllResponsible();
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -30,13 +30,13 @@ export default function ResponsablePage() {
         </div>
         <DataTable
           columns={columns}
-          data={responsables}
+          data={responsables ?? []}
           isLoading={isLoading}
         />
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Crear Responsable</DialogTitle>
-            <ResponsableForm closeModal={closeModal} />
+            <ResponsibleForm closeModal={closeModal} />
           </DialogHeader>
         </DialogContent>
       </Dialog>

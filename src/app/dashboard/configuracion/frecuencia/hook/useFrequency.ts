@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFrequency, getFrequencies } from "../service";
 import { AxiosError } from "axios";
 import { CreateFrequency } from "../types";
-import { errorMapper } from "../error/errorMapper";
 
 export const useGetAllFrequencies = () => {
   const { data, error, isError, isLoading } = useQuery({

@@ -1,7 +1,14 @@
-export interface Responsable {
+export interface Responsible {
   id: string;
-  identificacion: string;
-  nombre: string;
-  fecha_creacion: Date | string;
-  fecha_actualizacion: Date | string;
+  identification: string;
+  name: string;
+  lastName: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreateResponsible {
+  identification: string;
+  name: string;
+  lastName: string;
 }

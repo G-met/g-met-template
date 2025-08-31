@@ -13,14 +13,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { crearTipoPatron } from "../../hooks/useTipoPatron";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useCreatePatternType } from "./hook/usePatternType";
+import { errorMapper } from "./error/errorMapper";
 
 const formSchema = z.object({
-  alias: z.string({ description: "nombre es requerido" }),
-  descripcion: z.string({ description: "identificacion es requerido" }),
+  alias: z.string().min(2, { message: "Alias es requerido" }),
+  description: z.string().min(2, { message: "Descripción es requerida" }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -34,18 +35,18 @@ export default function PatternTypeForm({ closeModal }: PatternTypeFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       alias: "",
-      descripcion: "",
+      description: "",
     },
   });
 
   const { toast } = useToast();
 
-  const { crear, isLoading, error, errorMsg } = crearTipoPatron();
+  const { create, isLoading, error, errorMessage } = useCreatePatternType();
 
   async function onSubmit(values: FormValues) {
-    await crear({
+    await create({
       alias: values.alias,
-      descripcion: values.descripcion,
+      description: values.description,
     });
 
     form.reset();
@@ -78,12 +79,12 @@ export default function PatternTypeForm({ closeModal }: PatternTypeFormProps) {
             />
             <FormField
               control={form.control}
-              name="descripcion"
+              name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descripcion</FormLabel>
+                  <FormLabel>Descripción</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ingrese una descripcion" {...field} />
+                    <Input placeholder="Ingrese una descripción" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -99,11 +100,13 @@ export default function PatternTypeForm({ closeModal }: PatternTypeFormProps) {
             Crear Tipo Patron
           </Button>
 
-          {error && (
+          {error && errorMessage && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>
+                {errorMapper[errorMessage] ?? errorMessage}
+              </AlertDescription>
             </Alert>
           )}
         </form>
