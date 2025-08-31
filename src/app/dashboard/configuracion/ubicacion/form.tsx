@@ -20,11 +20,11 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { obtenerResponsables } from "../../hooks/useResponsables";
 import { crearUbicacion } from "../../hooks/useUbicaciones";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
+import { useGetAllResponsible } from "../responsable/hook/useResponsible";
 
 const formSchema = z.object({
   nombre: z.string().min(2, { message: "requerido" }),
@@ -40,7 +40,7 @@ interface UbicacionFormProps {
 }
 
 export default function UbicacionForm({ closeModal }: UbicacionFormProps) {
-  const { responsables } = obtenerResponsables();
+  const { responsables } = useGetAllResponsible();
   const { crear, error, errorMsg, isLoading } = crearUbicacion();
 
   const form = useForm<FormValues>({
@@ -106,7 +106,7 @@ export default function UbicacionForm({ closeModal }: UbicacionFormProps) {
                       {responsables.map((res) => (
                         <>
                           <SelectItem value={res.id} key={res.id}>
-                            {res.nombre}
+                            {`${res.name} ${res.lastName}`}
                           </SelectItem>
                         </>
                       ))}

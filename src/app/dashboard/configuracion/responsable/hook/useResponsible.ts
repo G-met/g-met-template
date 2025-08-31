@@ -7,10 +7,16 @@ import {
 import { CreateResponsible } from "../types";
 
 export const useGetAllResponsible = () => {
-  return useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["getAllResponsible"],
     queryFn: getAllResponsible,
   });
+
+  return {
+    responsables: data ?? [],
+    isLoading,
+    error,
+  };
 };
 
 export const useCreateResponsible = () => {

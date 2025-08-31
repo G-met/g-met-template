@@ -12,13 +12,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ObtenerTipoPatrones } from "../../hooks/useTipoPatron";
 import PatternTypeForm from "./form";
+import { useGetAllPatternTypes } from "./hook/usePatternType";
 
 export default function PatternType() {
   const [open, SetOpen] = useState(false);
   const closeModal = () => SetOpen(false);
-  const { tipoPatrones, isLoading } = ObtenerTipoPatrones();
+  const { patternTypes, isLoading } = useGetAllPatternTypes();
   return (
     <>
       <Dialog open={open} onOpenChange={SetOpen}>
@@ -32,7 +32,7 @@ export default function PatternType() {
         </div>
         <DataTable
           columns={columns}
-          data={tipoPatrones}
+          data={patternTypes ?? []}
           isLoading={isLoading}
         />
         <DialogContent>

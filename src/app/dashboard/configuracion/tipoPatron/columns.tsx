@@ -9,14 +9,14 @@ export const columns: ColumnDef<PatternTypeResponse>[] = [
     header: "Alias",
   },
   {
-    accessorKey: "descripcion",
-    header: "Descripcion",
+    accessorKey: "description",
+    header: "Descripción",
   },
   {
-    accessorKey: "fecha_creacion",
-    header: "Fecha Creacion",
+    accessorKey: "createdAt",
+    header: "Fecha de Creación",
     cell: ({ row }) => {
-      const fecha = new Date(row.getValue("fecha_creacion"));
+      const fecha = new Date(row.getValue("createdAt"));
       return (
         <>
           {fecha.toLocaleDateString("es-ES", {

@@ -16,7 +16,7 @@ import { useGetAllResponsible } from "./hook/useResponsible";
 export default function ResponsiblePage() {
   const [open, setOpen] = useState(false);
   const closeModal = () => setOpen(false);
-  const { data, isLoading } = useGetAllResponsible();
+  const { responsables, isLoading } = useGetAllResponsible();
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -30,7 +30,7 @@ export default function ResponsiblePage() {
         </div>
         <DataTable
           columns={columns}
-          data={data ?? []}
+          data={responsables ?? []}
           isLoading={isLoading}
         />
         <DialogContent>
