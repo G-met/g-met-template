@@ -18,18 +18,34 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 
-import { MarcaForm } from "./form";
-import { Marca } from "@/app/api/marca/dominio";
+import { BrandForm } from "./form";
+import { BrandResponse } from "./types";
 import { DialogDescription } from "@radix-ui/react-dialog";
 
-export const columns: ColumnDef<Marca>[] = [
+export const columns: ColumnDef<BrandResponse>[] = [
   {
-    accessorKey: "descripcion",
-    header: "Descripcion",
+    accessorKey: "description",
+    header: "Descripción",
   },
   {
-    accessorKey: "identificacion",
-    header: "Identificacion",
+    accessorKey: "identification",
+    header: "Identificación",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Fecha de Creación",
+    cell: ({ row }) => {
+      const fecha = new Date(row.getValue("createdAt"));
+      return (
+        <>
+          {fecha.toLocaleDateString("es-ES", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
+        </>
+      );
+    },
   },
   {
     id: "actions",
@@ -76,9 +92,9 @@ export const columns: ColumnDef<Marca>[] = [
                   Ingresa la informacion solicitada
                 </DialogDescription>
               </DialogHeader>
-              <MarcaForm
+              <BrandForm
                 isEditing={true}
-                marca={row.original}
+                brand={row.original}
                 closeModal={closeModal}
               />
             </DialogContent>
