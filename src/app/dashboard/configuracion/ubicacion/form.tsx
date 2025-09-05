@@ -20,20 +20,21 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { crearUbicacion } from "../../hooks/useUbicaciones";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useGetAllResponsible } from "../responsable/hook/useResponsible";
+import { useCreateLocation } from "./hook/useLocation";
+import { errorMapper } from "./error/errorMapper";
 
 const formSchema = z.object({
-  nombre: z.string().min(2, { message: "requerido" }),
-  responsable: z
+  name: z.string().min(2, { message: "Nombre es requerido" }),
+  responsible: z
     .string({ required_error: "Seleccione un responsable" })
-    .min(2, { message: "requerido" }),
+    .min(2, { message: "Responsable es requerido" }),
 });
 
-export type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<typeof formSchema>;
 
 interface UbicacionFormProps {
   closeModal: () => void;
@@ -41,26 +42,26 @@ interface UbicacionFormProps {
 
 export default function UbicacionForm({ closeModal }: UbicacionFormProps) {
   const { responsables } = useGetAllResponsible();
-  const { crear, error, errorMsg, isLoading } = crearUbicacion();
+  const { create, error, errorMessage, isLoading } = useCreateLocation();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      nombre: "",
-      responsable: "",
+      name: "",
+      responsible: "",
     },
   });
 
   const { toast } = useToast();
 
   async function onSubmit(values: FormValues) {
-    await crear({
-      nombre: values.nombre,
-      responsable_id: values.responsable,
+    await create({
+      name: values.name,
+      responsibleId: values.responsible,
     });
     form.reset();
     toast({
-      title: "Ubicacion se guardo correctamente",
+      title: "Ubicación guardada correctamente",
       variant: "success",
     });
     closeModal();
@@ -75,13 +76,13 @@ export default function UbicacionForm({ closeModal }: UbicacionFormProps) {
           <div className="grid grid-cols-2 grid-rows-1 gap-2">
             <FormField
               control={form.control}
-              name="nombre"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nombre</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Ingrese nombre de la ubicacion"
+                      placeholder="Ingrese nombre de la ubicación"
                       {...field}
                     />
                   </FormControl>
@@ -92,7 +93,7 @@ export default function UbicacionForm({ closeModal }: UbicacionFormProps) {
 
             <FormField
               control={form.control}
-              name="responsable"
+              name="responsible"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Responsable</FormLabel>
@@ -130,7 +131,7 @@ export default function UbicacionForm({ closeModal }: UbicacionFormProps) {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMapper[errorMessage] ?? errorMessage}</AlertDescription>
             </Alert>
           )}
         </form>

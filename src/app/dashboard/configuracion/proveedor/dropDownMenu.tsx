@@ -8,7 +8,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import { ProveedorForm } from "./form";
-import { EditarProveedorDTO } from "@/app/api/proveedor/application/dto/editarProveedorDTO";
 import {
   Dialog,
   DialogContent,
@@ -16,9 +15,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { UpdateProviderProps } from "./types";
 
 interface Props {
-  proveedorDto: EditarProveedorDTO;
+  proveedorDto: UpdateProviderProps;
 }
 
 export const DropDownMenuProveedor = ({ proveedorDto }: Props) => {

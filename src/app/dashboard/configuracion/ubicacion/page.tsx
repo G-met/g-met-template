@@ -9,32 +9,39 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
+
+import { DialogDescription } from "@radix-ui/react-dialog";
 import UbicacionForm from "./form";
-import { obtenerUbicaciones } from "../../hooks/useUbicaciones";
+import { useGetAllLocations } from "./hook/useLocation";
 
 export default function UbicacionTable() {
-  const [open, setOpen] = useState(false);
-  const closeModal = () => setOpen(false);
-  const { ubicaciones, isLoading } = obtenerUbicaciones(); // Implementa el hook
+  const { locations, isLoading } = useGetAllLocations();
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const closeModal = () => {
+    setIsOpenModal(false);
+  };
   return (
     <>
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog
+        open={isOpenModal}
+        onOpenChange={(value) => setIsOpenModal(value)}
+      >
         <h2 className="text-center my-4 font-semibold">
           Consultar Ubicaciones
         </h2>
         <div className="flex justify-end mb-3">
-          <DialogTrigger asChild>
-            <Button>Crear Ubicación</Button>
-          </DialogTrigger>
+          <Button onClick={() => setIsOpenModal(true)}>Crear Ubicación</Button>
         </div>
-        <DataTable columns={columns} data={ubicaciones} isLoading={isLoading} />
+        <DataTable columns={columns} data={locations} isLoading={isLoading} />
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Crear Ubicación</DialogTitle>
-            <UbicacionForm closeModal={closeModal} />
+            <DialogDescription>
+              Ingresa la información solicitada
+            </DialogDescription>
           </DialogHeader>
+          <UbicacionForm closeModal={closeModal} />
         </DialogContent>
       </Dialog>
     </>

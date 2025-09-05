@@ -1,30 +1,30 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFrequency, getFrequencies } from "../service";
-import { CreateFrequency } from "../types";
+import { createLocation, getLocations } from "../service";
 import { getErrorMessage } from "@/lib/helpers/getErrorMessage";
+import { CreateLocation } from "../types";
 
-export const useGetAllFrequencies = () => {
+export const useGetAllLocations = () => {
   const { data, error, isError, isLoading } = useQuery({
-    queryKey: ["frequencies"],
-    queryFn: () => getFrequencies(),
+    queryKey: ["locations"],
+    queryFn: () => getLocations(),
     select: (response) => response.data,
   });
 
   return {
-    frequencies: data ?? [],
+    locations: data ?? [],
     error,
     isError,
     isLoading,
   };
 };
 
-export const useCreateFrequency = () => {
+export const useCreateLocation = () => {
   const queryClient = useQueryClient();
   const { error, isError, mutateAsync, isPending } = useMutation({
-    mutationFn: (frequency: CreateFrequency) => createFrequency(frequency),
-    mutationKey: ["createFrequency"],
+    mutationFn: (location: CreateLocation) => createLocation(location),
+    mutationKey: ["createLocation"],
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["frequencies"] });
+      queryClient.invalidateQueries({ queryKey: ["locations"] });
     },
   });
 

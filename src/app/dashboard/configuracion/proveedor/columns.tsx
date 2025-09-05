@@ -1,45 +1,44 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ListarProveedoresDTO } from "@/app/api/proveedor/application/dto/listarProveedore.DTO";
+import { ProviderResponse, UpdateProvider, UpdateProviderProps } from "./types";
 import { DropDownMenuProveedor } from "./dropDownMenu";
-import { EditarProveedorDTO } from "@/app/api/proveedor/application/dto/editarProveedorDTO";
 
-export const columns: ColumnDef<ListarProveedoresDTO>[] = [
+export const columns: ColumnDef<ProviderResponse>[] = [
   {
-    accessorKey: "nombre",
+    accessorKey: "name",
     header: "Nombre empresa",
   },
   {
-    accessorKey: "tipoIdentificacion",
+    accessorKey: "identificationType",
     header: "Tipo Identificacion",
   },
   {
-    accessorKey: "numeroIdentificacion",
+    accessorKey: "identificationNumber",
     header: "Numero Identificacion",
   },
   {
-    accessorKey: "nombreContacto",
+    accessorKey: "contactName",
     header: "Nombre contacto",
   },
   {
-    accessorKey: "telefonoContacto",
+    accessorKey: "contactPhone",
     header: "Telefono contacto",
   },
 
   {
     id: "actions",
     cell: ({ row }) => {
-      const proveedorDto: EditarProveedorDTO = {
+      const proveedorDto: UpdateProviderProps = {
         id: row.original.id,
-        nombre: row.original.nombre,
-        tipoIdetificacion: row.original.tipoIdentificacion,
-        numeroIdentificacion: row.original.numeroIdentificacion,
-        direccion: row.original.direccion,
-        telefono: row.original.telefono,
-        email: row.original.email,
-        nombreContacto: row.original.nombreContacto,
-        telefonoContacto: row.original.telefonoContacto,
+        name: row.original.name,
+        identificationType: row.original.identificationType,
+        identificationNumber: row.original.identificationNumber,
+        address: row.original.address || "",
+        phone: row.original.phone || "",
+        email: row.original.email || "",
+        contactName: row.original.contactName || "",
+        contactPhone: row.original.contactPhone || "",
       };
       return <DropDownMenuProveedor proveedorDto={proveedorDto} />;
     },

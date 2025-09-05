@@ -1,16 +1,20 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Ubicacion } from "./types/types";
+import { LocationResponse } from "./types";
 
-export const columns: ColumnDef<Ubicacion, any>[] = [
+export const columns: ColumnDef<LocationResponse>[] = [
   {
-    accessorKey: "nombre",
+    accessorKey: "name",
     header: "Nombre",
   },
   {
-    accessorKey:"fecha_creacion",
+    accessorKey: "responsible.name",
+    header: "Responsable",
+  },
+  {
+    accessorKey: "createdAt",
     header: "Fecha de Creación",
     cell: ({ row }) => {
-      const fecha = new Date(row.getValue("fecha_creacion"));
+      const fecha = new Date(row.getValue("createdAt"));
       return (
         <>
           {fecha.toLocaleDateString("es-ES", {
@@ -21,5 +25,5 @@ export const columns: ColumnDef<Ubicacion, any>[] = [
         </>
       );
     },
-  }
+  },
 ];

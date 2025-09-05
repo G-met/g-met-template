@@ -6,9 +6,8 @@ import { columns } from "./columns";
 
 import { useState } from "react";
 import {
-  useListadoProvedores,
-  useCrearProveedor,
-} from "../../hooks/useProveedor";
+  useGetAllProviders,
+} from "./hook/useProvider";
 import {
   Dialog,
   DialogContent,
@@ -21,7 +20,7 @@ import { ProveedorForm } from "./form";
 export default function Proveedor() {
   const [open, SetOpen] = useState(false);
   const closeModal = () => SetOpen(false);
-  const { proveedores, isLoading } = useListadoProvedores();
+  const { providers: proveedores, isLoading } = useGetAllProviders();
   return (
     <>
       <Dialog open={open} onOpenChange={SetOpen}>
