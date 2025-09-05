@@ -23,29 +23,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  useCrearProveedor,
-  useEditarProveedor,
-} from "../../hooks/useProveedor";
-import { Identificacion } from "@/app/api/proveedor/dominio/entity";
-import { EditarProveedorDTO } from "@/app/api/proveedor/application/dto/editarProveedorDTO";
-
-const formSchema = z.object({
-  nombre: z.string(),
-  tipoIdetificacion: z.enum(["NIT"]),
-  numeroIdentificacion: z.string(),
-  direccion: z.string(),
-  telefono: z.string(),
-  email: z.string().email(),
-  nombreContacto: z.string(),
-  telefonoContacto: z.string(),
-});
+import { useCreateProvider, useUpdateProvider } from "./hook/useProvider";
+import { UpdateProviderProps } from "./types";
 
 interface Props {
   isEditing?: boolean;
-  proveedorDto?: EditarProveedorDTO;
+  proveedorDto?: UpdateProviderProps;
   closeModal?: () => void;
 }
+
+const formSchema = z.object({
+  name: z.string().min(1, "Nombre de la empresa es requerido"),
+  identificationType: z.enum(["NIT"]),
+  identificationNumber: z
+    .string()
+    .min(1, "Número de identificación es requerido"),
+  address: z.string(),
+  phone: z.string(),
+  email: z.string().email("Email inválido"),
+  contactName: z.string(),
+  contactPhone: z.string(),
+});
 
 export function ProveedorForm({
   isEditing = false,
@@ -56,51 +54,56 @@ export function ProveedorForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      direccion: proveedorDto?.direccion ?? "",
-      email: proveedorDto?.email ?? "",
-      nombre: proveedorDto?.nombre ?? "",
-      numeroIdentificacion: proveedorDto?.numeroIdentificacion ?? "",
-      telefono: proveedorDto?.telefono ?? "",
-      tipoIdetificacion:
-        (proveedorDto?.tipoIdetificacion as Identificacion) ?? "",
+      name: proveedorDto?.name || "",
+      identificationType: (proveedorDto?.identificationType as "NIT") ?? "NIT",
+      identificationNumber: proveedorDto?.identificationNumber || "",
+      address: proveedorDto?.address || "",
+      phone: proveedorDto?.phone || "",
+      email: proveedorDto?.email || "",
+      contactName: proveedorDto?.contactName || "",
+      contactPhone: proveedorDto?.contactPhone || "",
     },
   });
 
   const { toast } = useToast();
   const {
-    crear,
+    create,
     error,
-    errorMsg: errorMsgCreated,
+    errorMessage: errorMessageCreated,
     isLoading: isLoadingCreated,
-  } = useCrearProveedor();
+  } = useCreateProvider();
   const {
-    editar,
+    update,
+    error: updateError,
+    errorMessage: errorMessageUpdate,
     isLoading: isLoadingEdit,
-    errorMsg: erroMsgEdit,
-  } = useEditarProveedor();
+  } = useUpdateProvider();
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (isEditing) {
-      await editar({
-        id: proveedorDto?.id ?? "",
-        direccion: values.direccion,
-        email: values.email,
-        nombre: values.nombre,
-        numeroIdentificacion: values.numeroIdentificacion,
-        telefono: values.telefono,
-        tipoIdetificacion: values.tipoIdetificacion as Identificacion,
-        nombreContacto: values.nombreContacto,
-        telefonoContacto: values.telefonoContacto,
+    if (isEditing && proveedorDto) {
+      await update({
+        id: proveedorDto.id,
+        provider: {
+          name: values.name,
+          identificationType: values.identificationType,
+          identificationNumber: values.identificationNumber,
+          address: values.address,
+          phone: values.phone,
+          email: values.email,
+          contactName: values.contactName,
+          contactPhone: values.contactPhone,
+        },
       });
     } else {
-      await crear({
-        direccion: values.direccion,
+      await create({
+        name: values.name,
+        identificationType: values.identificationType,
+        identificationNumber: values.identificationNumber,
+        address: values.address,
+        phone: values.phone,
         email: values.email,
-        nombre: values.nombre,
-        numeroIdentificacion: values.numeroIdentificacion,
-        telefono: values.telefono,
-        tipoIdetificacion: values.tipoIdetificacion as Identificacion,
-        nombreContacto: values.nombreContacto,
-        telefonoContacto: values.telefonoContacto,
+        contactName: values.contactName,
+        contactPhone: values.contactPhone,
       });
     }
 
@@ -120,7 +123,7 @@ export function ProveedorForm({
         <div className="grid grid-cols-2 grid-rows-1 gap-2">
           <FormField
             control={form.control}
-            name="nombre"
+            name="name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nombre de la empresa</FormLabel>
@@ -137,7 +140,7 @@ export function ProveedorForm({
 
           <FormField
             control={form.control}
-            name="tipoIdetificacion"
+            name="identificationType"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Tipo Identificacion</FormLabel>
@@ -160,7 +163,7 @@ export function ProveedorForm({
 
           <FormField
             control={form.control}
-            name="numeroIdentificacion"
+            name="identificationNumber"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Numero de Identificacion</FormLabel>
@@ -173,7 +176,7 @@ export function ProveedorForm({
           />
           <FormField
             control={form.control}
-            name="direccion"
+            name="address"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Direccion</FormLabel>
@@ -186,7 +189,7 @@ export function ProveedorForm({
           />
           <FormField
             control={form.control}
-            name="telefono"
+            name="phone"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>telefono</FormLabel>
@@ -216,7 +219,7 @@ export function ProveedorForm({
           />
           <FormField
             control={form.control}
-            name="nombreContacto"
+            name="contactName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nombre de contacto</FormLabel>
@@ -232,7 +235,7 @@ export function ProveedorForm({
           />
           <FormField
             control={form.control}
-            name="telefonoContacto"
+            name="contactPhone"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Telefono de contacto</FormLabel>
@@ -261,12 +264,12 @@ export function ProveedorForm({
           {labelform}
         </Button>
 
-        {error && (
+        {(error || updateError) && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>
-              {erroMsgEdit || errorMsgCreated}
+              {errorMessageUpdate || errorMessageCreated}
             </AlertDescription>
           </Alert>
         )}

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFrequency, getFrequencies } from "../service";
-import { AxiosError } from "axios";
 import { CreateFrequency } from "../types";
+import { getErrorMessage } from "@/lib/helpers/getErrorMessage";
 
 export const useGetAllFrequencies = () => {
   const { data, error, isError, isLoading } = useQuery({
@@ -27,16 +27,6 @@ export const useCreateFrequency = () => {
       queryClient.invalidateQueries({ queryKey: ["frequencies"] });
     },
   });
-
-  const getErrorMessage = (err: unknown): string | undefined => {
-    if (
-      err &&
-      (err as AxiosError<{ message?: string }>).response?.data?.message
-    ) {
-      return (err as AxiosError<{ message?: string }>).response?.data?.message;
-    }
-    return (err as Error)?.message;
-  };
 
   return {
     create: mutateAsync,
