@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,7 +5,7 @@ generator client {
 generator dbml {
   provider              = "prisma-dbml-generator"
   projectDatabaseType   = "PostgreSQL"
-  includeRelationFields = false
+  includeRelationFields = "false"
 }
 
 datasource db {
@@ -22,26 +19,25 @@ model equipo {
   descripcion           String                        @db.VarChar(60)
   modelo                String                        @db.VarChar(40)
   serie                 String                        @db.VarChar(40)
-  datos_metrologicos    datos_metrologicos_equipos?
-  datos_complementarios datos_complementarios_equipo?
-  marca                 marca                         @relation(fields: [marca_id], references: [id])
   marca_id              String
-  programacion_equipos  ProgramacionEquipos[]
   fecha_creacion        DateTime                      @default(now())
   fecha_actualizacion   DateTime                      @default(now()) @updatedAt
   fecha_inactivacion    DateTime?
-  ubicacion             ubicacion                     @relation(fields: [ubicacion_id], references: [id])
   ubicacion_id          String
   cliente_id            String
-  cliente               cliente                       @relation(fields: [cliente_id], references: [id])
   documentos            Json                          @default("[]")
+  datos_complementarios datos_complementarios_equipo?
+  datos_metrologicos    datos_metrologicos_equipos?
+  cliente               cliente                       @relation(fields: [cliente_id], references: [id])
+  marca                 marca                         @relation(fields: [marca_id], references: [id])
+  ubicacion             ubicacion                     @relation(fields: [ubicacion_id], references: [id])
+  programacion_equipos  ProgramacionEquipos[]
 
   @@index([cliente_id])
 }
 
 model responsable {
   id                  String      @id @default(cuid())
-  ubicacion           ubicacion[]
   identificacion      String      @unique @db.VarChar(10)
   nombre              String      @db.VarChar(40)
   apellido            String      @db.VarChar(40)
@@ -50,6 +46,7 @@ model responsable {
   fecha_inactivacion  DateTime?
   cliente_id          String
   cliente             cliente     @relation(fields: [cliente_id], references: [id])
+  ubicacion           ubicacion[]
 
   @@index([cliente_id])
 }
@@ -57,30 +54,30 @@ model responsable {
 model ubicacion {
   id                  String      @id @default(cuid())
   nombre              String      @unique @db.VarChar(40)
-  equipos             equipo[]
-  responsable         responsable @relation(fields: [responsable_id], references: [id])
   responsable_id      String
   fecha_creacion      DateTime    @default(now())
   fecha_actualizacion DateTime    @updatedAt
   fecha_inactivacion  DateTime?
-  patrones            patrones[]
   cliente_id          String
+  equipos             equipo[]
+  patron              patron[]
   cliente             cliente     @relation(fields: [cliente_id], references: [id])
+  responsable         responsable @relation(fields: [responsable_id], references: [id])
 
   @@index([cliente_id])
 }
 
 model marca {
-  id                 String     @id @default(cuid())
+  id                 String    @id @default(cuid())
   identificacion     String
   descripcion        String
-  equipos            equipo[]
-  fechaCreacion      DateTime   @default(now())
-  fechaactualizacion DateTime   @updatedAt
+  fechaCreacion      DateTime  @default(now())
+  fechaactualizacion DateTime  @updatedAt
   fecha_inactivacion DateTime?
-  patrones           patrones[]
   cliente_id         String
-  cliente            cliente    @relation(fields: [cliente_id], references: [id])
+  equipos            equipo[]
+  cliente            cliente   @relation(fields: [cliente_id], references: [id])
+  patron             patron[]
 
   @@index([cliente_id])
 }
@@ -88,13 +85,13 @@ model marca {
 model tipo_actividad {
   id                   String                 @id @default(cuid())
   descripcion          String
-  programacion_equipos ProgramacionEquipos[]
   fecha_creacion       DateTime               @default(now())
   fecha_actualizacion  DateTime               @updatedAt
   fecha_inactivacion   DateTime?
   cliente_id           String
-  cliente              cliente                @relation(fields: [cliente_id], references: [id])
+  programacion_equipos ProgramacionEquipos[]
   ProgramacionPatrones ProgramacionPatrones[]
+  cliente              cliente                @relation(fields: [cliente_id], references: [id])
 
   @@index([cliente_id])
 }
@@ -102,57 +99,49 @@ model tipo_actividad {
 model frecuencia {
   id                    String                 @id @default(cuid())
   descripcion           String
-  cantidad_dias         Int                    @db.Integer
+  cantidad_dias         Int
   fecha_creacion        DateTime               @default(now())
   fecha_actualizacion   DateTime               @updatedAt
   fecha_inactivacion    DateTime?
-  programacion_equipos  ProgramacionEquipos[]
-  programacion_patrones ProgramacionPatrones[]
   cliente_id            String
   cliente               cliente                @relation(fields: [cliente_id], references: [id])
+  programacion_equipos  ProgramacionEquipos[]
+  programacion_patrones ProgramacionPatrones[]
 
   @@index([cliente_id])
 }
 
 model usuario {
   id                    String              @id @default(cuid())
-  usuario               String              @db.VarChar(40)
   nombre                String              @db.VarChar(40)
   apellido              String              @db.VarChar(40)
   cargo                 String              @db.VarChar(40)
-  rol                   Role                @default(Consulta)
   correo                String              @unique @db.VarChar(50)
   correoVerificado      Boolean             @default(false) @map("correo_verificado")
   fechaCreacion         DateTime            @default(now()) @map("fecha_creacion")
   fechaActualizacion    DateTime            @updatedAt @map("fecha_actualizacion")
   fechaInactivacion     DateTime?           @map("fecha_inactivacion")
   clienteId             String              @map("cliente_id")
-  cliente               cliente             @relation(fields: [clienteId], references: [id])
-  EjecucionEquipos      EjecucionEquipos[]
-  EjecucionPatrones     EjecucionPatrones[]
   codigo_identificacion String?             @unique @map("codigo_identificacion") @db.VarChar(25)
   status                UserStatus          @default(PENDING_ACTIVATION) @map("status")
+  role                  Role                @default(Consulta)
+  EjecucionEquipos      EjecucionEquipos[]
+  EjecucionPatrones     EjecucionPatrones[]
+  cliente               cliente             @relation(fields: [clienteId], references: [id])
 
   @@index([clienteId, correo])
-}
-
-enum UserStatus {
-  ACTIVE
-  PENDING_ACTIVATION
-  DISABLED
-  DELETED
 }
 
 model magnitud {
   id                  String     @id @default(cuid())
   alias               String     @db.VarChar(10)
   descripcion         String     @db.VarChar(50)
-  variables           variable[]
   fecha_creacion      DateTime   @default(now())
   fecha_actualizacion DateTime   @updatedAt
   fecha_inactivacion  DateTime?
   cliente_id          String
   cliente             cliente    @relation(fields: [cliente_id], references: [id])
+  variables           variable[]
 
   @@index([cliente_id])
 }
@@ -161,49 +150,21 @@ model variable {
   id                  String    @id @default(cuid())
   alias               String
   descripcion         String
-  magnitud            magnitud  @relation(fields: [magnitud_id], references: [id])
   magnitud_id         String
   fecha_creacion      DateTime  @default(now())
   fecha_actualizacion DateTime  @updatedAt
   fecha_inactivacion  DateTime?
   cliente_id          String
   cliente             cliente   @relation(fields: [cliente_id], references: [id])
-
-  @@index([cliente_id])
-}
-
-model patrones {
-  id                            String                          @id @default(cuid())
-  codigo                        String                          @unique @db.VarChar(20)
-  descripcion                   String                          @db.VarChar(60)
-  modelo                        String                          @db.VarChar(40)
-  serie                         String                          @db.VarChar(40)
-  datos_metrologicos            datos_metrologicos_patrones?
-  datos_complementarios         datos_complementarios_patrones?
-  marca                         marca                           @relation(fields: [marca_id], references: [id])
-  marca_id                      String
-  fecha_creacion                DateTime                        @default(now())
-  fecha_actualizacion           DateTime                        @updatedAt
-  fecha_inactivacion            DateTime?
-  ubicacion                     ubicacion                       @relation(fields: [ubicacionId], references: [id])
-  ubicacionId                   String                          @map("ubicacion_id")
-  datos_metrologicos_patronesId String?
-  programacion_patrones         ProgramacionPatrones[]
-  cliente_id                    String
-  cliente                       cliente                         @relation(fields: [cliente_id], references: [id])
-  tipo_patron                   tipo_patron                     @relation(fields: [tipo_patron_id], references: [id])
-  tipo_patron_id                String
-  documentos                    Json                            @default("[]")
+  magnitud            magnitud  @relation(fields: [magnitud_id], references: [id])
 
   @@index([cliente_id])
 }
 
 model datos_metrologicos_equipos {
-  id     String @id @default(cuid())
-  equipo equipo @relation(fields: [equipo_id], references: [id])
-
+  id                  String    @id @default(cuid())
   equipo_id           String    @unique
-  emp                 Float     @db.DoublePrecision()
+  emp                 Float
   division_escala     Float
   resolucion          Float
   rango_minimo        Float
@@ -213,13 +174,14 @@ model datos_metrologicos_equipos {
   fecha_inactivacion  DateTime?
   cliente_id          String
   cliente             cliente   @relation(fields: [cliente_id], references: [id])
+  equipo              equipo    @relation(fields: [equipo_id], references: [id])
 
   @@index([cliente_id])
 }
 
 model datos_metrologicos_patrones {
   id                  String    @id @default(cuid())
-  emp                 Float     @db.DoublePrecision()
+  emp                 Float
   division_escala     Float
   resolucion          Float
   rango_minimo        Float
@@ -228,24 +190,24 @@ model datos_metrologicos_patrones {
   fecha_creacion      DateTime  @default(now())
   fecha_actualizacion DateTime  @updatedAt
   fecha_inactivacion  DateTime?
-  patrones            patrones  @relation(fields: [patrones_id], references: [id])
   patrones_id         String    @unique
   cliente_id          String
   cliente             cliente   @relation(fields: [cliente_id], references: [id])
+  patrones            patron    @relation(fields: [patrones_id], references: [id])
 
   @@index([cliente_id])
 }
 
 model tipo_patron {
-  id                  String     @id @default(cuid())
+  id                  String    @id @default(cuid())
   alias               String
   descripcion         String
-  fecha_creacion      DateTime   @default(now())
-  fecha_actualizacion DateTime   @updatedAt
+  fecha_creacion      DateTime  @default(now())
+  fecha_actualizacion DateTime  @updatedAt
   fecha_inactivacion  DateTime?
   cliente_id          String
-  cliente             cliente    @relation(fields: [cliente_id], references: [id])
-  patrones            patrones[]
+  patron              patron[]
+  cliente             cliente   @relation(fields: [cliente_id], references: [id])
 
   @@index([cliente_id])
 }
@@ -259,13 +221,13 @@ model datos_complementarios_equipo {
   version_software                    String?
   fireware                            String?
   observaciones                       String?
-  equipo                              equipo    @relation(fields: [equipo_id], references: [id])
   equipo_id                           String    @unique
   fecha_creacion                      DateTime  @default(now())
   fecha_actualizacion                 DateTime  @updatedAt
   fecha_inactivacion                  DateTime?
   cliente_id                          String
   cliente                             cliente   @relation(fields: [cliente_id], references: [id])
+  equipo                              equipo    @relation(fields: [equipo_id], references: [id])
 
   @@index([cliente_id])
 }
@@ -279,78 +241,78 @@ model datos_complementarios_patrones {
   version_software                    String?
   fireware                            String?
   observaciones                       String?
-  patron                              patrones  @relation(fields: [patron_id], references: [id])
   patron_id                           String    @unique
   fecha_creacion                      DateTime  @default(now())
   fecha_actualizacion                 DateTime  @updatedAt
   fecha_inactivacion                  DateTime?
   cliente_id                          String
   cliente                             cliente   @relation(fields: [cliente_id], references: [id])
+  patron                              patron    @relation(fields: [patron_id], references: [id])
 
   @@index([cliente_id])
 }
 
 model ProgramacionEquipos {
   id                 String             @id @default(cuid())
-  actividad          tipo_actividad     @relation(fields: [actividadId], references: [id])
   actividadId        String             @map("actividad_id")
-  frecuencia         frecuencia         @relation(fields: [frecuenciaId], references: [id])
   frecuenciaId       String             @map("frecuencia_id")
-  equipo             equipo             @relation(fields: [equipoId], references: [id])
   equipoId           String             @map("equipo_id")
   fechaProgramacion  DateTime           @map("fecha_programacion")
   fechaCreacion      DateTime           @default(now()) @map("fecha_creacion")
   fechaActualizacion DateTime           @updatedAt @map("fecha_actualizacion")
   fechaInactivacion  DateTime?          @map("fecha_inactivacion")
   clienteId          String             @map("cliente_id")
-  cliente            cliente            @relation(fields: [clienteId], references: [id])
   estado             EstadoProgramacion @default(PENDIENTE)
-  EjecucionEquipos   EjecucionEquipos[]
+  EjecucionEquipos   EjecucionEquipos?
+  actividad          tipo_actividad     @relation(fields: [actividadId], references: [id])
+  cliente            cliente            @relation(fields: [clienteId], references: [id])
+  equipo             equipo             @relation(fields: [equipoId], references: [id])
+  frecuencia         frecuencia         @relation(fields: [frecuenciaId], references: [id])
 
   @@index([clienteId])
   @@map("programacion_equipos")
 }
 
 model ProgramacionPatrones {
-  id                 String              @id @default(cuid())
-  actividad          tipo_actividad      @relation(fields: [actividadId], references: [id])
-  actividadId        String              @map("actividad_id")
-  frecuencia         frecuencia          @relation(fields: [frecuenciaId], references: [id])
-  frecuenciaId       String              @map("frecuencia_id")
-  patron             patrones            @relation(fields: [patronId], references: [id])
-  patronId           String              @map("patron_id")
-  fechaProgramacion  DateTime            @map("fecha_programacion")
-  fechaCreacion      DateTime            @default(now()) @map("fecha_creacion")
-  fechaActualizacion DateTime            @updatedAt @map("fecha_actualizacion")
-  fechaInactivacion  DateTime?           @map("fecha_inactivacion")
-  clienteId          String              @map("cliente_id")
-  cliente            cliente             @relation(fields: [clienteId], references: [id])
-  estado             EstadoProgramacion  @default(PENDIENTE)
-  EjecucionPatrones  EjecucionPatrones[]
+  id                 String             @id @default(cuid())
+  actividadId        String             @map("actividad_id")
+  frecuenciaId       String             @map("frecuencia_id")
+  patronId           String             @map("patron_id")
+  fechaProgramacion  DateTime           @map("fecha_programacion")
+  fechaCreacion      DateTime           @default(now()) @map("fecha_creacion")
+  fechaActualizacion DateTime           @updatedAt @map("fecha_actualizacion")
+  fechaInactivacion  DateTime?          @map("fecha_inactivacion")
+  clienteId          String             @map("cliente_id")
+  estado             EstadoProgramacion @default(PENDIENTE)
+  EjecucionPatrones  EjecucionPatrones?
+  actividad          tipo_actividad     @relation(fields: [actividadId], references: [id])
+  cliente            cliente            @relation(fields: [clienteId], references: [id])
+  frecuencia         frecuencia         @relation(fields: [frecuenciaId], references: [id])
+  patron             patron             @relation(fields: [patronId], references: [id])
 
   @@index([clienteId])
   @@map("programacion_patrones")
-}
-
-enum TipoIdentificacion {
-  NIT
 }
 
 model Proveedor {
   id                   String              @id @default(uuid())
   nombre               String
   tipoIdetificacion    TipoIdentificacion  @default(NIT)
-  numeroIdentificacion String              @unique
-  direccion            String?
-  telefono             String?
-  email                String?
-  nombreContacto       String?
-  telefonoContacto     String?
-  cliente              cliente             @relation(fields: [clienteId], references: [id])
+  numeroIdentificacion String
+  direccion            String
+  telefono             String
+  email                String
+  nombreContacto       String
+  telefonoContacto     String
   clienteId            String
+  fecha_actualizacion  DateTime
+  fecha_creacion       DateTime            @default(now())
+  fecha_inactivacion   DateTime?
   EjecucionEquipos     EjecucionEquipos[]
   EjecucionPatrones    EjecucionPatrones[]
+  cliente              cliente             @relation(fields: [clienteId], references: [id])
 
+  @@unique([clienteId, numeroIdentificacion])
   @@index([clienteId, numeroIdentificacion])
   @@map("proveedor")
 }
@@ -358,31 +320,28 @@ model Proveedor {
 model cliente {
   id                             String                           @id @default(uuid())
   nombre                         String                           @unique
-  usuario                        usuario[]
-  responsable                    responsable[]
-  equipo                         equipo[]
-  marca                          marca[]
-  ubicacion                      ubicacion[]
-  tipo_actividad                 tipo_actividad[]
-  frecuencia                     frecuencia[]
-  magnitud                       magnitud[]
-  variable                       variable[]
-  tipo_patron                    tipo_patron[]
-  patrones                       patrones[]
-  datos_metrologicos_equipos     datos_metrologicos_equipos[]
-  datos_metrologicos_patrones    datos_metrologicos_patrones[]
   datos_complementarios_equipo   datos_complementarios_equipo[]
   datos_complementarios_patrones datos_complementarios_patrones[]
-  programacion_equipos           ProgramacionEquipos[]
-  programacion_patrones          ProgramacionPatrones[]
+  datos_metrologicos_equipos     datos_metrologicos_equipos[]
+  datos_metrologicos_patrones    datos_metrologicos_patrones[]
   EjecucionEquipos               EjecucionEquipos[]
   EjecucionPatrones              EjecucionPatrones[]
-  Proveedor                      Proveedor[]
+  equipo                         equipo[]
+  frecuencia                     frecuencia[]
+  magnitud                       magnitud[]
+  marca                          marca[]
   PasswordResetToken             PasswordResetToken[]
+  patron                         patron[]
+  programacion_equipos           ProgramacionEquipos[]
+  programacion_patrones          ProgramacionPatrones[]
+  Proveedor                      Proveedor[]
+  responsable                    responsable[]
+  tipo_actividad                 tipo_actividad[]
+  tipo_patron                    tipo_patron[]
+  ubicacion                      ubicacion[]
+  usuario                        usuario[]
+  variable                       variable[]
 }
-
-//PROVEDOR
-//USUARIO
 
 model EjecucionEquipos {
   id                   String              @id @default(uuid())
@@ -390,15 +349,15 @@ model EjecucionEquipos {
   fechaCreacion        DateTime            @default(now()) @map("fecha_creacion")
   clienteId            String              @map("cliente_id")
   observaciones        String
-  cliente              cliente             @relation(fields: [clienteId], references: [id])
-  programacionEquipo   ProgramacionEquipos @relation(fields: [programacionEquipoId], references: [id])
   programacionEquipoId String              @unique @map("programacion_equipo_id")
   documentos           Json                @default("[]")
   proveedorId          String?             @map("proveedor_id")
-  proveedor            Proveedor?          @relation(fields: [proveedorId], references: [id])
   usuarioId            String?             @map("usuario_id")
-  usuario              usuario?            @relation(fields: [usuarioId], references: [id])
   tipoEjecutor         tipoEjecutor        @default(INTERNO) @map("tipo_ejecutor")
+  cliente              cliente             @relation(fields: [clienteId], references: [id])
+  programacionEquipo   ProgramacionEquipos @relation(fields: [programacionEquipoId], references: [id])
+  proveedor            Proveedor?          @relation(fields: [proveedorId], references: [id])
+  usuario              usuario?            @relation(fields: [usuarioId], references: [id])
 
   @@index([clienteId, programacionEquipoId])
   @@map("ejecucion_equipos")
@@ -409,16 +368,16 @@ model EjecucionPatrones {
   fechaEjecucion       DateTime             @map("fecha_ejecucion")
   fechaCreacion        DateTime             @default(now()) @map("fecha_creacion")
   clienteId            String               @map("cliente_id")
-  cliente              cliente              @relation(fields: [clienteId], references: [id])
   observaciones        String
-  programacionPatron   ProgramacionPatrones @relation(fields: [programacionPatronId], references: [id])
   programacionPatronId String               @unique @map("programacion_patron_id")
   documentos           Json                 @default("[]")
   proveedorId          String?              @map("proveedor_id")
-  proveedor            Proveedor?           @relation(fields: [proveedorId], references: [id])
   usuarioId            String?              @map("usuario_id")
-  usuario              usuario?             @relation(fields: [usuarioId], references: [id])
   tipoEjecutor         tipoEjecutor         @default(INTERNO) @map("tipo_ejecutor")
+  cliente              cliente              @relation(fields: [clienteId], references: [id])
+  programacionPatron   ProgramacionPatrones @relation(fields: [programacionPatronId], references: [id])
+  proveedor            Proveedor?           @relation(fields: [proveedorId], references: [id])
+  usuario              usuario?             @relation(fields: [usuarioId], references: [id])
 
   @@index([clienteId, programacionPatronId])
   @@map("ejecucion_patrones")
@@ -434,6 +393,43 @@ model PasswordResetToken {
 
   @@index([email, token])
   @@map("password_reset_token")
+}
+
+model patron {
+  id                            String                          @id
+  codigo                        String                          @unique @db.VarChar(20)
+  descripcion                   String                          @db.VarChar(60)
+  modelo                        String                          @db.VarChar(40)
+  serie                         String                          @db.VarChar(40)
+  marca_id                      String
+  fecha_creacion                DateTime                        @default(now())
+  fecha_actualizacion           DateTime                        @default(now()) @updatedAt
+  fecha_inactivacion            DateTime?
+  ubicacion_id                  String
+  datos_metrologicos_patronesId String?
+  cliente_id                    String
+  tipo_patron_id                String
+  documentos                    Json                            @default("[]")
+  datos_complementarios         datos_complementarios_patrones?
+  datos_metrologicos            datos_metrologicos_patrones?
+  cliente                       cliente                         @relation(fields: [cliente_id], references: [id])
+  marca                         marca                           @relation(fields: [marca_id], references: [id])
+  tipo_patron                   tipo_patron                     @relation(fields: [tipo_patron_id], references: [id])
+  ubicacion                     ubicacion                       @relation(fields: [ubicacion_id], references: [id])
+  programacion_patrones         ProgramacionPatrones[]
+
+  @@index([cliente_id])
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING_ACTIVATION
+  DISABLED
+  DELETED
+}
+
+enum TipoIdentificacion {
+  NIT
 }
 
 enum Role {

@@ -7,7 +7,7 @@ export class PatronWriteRepositoryImp implements PatronWriteRepository {
     clienteId: string,
     patron: PatronEntity
   ): Promise<void> {
-    await prisma.patrones.create({
+    await prisma.patron.create({
       data: {
         id: patron.id,
         cliente_id: clienteId,
@@ -18,7 +18,7 @@ export class PatronWriteRepositoryImp implements PatronWriteRepository {
         marca_id: patron.marca.id,
         tipo_patron_id: patron.tipoPatron.id,
         documentos: patron.documentos as Prisma.JsonArray,
-        ubicacionId: patron.ubicacion.id,
+        ubicacion_id: patron.ubicacion.id,
       },
     });
   }
