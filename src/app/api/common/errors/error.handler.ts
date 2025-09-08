@@ -2,6 +2,7 @@ import { getLogger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 export const errorHandler = async (error: any) => {
+  console.error("entro al error handler console.error", error);
   const logger = await getLogger();
   logger.error("entro al error handler", error);
   if (error.cause === "negocio") {

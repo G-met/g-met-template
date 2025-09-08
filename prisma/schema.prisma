@@ -132,6 +132,7 @@ model usuario {
   EjecucionPatrones     EjecucionPatrones[]
   codigo_identificacion String?             @unique @map("codigo_identificacion") @db.VarChar(25)
   status                UserStatus          @default(PENDING_ACTIVATION) @map("status")
+
   @@index([clienteId, correo])
 }
 
@@ -185,7 +186,7 @@ model patrones {
   fecha_actualizacion           DateTime                        @updatedAt
   fecha_inactivacion            DateTime?
   ubicacion                     ubicacion                       @relation(fields: [ubicacionId], references: [id])
-  ubicacionId                   String
+  ubicacionId                   String                          @map("ubicacion_id")
   datos_metrologicos_patronesId String?
   programacion_patrones         ProgramacionPatrones[]
   cliente_id                    String
