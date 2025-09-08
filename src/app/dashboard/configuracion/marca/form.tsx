@@ -16,48 +16,49 @@ import { useForm } from "react-hook-form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { crearMarca, editarMarca } from "../../hooks/useMarca";
-import { Marca } from "@/app/api/marca/dominio";
+import { useCreateBrand, useUpdateBrand } from "./hook/useBrand";
+import { BrandResponse } from "./types";
+import { errorMapper } from "./error/errorMapper";
 
 const formSchema = z.object({
-  descripcion: z
+  description: z
     .string()
-    .min(2, { message: "requerido" })
-    .max(20, "los caracteres maximos son 20"),
-  identificacion: z.string().min(2, { message: "requerido" }),
+    .min(2, { message: "Descripción es requerida" })
+    .max(20, "Máximo 20 caracteres"),
+  identification: z.string().min(2, { message: "Identificación es requerida" }),
 });
 
 interface Props {
   isEditing?: boolean;
-  marca?: Marca;
+  brand?: BrandResponse;
   closeModal?: () => void;
 }
 
-export function MarcaForm({ isEditing = false, marca, closeModal }: Props) {
+export function BrandForm({ isEditing = false, brand, closeModal }: Props) {
   const labelform = isEditing ? "Editar Marca" : "Crear Marca";
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      identificacion: marca?.identificacion ?? "",
-      descripcion: marca?.descripcion ?? "",
+      identification: brand?.identification ?? "",
+      description: brand?.description ?? "",
     },
   });
 
   const { toast } = useToast();
-  const { crear, error, errorMsg, isLoading: isLoadingCreated } = crearMarca();
-  const { editar, isLoading: isLoadingEdit } = editarMarca();
+  const { create, error, errorMessage, isLoading: isLoadingCreated } = useCreateBrand();
+  const { update, isLoading: isLoadingEdit } = useUpdateBrand();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (isEditing) {
-      await editar({
-        identificacion: values.identificacion,
-        descripcion: values.descripcion,
-        id: marca?.id!,
+      await update({
+        identification: values.identification,
+        description: values.description,
+        id: brand?.id!,
       });
     } else {
-      await crear({
-        identificacion: values.identificacion,
-        descripcion: values.descripcion,
+      await create({
+        identification: values.identification,
+        description: values.description,
       });
     }
 
@@ -66,7 +67,7 @@ export function MarcaForm({ isEditing = false, marca, closeModal }: Props) {
     }
     form.reset();
     toast({
-      title: "Marca se guardo correctamente",
+      title: "Marca guardada correctamente",
       variant: "success",
     });
   }
@@ -77,12 +78,12 @@ export function MarcaForm({ isEditing = false, marca, closeModal }: Props) {
         <div className="grid grid-cols-2 grid-rows-1 gap-2">
           <FormField
             control={form.control}
-            name="descripcion"
+            name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Descripcion</FormLabel>
+                <FormLabel>Descripción</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ingrese una descripcion" {...field} />
+                  <Input placeholder="Ingrese una descripción" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -90,10 +91,10 @@ export function MarcaForm({ isEditing = false, marca, closeModal }: Props) {
           />
           <FormField
             control={form.control}
-            name="identificacion"
+            name="identification"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Identificacion</FormLabel>
+                <FormLabel>Identificación</FormLabel>
                 <FormControl>
                   <Input placeholder="Ingrese un alias" {...field} />
                 </FormControl>
@@ -115,7 +116,7 @@ export function MarcaForm({ isEditing = false, marca, closeModal }: Props) {
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{errorMsg}</AlertDescription>
+            <AlertDescription>{errorMapper[errorMessage] ?? errorMessage}</AlertDescription>
           </Alert>
         )}
       </form>
