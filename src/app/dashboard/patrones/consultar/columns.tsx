@@ -12,29 +12,30 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { SubMenuDocuments } from "../../components/SubMenuDocuments";
-import { PatronInformacionBasicaDTO } from "@/app/api/patrones/application/dto/obtenerPatrones";
+import { PatternResponse } from "../types";
 
-export const columns: ColumnDef<PatronInformacionBasicaDTO>[] = [
+export const columns: ColumnDef<PatternResponse>[] = [
   {
-    accessorKey: "codigo",
+    accessorKey: "code",
     header: "codigo",
   },
   {
-    accessorKey: "descripcion",
+    accessorKey: "description",
     header: "descripcion",
   },
   {
-    accessorKey: "marca",
+    accessorKey: "brandName",
     header: "marca",
   },
   {
-    accessorKey: "responsable",
+    accessorKey: "responsible",
     header: "Responsable",
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const documentos = row.original?.documentos;
+      const documents = row.original?.documents;
+      const code = row.original?.code;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -43,17 +44,13 @@ export const columns: ColumnDef<PatronInformacionBasicaDTO>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <Link
-              href={`/dashboard/patrones/programar/${row.getValue("codigo")}`}
-            >
+            <Link href={`/dashboard/patrones/programar/${code}`}>
               <DropdownMenuItem>Programar</DropdownMenuItem>
             </Link>
-            <Link
-              href={`/dashboard/patrones/consultar/${row.getValue("codigo")}`}
-            >
+            <Link href={`/dashboard/patrones/consultar/${code}`}>
               <DropdownMenuItem>Ver Patron</DropdownMenuItem>
             </Link>
-            <SubMenuDocuments documentos={documentos ?? []} />
+            <SubMenuDocuments documentos={documents ?? []} />
           </DropdownMenuContent>
         </DropdownMenu>
       );

@@ -53,7 +53,7 @@ export class EjecucionPatronesReadRepositoryImp
               fecha_creacion: res.programacionPatron.patron.fecha_creacion,
               serie: res.programacionPatron.patron.serie,
               marca_id: res.programacionPatron.patron.marca_id,
-              ubicacionId: res.programacionPatron.patron.ubicacionId,
+              ubicacionId: res.programacionPatron.patron.ubicacion_id,
             }),
             actividad: new Actividad(),
             cliente: new Cliente(),
@@ -68,7 +68,7 @@ export class EjecucionPatronesReadRepositoryImp
             nombre: res.usuario?.nombre ?? "",
             apellido: res.usuario?.apellido ?? "",
             correo: res.usuario?.correo ?? "",
-            rol: (res.usuario?.rol as Role) ?? Role.Consulta,
+            rol: (res.usuario?.role as Role) ?? Role.Consulta,
             cargo: res.usuario?.cargo ?? "",
           }),
         })

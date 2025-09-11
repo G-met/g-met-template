@@ -41,14 +41,6 @@ export class ListarPatronesUseCaseImp implements ListarPatronesUseCase {
   }
 
   converToDTO(equipos: PatronEntity[]): PatronInformacionBasicaDTO[] {
-    return equipos.map((e) => ({
-      id: e.id,
-      codigo: e.codigo,
-      descripcion: e.descripcion,
-      marca: e.marca.descripcion,
-      responsable:
-        e.ubicacion.responsable.nombre + " " + e.ubicacion.responsable.apellido,
-      documentos: e.documentos,
-    }));
+    return PatronInformacionBasicaDTO.converToDTO(equipos);
   }
 }

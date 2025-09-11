@@ -5,7 +5,7 @@ import CrearPatronesBasicos from "./basicos";
 import CrearDatosmetrologicos from "./metrologicos";
 import CrearDatosComplementarios from "./complementarios";
 
-export default function Equipo() {
+export default function Pattern() {
   return (
     <>
       <h2 className="text-center mb-4 font-semibold">Crear Patron</h2>
