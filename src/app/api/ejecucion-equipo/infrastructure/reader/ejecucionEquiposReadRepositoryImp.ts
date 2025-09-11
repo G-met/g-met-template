@@ -9,7 +9,6 @@ import { Equipo } from "../../../equipos/dominio/index";
 import { Proveedor } from "@/app/api/proveedor/dominio/entity";
 import { Role, Usuario } from "@/app/api/usuarios/dominio/entity";
 import { Documentos } from "@/app/api/common/types";
-import { EjecucionEquipos as EjecucionEquiposPrisma } from "@prisma/client";
 export class EjecucionEquiposReadRepositoryImp
   implements EjecucionEquipoReadRepository
 {
@@ -81,7 +80,7 @@ export class EjecucionEquiposReadRepositoryImp
             nombre: res.usuario?.nombre ?? "",
             apellido: res.usuario?.apellido ?? "",
             correo: res.usuario?.correo ?? "",
-            rol: (res.usuario?.rol as Role) ?? Role.Consulta,
+            rol: (res.usuario?.role as Role) ?? Role.Consulta,
             cargo: res.usuario?.cargo ?? "",
           }),
         })

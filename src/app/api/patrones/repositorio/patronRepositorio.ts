@@ -28,7 +28,7 @@ export const patronRepositorio: PatronRepositorio = {
     dto: CrearPatronDto,
     clienteId: string
   ): Promise<Patron> {
-    const patron = await prisma.patrones.create({
+    const patron = await prisma.patron.create({
       data: {
         cliente_id: clienteId,
         codigo: dto.codigo,
@@ -36,7 +36,7 @@ export const patronRepositorio: PatronRepositorio = {
         modelo: dto.modelo,
         serie: dto.serie,
         marca_id: dto.marcaId,
-        ubicacionId: dto.ubicacionId,
+        ubicacion_id: dto.ubicacionId,
         tipo_patron_id: dto.tipoPatronId,
       },
     });
@@ -46,7 +46,7 @@ export const patronRepositorio: PatronRepositorio = {
     codigo: string,
     clienteId: string
   ): Promise<Patron | null> {
-    const patron = await prisma.patrones.findUnique({
+    const patron = await prisma.patron.findUnique({
       where: {
         codigo,
         cliente_id: clienteId,
@@ -103,7 +103,7 @@ export const patronRepositorio: PatronRepositorio = {
     dto?: queryValuesDTO | undefined
   ): Promise<ObtenerPatronesDtoOutput> {
     const { porPagina, skip } = calcularPagina(dto?.page ?? 1);
-    const dbResponse = await prisma.patrones.findMany({
+    const dbResponse = await prisma.patron.findMany({
       where: {
         cliente_id: clienteId,
       },
@@ -140,7 +140,7 @@ export const patronRepositorio: PatronRepositorio = {
       responsable: patron.ubicacion.responsable.nombre,
     }));
 
-    const countNextPage = await prisma.patrones.count({
+    const countNextPage = await prisma.patron.count({
       where: { cliente_id: clienteId },
       take: porPagina,
       skip,
@@ -158,12 +158,12 @@ export const patronRepositorio: PatronRepositorio = {
     patron: Partial<Patron>,
     clienteId: string
   ): Promise<void> {
-    await prisma.patrones.update({
+    await prisma.patron.update({
       where: { codigo, cliente_id: clienteId },
       data: {
         marca_id: patron.marca_id,
         descripcion: patron.descripcion,
-        ubicacionId: patron.ubicacionId,
+        ubicacion_id: patron.ubicacionId,
         serie: patron.serie,
         modelo: patron.modelo,
       },
@@ -213,13 +213,13 @@ export const patronRepositorio: PatronRepositorio = {
     dto: CrearProgramacionPatronDto,
     clienteId: string
   ): Promise<ProgramacionPatrones> {
-    return prisma.programacion_patrones.create({
+    return prisma.programacionPatrones.create({
       data: {
-        patron_id: dto.patronId,
-        frecuencia_id: dto.frecuenciaId,
-        fecha_programacion: dto.fechaProgramacion,
-        actividad_id: dto.actividadId,
-        cliente_id: clienteId,
+        frecuenciaId: dto.frecuenciaId,
+        fechaProgramacion: dto.fechaProgramacion,
+        actividadId: dto.actividadId,
+        clienteId: clienteId,
+        patronId: dto.patronId,
       },
     });
   },
@@ -229,12 +229,12 @@ export const patronRepositorio: PatronRepositorio = {
   ): Promise<ListaProgramacionPatronesDTO> {
     const { skip, porPagina } = calcularPagina(dto?.page ?? 1);
 
-    const equipoProgramacion = await prisma.programacion_patrones.findMany({
-      where: { cliente_id: clienteId },
+    const equipoProgramacion = await prisma.programacionPatrones.findMany({
+      where: { clienteId },
       take: porPagina,
       skip,
       orderBy: {
-        fecha_creacion: "desc",
+        fechaCreacion: "desc",
       },
       include: {
         patron: {
@@ -256,8 +256,8 @@ export const patronRepositorio: PatronRepositorio = {
       },
     });
 
-    const countNextPage = await prisma.programacion_patrones.count({
-      where: { cliente_id: clienteId },
+    const countNextPage = await prisma.programacionPatrones.count({
+      where: { clienteId },
       take: porPagina,
       skip,
     });
@@ -269,7 +269,7 @@ export const patronRepositorio: PatronRepositorio = {
         codigo: element.patron.codigo,
         actividad: element.actividad.descripcion,
         descripcion: element.patron.descripcion,
-        fechaProgramacion: format(element.fecha_programacion, "dd-MM-yyyy"),
+        fechaProgramacion: format(element.fechaProgramacion, "dd-MM-yyyy"),
         frecuencia: element.frecuencia.descripcion,
       })
     );

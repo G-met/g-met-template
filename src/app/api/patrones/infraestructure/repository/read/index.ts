@@ -11,7 +11,7 @@ export class PatronRepositoryReadImp implements PatronReadRepository {
     valor: string,
     paginationOptions: PaginationOptions
   ): Promise<PatronEntity[]> {
-    const res = await prisma.patrones.findMany({
+    const res = await prisma.patron.findMany({
       skip: paginationOptions.page,
       take: paginationOptions.limit,
       where: {
@@ -58,7 +58,7 @@ export class PatronRepositoryReadImp implements PatronReadRepository {
     termino: string,
     valor: string
   ): Promise<number> {
-    return prisma.patrones.count({
+    return prisma.patron.count({
       where: {
         cliente_id: clienteId,
         [termino]: {
@@ -68,7 +68,7 @@ export class PatronRepositoryReadImp implements PatronReadRepository {
     });
   }
   totalPatrones(clienteId: string): Promise<number> {
-    return prisma.patrones.count({
+    return prisma.patron.count({
       where: {
         cliente_id: clienteId,
       },
@@ -79,7 +79,7 @@ export class PatronRepositoryReadImp implements PatronReadRepository {
     page: number,
     limit: number
   ): Promise<PatronEntity[]> {
-    const res = await prisma.patrones.findMany({
+    const res = await prisma.patron.findMany({
       where: {
         cliente_id: clienteId,
       },
@@ -119,7 +119,7 @@ export class PatronRepositoryReadImp implements PatronReadRepository {
     );
   }
   async obtenerPorID(ID: string, clienteId: string): Promise<Patron | null> {
-    const patron = await prisma.patrones.findUnique({
+    const patron = await prisma.patron.findUnique({
       where: { cliente_id: clienteId, id: ID },
     });
     if (!patron) {
