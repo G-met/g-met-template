@@ -43,10 +43,14 @@ export interface ComplementaryData {
 }
 
 export interface CreatePattern {
+  code: string;
   description: string;
   model: string;
   serial: string;
-  brandId?: string;
+  brandId: string;
+  locationId: string;
+  patternTypeId: string;
+  files: File[] | null;
 }
 
 export interface CreateMetrologicalData {

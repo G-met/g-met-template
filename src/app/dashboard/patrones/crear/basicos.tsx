@@ -21,24 +21,24 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { obtenerUbicaciones } from "../../hooks/useUbicaciones";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { obtenerMarcas } from "../../hooks/useMarca";
-import { useCrearPatron } from "../../hooks/usePatron";
-import { ObtenerTipoPatrones } from "../../hooks/useTipoPatron";
 import { validateFileListSize } from "@/app/api/common/files/filesSize";
+import { useCreatePattern } from "@/app/dashboard/patrones/hook/usePattern";
+import { useGetAllBrands } from "@/app/dashboard/configuracion/marca/hook/useBrand";
+import { useGetAllLocations } from "@/app/dashboard/configuracion/ubicacion/hook/useLocation";
+import { useGetAllPatternTypes } from "@/app/dashboard/configuracion/tipoPatron/hook/usePatternType";
 
 const formSchema = z.object({
-  codigo: z.string().min(2, { message: "codigo requerido" }),
-  descripcion: z.string().min(2, { message: "descripcion requerido" }),
-  modelo: z.string().min(2, { message: "modelo requerido" }),
-  serie: z.string().min(2, { message: "serie requerido" }),
-  marcaId: z.string().min(2, { message: "marcaId requerido" }),
-  ubicacionId: z.string().min(2, { message: "ubicacionId requerido" }),
-  tipoPatronId: z.string().min(2, { message: "tipoPatron requerido" }),
-  archivos: z
+  code: z.string().min(2, { message: "codigo requerido" }),
+  description: z.string().min(2, { message: "descripcion requerido" }),
+  model: z.string().min(2, { message: "modelo requerido" }),
+  serial: z.string().min(2, { message: "serie requerido" }),
+  brandId: z.string().min(2, { message: "marcaId requerido" }),
+  locationId: z.string().min(2, { message: "ubicacionId requerido" }),
+  patternTypeId: z.string().min(2, { message: "tipoPatron requerido" }),
+  files: z
     .any()
     .refine(validateFileListSize, {
       message: "Cada archivo no debe pesar mas de 4.5 MB",
@@ -46,35 +46,36 @@ const formSchema = z.object({
     .optional(),
 });
 
-export default function CrearPatronesBasicos() {
-  const { marcas } = obtenerMarcas();
-  const { ubicaciones } = obtenerUbicaciones();
-  const { crear, error, errorMsg, isLoading } = useCrearPatron();
-  const { tipoPatrones } = ObtenerTipoPatrones();
+export default function CreateBasicPatterns() {
+  const { brands } = useGetAllBrands();
+  const { locations } = useGetAllLocations();
+  const { patternTypes } = useGetAllPatternTypes();
+  const { create, error, errorMessage, isLoading } = useCreatePattern();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      codigo: "",
-      descripcion: "",
-      modelo: "",
-      serie: "",
-      marcaId: "",
-      ubicacionId: "",
+      code: "",
+      description: "",
+      model: "",
+      serial: "",
+      brandId: "",
+      locationId: "",
     },
   });
 
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await crear({
-      codigo: values.codigo,
-      descripcion: values.descripcion,
-      modelo: values.modelo,
-      serie: values.serie,
-      marcaId: values.marcaId,
-      ubicacionId: values.ubicacionId,
-      tipoPatronId: values.tipoPatronId,
-      archivos: values.archivos,
+    await create({
+      code: values.code,
+      description: values.description,
+      model: values.model,
+      serial: values.serial,
+      brandId: values.brandId,
+      locationId: values.locationId,
+      patternTypeId: values.patternTypeId,
+      files: values.files,
     });
     form.reset();
 
@@ -93,7 +94,7 @@ export default function CrearPatronesBasicos() {
           <div className="grid grid-cols-2 grid-rows-1 gap-2">
             <FormField
               control={form.control}
-              name="codigo"
+              name="code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Codigo</FormLabel>
@@ -109,7 +110,7 @@ export default function CrearPatronesBasicos() {
             />
             <FormField
               control={form.control}
-              name="descripcion"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descripcion</FormLabel>
@@ -125,7 +126,7 @@ export default function CrearPatronesBasicos() {
             />
             <FormField
               control={form.control}
-              name="modelo"
+              name="model"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Modelo</FormLabel>
@@ -138,7 +139,7 @@ export default function CrearPatronesBasicos() {
             />
             <FormField
               control={form.control}
-              name="serie"
+              name="serial"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Serie</FormLabel>
@@ -155,7 +156,7 @@ export default function CrearPatronesBasicos() {
 
             <FormField
               control={form.control}
-              name="marcaId"
+              name="brandId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Marca</FormLabel>
@@ -166,10 +167,10 @@ export default function CrearPatronesBasicos() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {marcas.map((res) => (
+                      {brands.map((brand) => (
                         <>
-                          <SelectItem value={res.id} key={res.id}>
-                            {res.descripcion}
+                          <SelectItem value={brand.id} key={brand.id}>
+                            {brand.description}
                           </SelectItem>
                         </>
                       ))}
@@ -181,7 +182,7 @@ export default function CrearPatronesBasicos() {
             />
             <FormField
               control={form.control}
-              name="ubicacionId"
+              name="locationId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Ubicacion</FormLabel>
@@ -195,10 +196,10 @@ export default function CrearPatronesBasicos() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {ubicaciones.map((res) => (
+                      {locations.map((location) => (
                         <>
-                          <SelectItem value={res.id} key={res.id}>
-                            {res.nombre}
+                          <SelectItem value={location.id} key={location.id}>
+                            {location.name}
                           </SelectItem>
                         </>
                       ))}
@@ -210,7 +211,7 @@ export default function CrearPatronesBasicos() {
             />
             <FormField
               control={form.control}
-              name="tipoPatronId"
+              name="patternTypeId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tipo Patron</FormLabel>
@@ -225,10 +226,13 @@ export default function CrearPatronesBasicos() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {tipoPatrones.map((res) => (
+                      {patternTypes.map((patternType) => (
                         <>
-                          <SelectItem value={res.id} key={res.id}>
-                            {res.descripcion}
+                          <SelectItem
+                            value={patternType.id}
+                            key={patternType.id}
+                          >
+                            {patternType.description}
                           </SelectItem>
                         </>
                       ))}
@@ -240,7 +244,7 @@ export default function CrearPatronesBasicos() {
             />
             <FormField
               control={form.control}
-              name="archivos"
+              name="files"
               render={({ field: { value, onChange, ...fieldProps } }) => (
                 <FormItem>
                   <FormLabel>Archivos</FormLabel>
@@ -277,7 +281,7 @@ export default function CrearPatronesBasicos() {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
         </form>
