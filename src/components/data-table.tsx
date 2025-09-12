@@ -1,12 +1,12 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
-  Table as TanstackTable,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -20,15 +20,23 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  table: TanstackTable<TData>;
-  isLoading: boolean;
+  data: TData[];
+  isLoading: boolean; // New prop to indicate loading state
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  table,
+  data,
   isLoading,
 }: DataTableProps<TData, TValue>) {
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+
+  // Function to render skeleton rows
   const renderSkeletonRows = () => {
     return Array.from({ length: 5 }).map((_, index) => (
       <TableRow key={`skeleton-${index}`}>
@@ -42,29 +50,30 @@ export function DataTable<TData, TValue>({
   };
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {isLoading
-            ? renderSkeletonRows()
-            : table.getRowModel().rows?.length
-            ? table.getRowModel().rows.map((row) => (
+    <>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              renderSkeletonRows()
+            ) : table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
@@ -79,18 +88,19 @@ export function DataTable<TData, TValue>({
                   ))}
                 </TableRow>
               ))
-            : !isLoading && (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No se encontraron resultados
-                  </TableCell>
-                </TableRow>
-              )}
-        </TableBody>
-      </Table>
-    </div>
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No se encontraron resultados
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   );
 }
