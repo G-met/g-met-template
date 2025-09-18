@@ -29,6 +29,7 @@ import { useCreatePattern } from "@/app/dashboard/patrones/hook/usePattern";
 import { useGetAllBrands } from "@/app/dashboard/configuracion/marca/hook/useBrand";
 import { useGetAllLocations } from "@/app/dashboard/configuracion/ubicacion/hook/useLocation";
 import { useGetAllPatternTypes } from "@/app/dashboard/configuracion/tipoPatron/hook/usePatternType";
+import { useState } from "react";
 
 const formSchema = z.object({
   code: z.string().min(2, { message: "codigo requerido" }),
@@ -44,6 +45,7 @@ const formSchema = z.object({
       message: "Cada archivo no debe pesar mas de 4.5 MB",
     })
     .optional(),
+  lote: z.string().optional(),
 });
 
 export default function CreateBasicPatterns() {
@@ -84,6 +86,24 @@ export default function CreateBasicPatterns() {
       variant: "success",
     });
   }
+  const [isMC, setIsMC] = useState(false);
+
+  const hasMCPatternType = (value: string) => {
+    const selectedPatternType = patternTypes.find((pt) => pt.id === value);
+
+    if (
+      selectedPatternType &&
+      (selectedPatternType.description.toLowerCase() ===
+        "material de referencia certificado" ||
+        selectedPatternType.description.toLowerCase() ===
+          "material de referencia")
+    ) {
+      setIsMC(true);
+      return true;
+    }
+    setIsMC(false);
+    return false;
+  };
 
   return (
     <>
@@ -163,7 +183,7 @@ export default function CreateBasicPatterns() {
                   <Select onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccione un Descripcion" />
+                        <SelectValue placeholder="Seleccione una Marca" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -186,10 +206,7 @@ export default function CreateBasicPatterns() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Ubicacion</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccione una Ubicacion" />
@@ -216,7 +233,10 @@ export default function CreateBasicPatterns() {
                 <FormItem>
                   <FormLabel>Tipo Patron</FormLabel>
                   <Select
-                    onValueChange={field.onChange}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      hasMCPatternType(value);
+                    }}
                     defaultValue={field.value}
                     value={field.value}
                   >
@@ -267,6 +287,24 @@ export default function CreateBasicPatterns() {
                 </FormItem>
               )}
             />
+            {isMC && (
+              <FormField
+                control={form.control}
+                name="lote"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Lote</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Ingrese nombre del lote"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
           <Button type="submit" disabled={isLoading} className="mx-auto">
             <Loader2

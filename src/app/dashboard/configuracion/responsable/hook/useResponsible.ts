@@ -10,6 +10,7 @@ export const useGetAllResponsible = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["getAllResponsible"],
     queryFn: getAllResponsible,
+    refetchOnWindowFocus: false,
   });
 
   return {

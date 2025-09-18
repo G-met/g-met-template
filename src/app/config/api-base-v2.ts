@@ -12,14 +12,25 @@ export const httpBaseV2 = axios.create({
 });
 
 if (!isServer) {
-  httpBaseV2.interceptors.request.use(async (config) => {
-    const { Clerk } = await import("@clerk/clerk-js");
+  let clerkInstancePromise: Promise<any> | null = null;
 
-    const clerk = new Clerk(
-      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? ""
-    );
+  const getClerkInstance = () => {
+    if (!clerkInstancePromise) {
+      clerkInstancePromise = (async () => {
+        const { Clerk } = await import("@clerk/clerk-js");
+        const clerk = new Clerk(
+          process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? ""
+        );
+        await clerk.load();
+        return clerk;
+      })();
+    }
+    return clerkInstancePromise;
+  };
+
+  httpBaseV2.interceptors.request.use(async (config) => {
     try {
-      await clerk.load();
+      const clerk = await getClerkInstance();
       const token = await clerk?.session?.getToken();
 
       if (token) {
