@@ -71,7 +71,7 @@ export default function CreateBasicPatterns() {
       description: "",
       model: "",
       serial: "",
-      brandId: undefined,
+      brandId: "",
       locationId: "",
       patternTypeId: "",
       lote: "",
@@ -96,18 +96,7 @@ export default function CreateBasicPatterns() {
         ? values.expirationDate.toISOString()
         : undefined,
     });
-    form.reset({
-      code: "",
-      description: "",
-      model: "",
-      serial: "",
-      brandId: undefined, // or "" if your Select expects an empty string
-      locationId: "",
-      patternTypeId: "",
-      lote: "",
-      expirationDate: undefined,
-      files: undefined,
-    });
+    form.reset();
 
     toast({
       title: "Patron se guardo correctamente",
@@ -216,11 +205,9 @@ export default function CreateBasicPatterns() {
                     </FormControl>
                     <SelectContent>
                       {brands.map((brand) => (
-                        <>
-                          <SelectItem value={brand.id} key={brand.id}>
-                            {brand.description}
-                          </SelectItem>
-                        </>
+                        <SelectItem value={brand.id} key={brand.id}>
+                          {brand.description}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -338,7 +325,7 @@ export default function CreateBasicPatterns() {
                   name="expirationDate"
                   render={({ field }) => (
                     <FormItem className="flex flex-col mt-2">
-                      <FormLabel className="" >Fecha de Expiración</FormLabel>
+                      <FormLabel className="">Fecha de Expiración</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
