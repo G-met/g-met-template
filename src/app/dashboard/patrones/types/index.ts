@@ -51,6 +51,8 @@ export interface CreatePattern {
   locationId: string;
   patternTypeId: string;
   files: File[] | null;
+  lote?: string;
+  expirationDate?: string;
 }
 
 export interface CreateMetrologicalData {

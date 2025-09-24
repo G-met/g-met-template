@@ -8,6 +8,8 @@ export const useGetAllBrands = () => {
     queryKey: ["brands"],
     queryFn: () => getBrands(),
     select: (response) => response.data,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false,
   });
 
   return {

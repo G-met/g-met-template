@@ -12,6 +12,7 @@ export const useGetAllPatternTypes = () => {
     queryKey: [KEY],
     queryFn: getAllPatternTypes,
     select: (response) => response.data,
+    refetchOnWindowFocus: false,
   });
 
   return {

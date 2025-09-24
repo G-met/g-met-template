@@ -23,12 +23,22 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, CalendarIcon, Loader2 } from "lucide-react";
 import { validateFileListSize } from "@/app/api/common/files/filesSize";
 import { useCreatePattern } from "@/app/dashboard/patrones/hook/usePattern";
 import { useGetAllBrands } from "@/app/dashboard/configuracion/marca/hook/useBrand";
 import { useGetAllLocations } from "@/app/dashboard/configuracion/ubicacion/hook/useLocation";
 import { useGetAllPatternTypes } from "@/app/dashboard/configuracion/tipoPatron/hook/usePatternType";
+import { useState } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import format from "date-fns/format";
+import { es } from "date-fns/locale";
 
 const formSchema = z.object({
   code: z.string().min(2, { message: "codigo requerido" }),
@@ -44,6 +54,8 @@ const formSchema = z.object({
       message: "Cada archivo no debe pesar mas de 4.5 MB",
     })
     .optional(),
+  lote: z.string().optional(),
+  expirationDate: z.date().optional(),
 });
 
 export default function CreateBasicPatterns() {
@@ -61,6 +73,9 @@ export default function CreateBasicPatterns() {
       serial: "",
       brandId: "",
       locationId: "",
+      patternTypeId: "",
+      lote: "",
+      expirationDate: undefined,
     },
   });
 
@@ -76,6 +91,10 @@ export default function CreateBasicPatterns() {
       locationId: values.locationId,
       patternTypeId: values.patternTypeId,
       files: values.files,
+      lote: values.lote,
+      expirationDate: values.expirationDate
+        ? values.expirationDate.toISOString()
+        : undefined,
     });
     form.reset();
 
@@ -84,6 +103,24 @@ export default function CreateBasicPatterns() {
       variant: "success",
     });
   }
+  const [isMC, setIsMC] = useState(false);
+
+  const hasMCPatternType = (value: string) => {
+    const selectedPatternType = patternTypes.find((pt) => pt.id === value);
+
+    if (
+      selectedPatternType &&
+      (selectedPatternType.description.toLowerCase() ===
+        "material de referencia certificado" ||
+        selectedPatternType.description.toLowerCase() ===
+          "material de referencia")
+    ) {
+      setIsMC(true);
+      return true;
+    }
+    setIsMC(false);
+    return false;
+  };
 
   return (
     <>
@@ -163,16 +200,14 @@ export default function CreateBasicPatterns() {
                   <Select onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccione un Descripcion" />
+                        <SelectValue placeholder="Seleccione una Marca" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {brands.map((brand) => (
-                        <>
-                          <SelectItem value={brand.id} key={brand.id}>
-                            {brand.description}
-                          </SelectItem>
-                        </>
+                        <SelectItem value={brand.id} key={brand.id}>
+                          {brand.description}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -186,10 +221,7 @@ export default function CreateBasicPatterns() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Ubicacion</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccione una Ubicacion" />
@@ -216,7 +248,10 @@ export default function CreateBasicPatterns() {
                 <FormItem>
                   <FormLabel>Tipo Patron</FormLabel>
                   <Select
-                    onValueChange={field.onChange}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      hasMCPatternType(value);
+                    }}
                     defaultValue={field.value}
                     value={field.value}
                   >
@@ -267,6 +302,71 @@ export default function CreateBasicPatterns() {
                 </FormItem>
               )}
             />
+            {isMC && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="lote"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Lote</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Ingrese nombre del lote"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="expirationDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col mt-2">
+                      <FormLabel className="">Fecha de Expiración</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-[240px] pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Seleccione una fecha</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date < new Date() || date > new Date("2100-01-01")
+                            }
+                            captionLayout="dropdown"
+                            locale={es}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormDescription>
+                        Fecha de expiracion del Material de Referencia
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
           </div>
           <Button type="submit" disabled={isLoading} className="mx-auto">
             <Loader2
