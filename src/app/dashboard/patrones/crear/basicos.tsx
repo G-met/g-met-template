@@ -96,7 +96,18 @@ export default function CreateBasicPatterns() {
         ? values.expirationDate.toISOString()
         : undefined,
     });
-    form.reset();
+    form.reset({
+      code: "",
+      description: "",
+      model: "",
+      serial: "",
+      brandId: undefined, // or "" if your Select expects an empty string
+      locationId: "",
+      patternTypeId: "",
+      lote: "",
+      expirationDate: undefined,
+      files: undefined,
+    });
 
     toast({
       title: "Patron se guardo correctamente",
@@ -326,8 +337,8 @@ export default function CreateBasicPatterns() {
                   control={form.control}
                   name="expirationDate"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Fecha de Expiración</FormLabel>
+                    <FormItem className="flex flex-col mt-2">
+                      <FormLabel className="" >Fecha de Expiración</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
