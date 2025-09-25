@@ -16,7 +16,7 @@ export class PatronWriteRepositoryImp implements PatronWriteRepository {
         modelo: patron.modelo,
         serie: patron.serie,
         marca_id: patron.marca.id,
-        tipo_patron_id: patron.tipoPatron.id,
+        tipo_patron_id: "",
         documentos: patron.documentos as Prisma.JsonArray,
         ubicacion_id: patron.ubicacion.id,
       },

@@ -9,7 +9,6 @@ import { CrearPatronDto } from "../../dto/crearPatrones";
 import { PatronWriteRepository } from "../../../dominio/repository/index";
 import { PatronEntity } from "../../../dominio/entity/intex";
 import { PatronService } from "../../../dominio/service";
-import { TipoPatron } from "@/app/api/tipoPatron/dominio";
 interface CrearDatosBasicos {
   execute(clienteId: string, crearEquipoDto: CrearPatronDto): Promise<void>;
 }
@@ -58,7 +57,6 @@ export class CrearDatosBasicosUseCaseImp implements CrearDatosBasicos {
       ubicacion: ubicacion,
       modelo: crearPatronDto.modelo,
       serie: crearPatronDto.serie,
-      tipoPatron: new TipoPatron({ id: crearPatronDto.tipoPatronId }),
       documentos: documentos,
     });
     await this.patronWriteRepository.crearDatosBasicos(clienteId, datosBasicos);

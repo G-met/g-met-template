@@ -3,7 +3,6 @@ import { Marca } from "@/app/api/marca/dominio";
 import { Ubicacion } from "@/app/api/ubicaciones/dominio/entity";
 import { DatosComplementariosPatrones, DatosMetrologicosPatrones } from "..";
 import { Documentos } from "@/app/api/common/types";
-import { TipoPatron } from "@/app/api/tipoPatron/dominio";
 
 export class PatronEntity {
   id: string;
@@ -20,7 +19,6 @@ export class PatronEntity {
   ubicacion: Ubicacion;
   cliente: Cliente;
   documentos: Documentos[];
-  tipoPatron: TipoPatron;
 
   constructor(attributes: Partial<PatronEntity> = {}) {
     this.id = attributes.id || "";
@@ -37,6 +35,5 @@ export class PatronEntity {
     this.ubicacion = attributes.ubicacion ?? new Ubicacion();
     this.cliente = attributes.cliente ?? new Cliente();
     this.documentos = attributes.documentos ?? [];
-    this.tipoPatron = attributes.tipoPatron ?? new TipoPatron()
   }
 }
