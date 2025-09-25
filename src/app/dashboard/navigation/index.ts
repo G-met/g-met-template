@@ -101,10 +101,6 @@ export const routes: Route[] = [
         url: "/marca",
       },
       {
-        title: "Tipo Patron",
-        url: "/tipoPatron",
-      },
-      {
         title: "Proveedores",
         url: "/proveedor",
       },
