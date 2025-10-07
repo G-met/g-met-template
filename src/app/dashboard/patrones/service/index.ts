@@ -4,6 +4,7 @@ import {
   CreatePattern,
   CreateMetrologicalData,
   CreateComplementaryData,
+  PatternDetail,
 } from "../types";
 import { createFormData } from "@/lib/helpers/formData";
 
@@ -24,3 +25,6 @@ export const createMetrologicalData = async (data: CreateMetrologicalData) =>
 
 export const createComplementaryData = async (data: CreateComplementaryData) =>
   httpBaseV2.post<void>("/patterns/complementary", data);
+
+export const getPatternByCode = async (code: string) =>
+  httpBaseV2.get<PatternDetail>(`/patterns/${code}`);

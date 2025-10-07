@@ -1,6 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getPatterns, createPattern, createMetrologicalData, createComplementaryData } from "../service";
-import { CreatePattern, CreateMetrologicalData, CreateComplementaryData } from "../types";
+import {
+  getPatterns,
+  createPattern,
+  createMetrologicalData,
+  createComplementaryData,
+  getPatternByCode,
+} from "../service";
+import {
+  CreatePattern,
+  CreateMetrologicalData,
+  CreateComplementaryData,
+} from "../types";
 import { getErrorMessage } from "@/lib/helpers/getErrorMessage";
 
 export const useGetAllPatterns = () => {
@@ -59,7 +69,8 @@ export const useCreateMetrologicalData = () => {
 export const useCreateComplementaryData = () => {
   const queryClient = useQueryClient();
   const { error, isError, mutateAsync, isPending } = useMutation({
-    mutationFn: (data: CreateComplementaryData) => createComplementaryData(data),
+    mutationFn: (data: CreateComplementaryData) =>
+      createComplementaryData(data),
     mutationKey: ["createComplementaryData"],
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["patterns"] });
@@ -72,5 +83,22 @@ export const useCreateComplementaryData = () => {
     errorMessage: getErrorMessage(error) ?? "",
     isError,
     isLoading: isPending,
+  };
+};
+
+export const useGetPatternByCode = (code: string) => {
+  const { data, error, isError, isLoading } = useQuery({
+    queryKey: ["pattern", code],
+    queryFn: () => getPatternByCode(code),
+    select: (response) => response.data,
+    enabled: !!code,
+  });
+
+  return {
+    pattern: data,
+    error,
+    errorMessage: getErrorMessage(error) ?? "",
+    isError,
+    isLoading,
   };
 };

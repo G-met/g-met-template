@@ -1,3 +1,35 @@
+export interface Brand {
+  id: string;
+  name: string;
+}
+
+export interface Location {
+  id: string;
+  name: string;
+}
+
+export interface Responsible {
+  id: string;
+  name: string;
+}
+
+export interface PatternType {
+  id: string;
+  name: string;
+}
+
+export interface PatternDetail {
+  id: string;
+  code: string;
+  description: string;
+  model: string;
+  serial: string;
+  brand: Brand;
+  location: Location;
+  responsible: Responsible;
+  patternType: PatternType;
+}
+
 export interface PatternResponse {
   id: string;
   code: string;

@@ -4,31 +4,13 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { Badge } from "@/components/badge";
 import clsx from "clsx";
-import { useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { DialogHeader } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { FormEjecucionPatron } from "./form";
+
 import { EstadoProgramacion } from "@prisma/client";
 import {
   Estatus,
   PatronProgramacionDto,
 } from "@/app/api/programacion-patrones/application/dto/listadoPatronesProgramados.dto";
 import { DropDownMenuEjecucionPatron } from "./DropDownMenu";
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 
 export const columns: ColumnDef<PatronProgramacionDto>[] = [
   {
@@ -84,9 +66,9 @@ export const columns: ColumnDef<PatronProgramacionDto>[] = [
       return (
         <DropDownMenuEjecucionPatron
           isCompleted={isCompleted}
-          programacionPatronId={row.original.id}
+          codeId={row.original.codigo}
         />
-      );
-    },
+        );
+      },
   },
 ];
