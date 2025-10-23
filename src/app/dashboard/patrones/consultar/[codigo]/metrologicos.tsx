@@ -21,7 +21,7 @@ import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 import { useUpdateMetrologicalDataPattern } from "../../hook/usePattern";
-import { Patron } from "@/app/api/patrones/dominio";
+import { PatternDetail } from "@/app/dashboard/patrones/types";
 const formSchema = z.object({
   code: z.string({ description: "code required" }),
   emp: z.coerce
@@ -41,7 +41,7 @@ const formSchema = z.object({
     .transform((val) => Number(val)),
 });
 interface Props {
-  patron: Patron;
+  patron: PatternDetail;
 }
 function EditarDatosmetrologicos({ patron }: Props) {
   const [isDisabled, setIsDisabled] = useState(true);
@@ -51,23 +51,23 @@ function EditarDatosmetrologicos({ patron }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      code: patron.codigo,
-      scaleDivision: patron.datos_metrologicos?.division_escala,
-      emp: patron.datos_metrologicos?.emp,
-      maximumRange: patron.datos_metrologicos?.rango_maximo,
-      minimumRange: patron.datos_metrologicos?.rango_minimo,
-      resolution: patron.datos_metrologicos?.resolucion,
+      code: patron.code,
+      scaleDivision: patron.metrologicalData?.scaleDivision,
+      emp: patron.metrologicalData?.emp,
+      maximumRange: patron.metrologicalData?.maximumRange,
+      minimumRange: patron.metrologicalData?.minimumRange,
+      resolution: patron.metrologicalData?.resolution,
     },
   });
   useEffect(() => {}, []);
 
-  if (patron.datos_metrologicos === null) {
+  if (patron.metrologicalData === null) {
     return <p>El equipo no tiene datos metrologicos</p>;
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     await update({
-      patternCode: patron.codigo,
+      patternCode: patron.code,
       data: {
         emp: values.emp,
         scaleDivision: values.scaleDivision,
@@ -96,7 +96,7 @@ function EditarDatosmetrologicos({ patron }: Props) {
                 <FormItem>
                   <FormLabel>Codigo Equipo</FormLabel>
                   <FormControl>
-                    <Input {...field} value={patron?.codigo} disabled />
+                    <Input {...field} value={patron?.code} disabled />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -27,7 +27,8 @@ import {
 } from "@/components/ui/select";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Patron, cumple } from "@/app/api/patrones/dominio";
+import { PatternDetail } from "@/app/dashboard/patrones/types";
+import { cumple } from "@/app/api/patrones/dominio";
 const formSchema = z.object({
   code: z.string({ description: "code required" }),
   specificationsDescription: z
@@ -48,7 +49,7 @@ const formSchema = z.object({
 });
 
 interface Props {
-  patron: Patron;
+  patron: PatternDetail;
 }
 function EditarDatosComplementarios({ patron }: Props) {
   const [isDisabled, setIsDisabled] = useState(true);
@@ -57,32 +58,33 @@ function EditarDatosComplementarios({ patron }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      code: patron.codigo,
+      code: patron.code,
       meetsInstallationSpecifications:
-        patron.datos_complementarios?.cumple_especificacion_instalaciones,
+        patron.complementaryData?.meetsInstallationSpecifications ? cumple.SI : cumple.NO,
       specificationsDescription:
-        patron.datos_complementarios?.descripcion_especificaciones ?? "",
+        patron.complementaryData?.specificationsDescription ?? "",
       softwareDescription:
-        patron.datos_complementarios?.descripcion_software ?? "",
-      firmware: patron.datos_complementarios?.fireware ?? "",
-      observations: patron.datos_complementarios?.observaciones ?? "",
-      usesSoftware: patron.datos_complementarios?.utiliza_software,
-      softwareVersion: patron.datos_complementarios?.version_software ?? "",
+        patron.complementaryData?.softwareDescription ?? "",
+      firmware: patron.complementaryData?.firmware ?? "",
+      observations: patron.complementaryData?.observations ?? "",
+      usesSoftware: patron.complementaryData?.usesSoftware ? cumple.SI : cumple.NO,
+      softwareVersion: patron.complementaryData?.softwareVersion ?? "",
     },
   });
 
   const { toast } = useToast();
+  console.log(patron.complementaryData)
   if (
-    patron.datos_complementarios === null ||
-    (patron.datos_complementarios &&
-      Object.values(patron.datos_complementarios).length === 0)
+    !patron.complementaryData ||
+    (patron.complementaryData &&
+      Object.values(patron.complementaryData).length === 0)
   ) {
-    return <p>El patron no tiene datos compllemetarios</p>;
+    return <p>El patron no tiene datos complementarios</p>;
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     await update({
-      patternCode: patron.codigo,
+      patternCode: patron.code,
       data: {
         specificationsDescription: values.specificationsDescription || undefined,
         meetsInstallationSpecifications: values.meetsInstallationSpecifications === cumple.SI,
@@ -99,7 +101,7 @@ function EditarDatosComplementarios({ patron }: Props) {
     });
     router.push("/dashboard/patrones/consultar");
   }
-  if (patron.datos_complementarios === null) {
+  if (patron.complementaryData === null) {
     return <p>El patron no tiene datos compllemetarios</p>;
   }
   return (
@@ -114,7 +116,7 @@ function EditarDatosComplementarios({ patron }: Props) {
                 <FormItem>
                   <FormLabel>Codigo Equipo</FormLabel>
                   <FormControl>
-                    <Input {...field} value={patron?.codigo} disabled />
+                    <Input {...field} value={patron?.code} disabled />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

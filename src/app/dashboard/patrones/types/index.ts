@@ -28,6 +28,25 @@ export interface PatternDetail {
   location: Location;
   responsible: Responsible;
   patternType: PatternType;
+  metrologicalData?: {
+    id: string;
+    emp: number;
+    scaleDivision: number;
+    resolution: number;
+    minimumRange: number;
+    maximumRange: number;
+    nominalValue: number;
+  } | null;
+  complementaryData?: {
+    id: string;
+    specificationsDescription?: string | null;
+    meetsInstallationSpecifications: boolean;
+    usesSoftware: boolean;
+    softwareDescription?: string | null;
+    softwareVersion?: string | null;
+    firmware?: string | null;
+    observations?: string | null;
+  } | null;
 }
 
 export interface PatternResponse {

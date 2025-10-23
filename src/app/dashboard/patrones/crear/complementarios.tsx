@@ -87,9 +87,9 @@ function CrearDatosmetrologicos() {
               name="codigo"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Codigo Equipo</FormLabel>
+                  <FormLabel>Codigo Patron</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ingrese codigo del equipo" {...field} />
+                    <Input placeholder="Ingrese codigo del patron" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
