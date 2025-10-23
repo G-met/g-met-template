@@ -106,6 +106,46 @@ export interface CreateComplementaryData {
   observations?: string | null;
 }
 
+export interface CreateMetrologicalDataPattern {
+  emp: number;
+  scaleDivision: number;
+  resolution: number;
+  minimumRange: number;
+  maximumRange: number;
+  nominalValue: number;
+  patternCode: string;
+}
+
+export interface UpdateMetrologicalDataPattern {
+  emp?: number;
+  scaleDivision?: number;
+  resolution?: number;
+  minimumRange?: number;
+  maximumRange?: number;
+  nominalValue?: number;
+}
+
+export interface CreateComplementaryDataPattern {
+  specificationsDescription: string;
+  meetsInstallationSpecifications: boolean;
+  usesSoftware: boolean;
+  softwareDescription?: string | null;
+  softwareVersion?: string | null;
+  firmware?: string | null;
+  observations?: string | null;
+  patternId: string;
+}
+
+export interface UpdateComplementaryDataPattern {
+  specificationsDescription?: string;
+  meetsInstallationSpecifications?: boolean;
+  usesSoftware?: boolean;
+  softwareDescription?: string | null;
+  softwareVersion?: string | null;
+  firmware?: string | null;
+  observations?: string | null;
+}
+
 export interface Location {
   id: string;
   // add other fields if needed

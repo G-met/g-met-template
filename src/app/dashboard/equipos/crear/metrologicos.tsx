@@ -14,12 +14,10 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { obtenerUbicaciones } from "../../hooks/useUbicaciones";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { obtenerMarcas } from "../../hooks/useMarca";
-import { crearDatosMetrologicos, useCrearEquipo } from "../../hooks/useEquipo";
+import { useCreateMetrologicalDataPattern } from "../../patrones/hook/usePattern";
 
 const formSchema = z.object({
   codigo: z.string({ description: "codigo requerido" }),
@@ -38,10 +36,13 @@ const formSchema = z.object({
   rangoMaximo: z
     .string({ description: "rango_maximo requerido" })
     .transform((val) => Number(val)),
+  valorNominal: z
+    .string({ description: "valor nominal requerido" })
+    .transform((val) => Number(val)),
 });
 
 function CrearDatosmetrologicos() {
-  const { crear, error, errorMsg, isLoading } = crearDatosMetrologicos();
+  const { create, error, errorMessage, isLoading } = useCreateMetrologicalDataPattern();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,19 +53,21 @@ function CrearDatosmetrologicos() {
       rangoMaximo: 0,
       rangoMinimo: 0,
       resolucion: 0,
+      valorNominal: 0,
     },
   });
 
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await crear({
-      codigo: values.codigo,
-      divisionEscala: values.divisionEscala,
-      emp:values.emp,
-      rangoMaximo:values.rangoMaximo,
-      rangoMinimo:values.rangoMinimo,
-      resolucion:values.resolucion
+    await create({
+      emp: values.emp,
+      scaleDivision: values.divisionEscala,
+      resolution: values.resolucion,
+      minimumRange: values.rangoMinimo,
+      maximumRange: values.rangoMaximo,
+      nominalValue: values.valorNominal,
+      patternCode: values.codigo
     });
 
     form.reset();
@@ -172,6 +175,23 @@ function CrearDatosmetrologicos() {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="valorNominal"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Valor Nominal</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Ingrese Valor Nominal"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
           <Button type="submit" disabled={isLoading} className="mx-auto">
             <Loader2
@@ -186,7 +206,7 @@ function CrearDatosmetrologicos() {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
         </form>

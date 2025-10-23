@@ -17,7 +17,7 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { editarDatosComplementarios } from "@/app/dashboard/hooks/usePatron";
+import { useUpdateComplementaryDataPattern } from "@/app/dashboard/patrones/hook/usePattern";
 import {
   Select,
   SelectContent,
@@ -29,21 +29,21 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Patron, cumple } from "@/app/api/patrones/dominio";
 const formSchema = z.object({
-  codigo: z.string({ description: "codigo requerido" }),
-  descripcionEspecificaciones: z
+  code: z.string({ description: "code required" }),
+  specificationsDescription: z
     .string({
-      description: "descripcionEspecificaciones requerido",
+      description: "specifications description required",
     })
     .optional(),
-  cumpleEspecificacionInstalaciones: z.nativeEnum(cumple),
-  utilizaSoftware: z.nativeEnum(cumple),
-  descripcionSoftware: z.string().optional(),
-  versionSoftware: z
-    .string({ description: "versionSoftware requerido" })
+  meetsInstallationSpecifications: z.nativeEnum(cumple),
+  usesSoftware: z.nativeEnum(cumple),
+  softwareDescription: z.string().optional(),
+  softwareVersion: z
+    .string({ description: "software version required" })
     .optional(),
-  fireware: z.string({ description: "fireware requerido" }).optional(),
-  observaciones: z
-    .string({ description: "observaciones requerido" })
+  firmware: z.string({ description: "firmware required" }).optional(),
+  observations: z
+    .string({ description: "observations required" })
     .optional(),
 });
 
@@ -52,22 +52,22 @@ interface Props {
 }
 function EditarDatosComplementarios({ patron }: Props) {
   const [isDisabled, setIsDisabled] = useState(true);
-  const { editar, errorMsg, error, isLoading } = editarDatosComplementarios();
+  const { update, error, errorMessage, isError, isLoading } = useUpdateComplementaryDataPattern();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      codigo: patron.codigo,
-      cumpleEspecificacionInstalaciones:
+      code: patron.codigo,
+      meetsInstallationSpecifications:
         patron.datos_complementarios?.cumple_especificacion_instalaciones,
-      descripcionEspecificaciones:
+      specificationsDescription:
         patron.datos_complementarios?.descripcion_especificaciones ?? "",
-      descripcionSoftware:
+      softwareDescription:
         patron.datos_complementarios?.descripcion_software ?? "",
-      fireware: patron.datos_complementarios?.fireware ?? "",
-      observaciones: patron.datos_complementarios?.observaciones ?? "",
-      utilizaSoftware: patron.datos_complementarios?.utiliza_software,
-      versionSoftware: patron.datos_complementarios?.version_software ?? "",
+      firmware: patron.datos_complementarios?.fireware ?? "",
+      observations: patron.datos_complementarios?.observaciones ?? "",
+      usesSoftware: patron.datos_complementarios?.utiliza_software,
+      softwareVersion: patron.datos_complementarios?.version_software ?? "",
     },
   });
 
@@ -81,16 +81,17 @@ function EditarDatosComplementarios({ patron }: Props) {
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await editar({
-      codigo: values.codigo,
-      utilizaSoftware: values.utilizaSoftware,
-      cumpleEspecificacionInstalaciones:
-        values.cumpleEspecificacionInstalaciones,
-      descripcionEspecificaciones: values.descripcionEspecificaciones,
-      descripcionSoftware: values.descripcionSoftware,
-      fireware: values.fireware,
-      observaciones: values.observaciones,
-      versionSoftware: values.versionSoftware,
+    await update({
+      patternCode: patron.codigo,
+      data: {
+        specificationsDescription: values.specificationsDescription || undefined,
+        meetsInstallationSpecifications: values.meetsInstallationSpecifications === cumple.SI,
+        usesSoftware: values.usesSoftware === cumple.SI,
+        softwareDescription: values.softwareDescription || null,
+        softwareVersion: values.softwareVersion || null,
+        firmware: values.firmware || null,
+        observations: values.observations || null,
+      },
     });
     toast({
       title: "Dato complementarios se editaron correctamente",
@@ -108,7 +109,7 @@ function EditarDatosComplementarios({ patron }: Props) {
           <div className="grid grid-cols-2 grid-rows-1 gap-2">
             <FormField
               control={form.control}
-              name="codigo"
+              name="code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Codigo Equipo</FormLabel>
@@ -121,7 +122,7 @@ function EditarDatosComplementarios({ patron }: Props) {
             />
             <FormField
               control={form.control}
-              name="descripcionEspecificaciones"
+              name="specificationsDescription"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descripcion Especificaciones</FormLabel>
@@ -134,7 +135,7 @@ function EditarDatosComplementarios({ patron }: Props) {
             />
             <FormField
               control={form.control}
-              name="versionSoftware"
+              name="softwareVersion"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Version software</FormLabel>
@@ -147,7 +148,7 @@ function EditarDatosComplementarios({ patron }: Props) {
             />
             <FormField
               control={form.control}
-              name="cumpleEspecificacionInstalaciones"
+              name="meetsInstallationSpecifications"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cumple especificaciones instalaciones</FormLabel>
@@ -172,7 +173,7 @@ function EditarDatosComplementarios({ patron }: Props) {
             />
             <FormField
               control={form.control}
-              name="utilizaSoftware"
+              name="usesSoftware"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Utiliza software</FormLabel>
@@ -197,7 +198,7 @@ function EditarDatosComplementarios({ patron }: Props) {
             />
             <FormField
               control={form.control}
-              name="descripcionSoftware"
+              name="softwareDescription"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descripcion software</FormLabel>
@@ -214,10 +215,10 @@ function EditarDatosComplementarios({ patron }: Props) {
             />
             <FormField
               control={form.control}
-              name="fireware"
+              name="firmware"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>fireware</FormLabel>
+                  <FormLabel>firmware</FormLabel>
                   <FormControl>
                     <Input disabled={isDisabled} {...field} />
                   </FormControl>
@@ -227,7 +228,7 @@ function EditarDatosComplementarios({ patron }: Props) {
             />
             <FormField
               control={form.control}
-              name="observaciones"
+              name="observations"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Observaciones</FormLabel>
@@ -261,11 +262,11 @@ function EditarDatosComplementarios({ patron }: Props) {
             Guardar Cambios
           </Button>
 
-          {error && (
+          {isError && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
         </form>

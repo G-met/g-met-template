@@ -24,57 +24,55 @@ import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import {  useState } from "react";
-import { obtenerMarcas } from "../../../hooks/useMarca";
+import { useGetAllBrands } from "../../../configuracion/marca/hook/useBrand";
 
-import {
-  obtenerUbicaciones,
-} from "../../../hooks/useUbicaciones";
+import { useGetAllLocations } from "../../../configuracion/ubicacion/hook/useLocation";
 
 import { useRouter } from "next/navigation";
-import { Patron } from "@/app/api/patrones/dominio";
+import { PatternDetail } from "@/app/dashboard/patrones/types";
 import { editarDatosBasicos } from "@/app/dashboard/hooks/usePatron";
 const formSchema = z.object({
-  codigo: z.string().min(2, { message: "codigo requerido" }),
-  descripcion: z.string().min(2, { message: "descripcion requerido" }),
-  modelo: z.string().min(2, { message: "modelo requerido" }),
-  serie: z.string().min(2, { message: "serie requerido" }),
-  marcaId: z.string().min(2, { message: "marca requerido" }),
-  ubicacionId: z.string().min(2, { message: "ubicacionId requerido" }),
+  code: z.string().min(2, { message: "codigo requerido" }),
+  description: z.string().min(2, { message: "descripcion requerido" }),
+  model: z.string().min(2, { message: "modelo requerido" }),
+  serial: z.string().min(2, { message: "serie requerido" }),
+  brandId: z.string().min(2, { message: "marca requerido" }),
+  locationId: z.string().min(2, { message: "ubicacionId requerido" }),
 });
 
 interface Props {
-  patron: Patron;
+  pattern: PatternDetail;
 }
 
-function EditarPatronesBasicos({ patron }: Props) {
+function EditarPatronesBasicos({ pattern }: Props) {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      codigo: patron.codigo,
-      descripcion: patron.descripcion,
-      modelo: patron.modelo,
-      serie: patron.serie,
-      marcaId: patron.marca_id,
-      ubicacionId: patron.ubicacionId,
+      code: pattern.code,
+      description: pattern.description,
+      model: pattern.model,
+      serial: pattern.serial,
+      brandId: pattern.brand.id,
+      locationId: pattern.location.id,
     },
   });
 
   const [isDisabled, setIsDisabled] = useState(true);
-  const { marcas } = obtenerMarcas();
-  const { ubicaciones } = obtenerUbicaciones();
+  const { brands } = useGetAllBrands();
+  const { locations } = useGetAllLocations();
   const { editar, errorMsg, error } = editarDatosBasicos();
 
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     await editar({
-      codigo: values.codigo,
-      descripcion: values.descripcion,
-      modelo: values.modelo,
-      serie: values.serie,
-      marcaId: values.marcaId,
-      ubicacionId: values.ubicacionId,
+      codigo: values.code,
+      descripcion: values.description,
+      modelo: values.model,
+      serie: values.serial,
+      marcaId: values.brandId,
+      ubicacionId: values.locationId,
     });
     form.reset();
     toast({
@@ -90,12 +88,12 @@ function EditarPatronesBasicos({ patron }: Props) {
           <div className="grid grid-cols-2 grid-rows-1 gap-2">
             <FormField
               control={form.control}
-              name="codigo"
+              name="code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Codigo</FormLabel>
                   <FormControl>
-                    <Input disabled {...field} value={patron?.codigo} />
+                    <Input disabled {...field} value={pattern.code} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -103,12 +101,12 @@ function EditarPatronesBasicos({ patron }: Props) {
             />
             <FormField
               control={form.control}
-              name="descripcion"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descripcion</FormLabel>
                   <FormControl>
-                    <Input disabled={isDisabled} {...field} />
+                    <Input disabled={isDisabled} {...field} value={pattern.description} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -116,12 +114,12 @@ function EditarPatronesBasicos({ patron }: Props) {
             />
             <FormField
               control={form.control}
-              name="modelo"
+              name="model"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Modelo</FormLabel>
                   <FormControl>
-                    <Input disabled={isDisabled} {...field} />
+                    <Input disabled={isDisabled} {...field} value={pattern.model} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -129,12 +127,12 @@ function EditarPatronesBasicos({ patron }: Props) {
             />
             <FormField
               control={form.control}
-              name="serie"
+              name="serial"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Serie</FormLabel>
                   <FormControl>
-                    <Input {...field} disabled={isDisabled} />
+                    <Input {...field} disabled={isDisabled} value={pattern.serial} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -143,7 +141,7 @@ function EditarPatronesBasicos({ patron }: Props) {
 
             <FormField
               control={form.control}
-              name="marcaId"
+              name="brandId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Marca</FormLabel>
@@ -151,18 +149,18 @@ function EditarPatronesBasicos({ patron }: Props) {
                     onValueChange={field.onChange}
                     disabled={isDisabled}
                     value={field.value}
-                    defaultValue={patron.marca_id}
+                    defaultValue={pattern.brand.id}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={"hola"} />
+                        <SelectValue placeholder={pattern.brand.name} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {marcas.map((res) => (
+                      {brands.map((res) => (
                         <>
                           <SelectItem value={res.id} key={res.id}>
-                            {res.descripcion}
+                            {res.description}
                           </SelectItem>
                         </>
                       ))}
@@ -175,7 +173,7 @@ function EditarPatronesBasicos({ patron }: Props) {
 
             <FormField
               control={form.control}
-              name="ubicacionId"
+              name="locationId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Ubicacion</FormLabel>
@@ -183,18 +181,18 @@ function EditarPatronesBasicos({ patron }: Props) {
                     onValueChange={field.onChange}
                     disabled={isDisabled}
                     value={field.value}
-                    defaultValue={patron.ubicacionId}
+                    defaultValue={pattern.location.id}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={patron?.ubicacion?.nombre} />
+                        <SelectValue placeholder={pattern.location.name} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {ubicaciones.map((res) => (
+                      {locations.map((res) => (
                         <>
                           <SelectItem value={res.id} key={res.id}>
-                            {res.nombre}
+                            {res.name}
                           </SelectItem>
                         </>
                       ))}

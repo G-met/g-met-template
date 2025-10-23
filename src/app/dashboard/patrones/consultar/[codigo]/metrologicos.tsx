@@ -20,24 +20,24 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
-import { editarDatosMetrologicos } from "@/app/dashboard/hooks/usePatron";
+import { useUpdateMetrologicalDataPattern } from "../../hook/usePattern";
 import { Patron } from "@/app/api/patrones/dominio";
 const formSchema = z.object({
-  codigo: z.string({ description: "codigo requerido" }),
+  code: z.string({ description: "code required" }),
   emp: z.coerce
-    .string({ description: "emp requerido" })
+    .string({ description: "emp required" })
     .transform((val) => Number(val)),
-  divisionEscala: z.coerce
-    .string({ description: "division_escala requerido" })
+  scaleDivision: z.coerce
+    .string({ description: "scale division required" })
     .transform((val) => Number(val)),
-  resolucion: z.coerce
-    .string({ description: "resolucion requerido" })
+  resolution: z.coerce
+    .string({ description: "resolution required" })
     .transform((val) => Number(val)),
-  rangoMinimo: z.coerce
-    .string({ description: "rango_minimo requerido" })
+  minimumRange: z.coerce
+    .string({ description: "minimum range required" })
     .transform((val) => Number(val)),
-  rangoMaximo: z.coerce
-    .string({ description: "rango_maximo requerido" })
+  maximumRange: z.coerce
+    .string({ description: "maximum range required" })
     .transform((val) => Number(val)),
 });
 interface Props {
@@ -47,16 +47,16 @@ function EditarDatosmetrologicos({ patron }: Props) {
   const [isDisabled, setIsDisabled] = useState(true);
   const { toast } = useToast();
   const router = useRouter();
-  const { editar, error, errorMsg } = editarDatosMetrologicos();
+  const { update, error, errorMessage, isLoading } = useUpdateMetrologicalDataPattern();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      codigo: patron.codigo,
-      divisionEscala: patron.datos_metrologicos?.division_escala,
+      code: patron.codigo,
+      scaleDivision: patron.datos_metrologicos?.division_escala,
       emp: patron.datos_metrologicos?.emp,
-      rangoMaximo: patron.datos_metrologicos?.rango_maximo,
-      rangoMinimo: patron.datos_metrologicos?.rango_minimo,
-      resolucion: patron.datos_metrologicos?.resolucion,
+      maximumRange: patron.datos_metrologicos?.rango_maximo,
+      minimumRange: patron.datos_metrologicos?.rango_minimo,
+      resolution: patron.datos_metrologicos?.resolucion,
     },
   });
   useEffect(() => {}, []);
@@ -66,13 +66,15 @@ function EditarDatosmetrologicos({ patron }: Props) {
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await editar({
-      codigo: values.codigo,
-      divisionEscala: values.divisionEscala,
-      emp: values.emp,
-      rangoMaximo: values.rangoMaximo,
-      rangoMinimo: values.rangoMinimo,
-      resolucion: values.resolucion,
+    await update({
+      patternCode: patron.codigo,
+      data: {
+        emp: values.emp,
+        scaleDivision: values.scaleDivision,
+        resolution: values.resolution,
+        minimumRange: values.minimumRange,
+        maximumRange: values.maximumRange,
+      }
     });
 
     form.reset();
@@ -89,7 +91,7 @@ function EditarDatosmetrologicos({ patron }: Props) {
           <div className="grid grid-cols-2 grid-rows-1 gap-2">
             <FormField
               control={form.control}
-              name="codigo"
+              name="code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Codigo Equipo</FormLabel>
@@ -102,7 +104,7 @@ function EditarDatosmetrologicos({ patron }: Props) {
             />
             <FormField
               control={form.control}
-              name="divisionEscala"
+              name="scaleDivision"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Division de escala</FormLabel>
@@ -128,7 +130,7 @@ function EditarDatosmetrologicos({ patron }: Props) {
             />
             <FormField
               control={form.control}
-              name="rangoMaximo"
+              name="maximumRange"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Rango Maximo</FormLabel>
@@ -141,7 +143,7 @@ function EditarDatosmetrologicos({ patron }: Props) {
             />
             <FormField
               control={form.control}
-              name="rangoMinimo"
+              name="minimumRange"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Rango Minimo</FormLabel>
@@ -154,7 +156,7 @@ function EditarDatosmetrologicos({ patron }: Props) {
             />
             <FormField
               control={form.control}
-              name="resolucion"
+              name="resolution"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Resolucion</FormLabel>
@@ -193,7 +195,7 @@ function EditarDatosmetrologicos({ patron }: Props) {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
         </form>

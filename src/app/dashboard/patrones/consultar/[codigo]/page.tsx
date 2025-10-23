@@ -26,10 +26,10 @@ export default function ConsultarPatron() {
               <EditarPatronesBasicos pattern={pattern} />
             </TabsContent>
             <TabsContent value="metrologicos">
-              <EditarDatosmetrologicos pattern={pattern} />
+              <EditarDatosmetrologicos patron={pattern} />
             </TabsContent>
             <TabsContent value="complementarios">
-              <EditarDatosComplementarios pattern={pattern} />
+              <EditarDatosComplementarios patron={pattern} />
             </TabsContent>
           </>
         )}
