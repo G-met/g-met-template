@@ -106,6 +106,15 @@ export interface CreatePattern {
   expirationDate?: string;
 }
 
+export interface UpdatePattern {
+  description: string;
+  model: string;
+  files?: File[] | null;
+  serial?: string;
+  brandId?: string;
+  locationId?: string;
+}
+
 export interface CreateMetrologicalData {
   emp: number;
   scaleDivision: number;

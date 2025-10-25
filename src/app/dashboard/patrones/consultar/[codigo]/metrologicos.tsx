@@ -61,7 +61,7 @@ function EditarDatosmetrologicos({ patron }: Props) {
   });
   useEffect(() => {}, []);
 
-  if (patron.metrologicalData === null) {
+  if (!patron.metrologicalData) {
     return <p>El equipo no tiene datos metrologicos</p>;
   }
 

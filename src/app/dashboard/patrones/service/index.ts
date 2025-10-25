@@ -2,6 +2,7 @@ import { httpBaseV2 } from "@/app/config/api-base-v2";
 import {
   PatternResponse,
   CreatePattern,
+  UpdatePattern,
   CreateMetrologicalData,
   CreateComplementaryData,
   PatternDetail,
@@ -50,3 +51,12 @@ export const updateComplementaryDataPattern = async (
 
 export const getPatternByCode = async (code: string) =>
   httpBaseV2.get<PatternDetail>(`/patterns/${code}`);
+
+export const updatePattern = async (id: string, pattern: UpdatePattern) => {
+  const formData = createFormData(pattern);
+  return httpBaseV2.put<void>(`/patterns/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};

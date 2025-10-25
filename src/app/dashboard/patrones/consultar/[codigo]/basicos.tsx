@@ -30,7 +30,7 @@ import { useGetAllLocations } from "../../../configuracion/ubicacion/hook/useLoc
 
 import { useRouter } from "next/navigation";
 import { PatternDetail } from "@/app/dashboard/patrones/types";
-import { editarDatosBasicos } from "@/app/dashboard/hooks/usePatron";
+import { useUpdatePattern } from "@/app/dashboard/patrones/hook/usePattern";
 const formSchema = z.object({
   code: z.string().min(2, { message: "codigo requerido" }),
   description: z.string().min(2, { message: "descripcion requerido" }),
@@ -61,20 +61,21 @@ function EditarPatronesBasicos({ pattern }: Props) {
   const [isDisabled, setIsDisabled] = useState(true);
   const { brands } = useGetAllBrands();
   const { locations } = useGetAllLocations();
-  const { editar, errorMsg, error } = editarDatosBasicos();
+  const { update, errorMessage, isError, isLoading } = useUpdatePattern();
 
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await editar({
-      codigo: values.code,
-      descripcion: values.description,
-      modelo: values.model,
-      serie: values.serial,
-      marcaId: values.brandId,
-      ubicacionId: values.locationId,
+    await update({
+      id: pattern.id,
+      pattern: {
+        description: values.description,
+        model: values.model,
+        serial: values.serial,
+        brandId: values.brandId,
+        locationId: values.locationId,
+      },
     });
-    form.reset();
     toast({
       title: "patron se edito correctamente",
       variant: "success",
@@ -93,7 +94,7 @@ function EditarPatronesBasicos({ pattern }: Props) {
                 <FormItem>
                   <FormLabel>Codigo</FormLabel>
                   <FormControl>
-                    <Input disabled {...field} value={pattern.code} />
+                    <Input disabled value={pattern.code} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -106,7 +107,7 @@ function EditarPatronesBasicos({ pattern }: Props) {
                 <FormItem>
                   <FormLabel>Descripcion</FormLabel>
                   <FormControl>
-                    <Input disabled={isDisabled} {...field} value={pattern.description} />
+                    <Input disabled={isDisabled} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -119,7 +120,7 @@ function EditarPatronesBasicos({ pattern }: Props) {
                 <FormItem>
                   <FormLabel>Modelo</FormLabel>
                   <FormControl>
-                    <Input disabled={isDisabled} {...field} value={pattern.model} />
+                    <Input disabled={isDisabled} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -132,7 +133,7 @@ function EditarPatronesBasicos({ pattern }: Props) {
                 <FormItem>
                   <FormLabel>Serie</FormLabel>
                   <FormControl>
-                    <Input {...field} disabled={isDisabled} value={pattern.serial} />
+                    <Input {...field} disabled={isDisabled} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -149,7 +150,6 @@ function EditarPatronesBasicos({ pattern }: Props) {
                     onValueChange={field.onChange}
                     disabled={isDisabled}
                     value={field.value}
-                    defaultValue={pattern.brand.id}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -158,11 +158,9 @@ function EditarPatronesBasicos({ pattern }: Props) {
                     </FormControl>
                     <SelectContent>
                       {brands.map((res) => (
-                        <>
-                          <SelectItem value={res.id} key={res.id}>
-                            {res.description}
-                          </SelectItem>
-                        </>
+                        <SelectItem value={res.id} key={res.id}>
+                          {res.description}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -181,7 +179,6 @@ function EditarPatronesBasicos({ pattern }: Props) {
                     onValueChange={field.onChange}
                     disabled={isDisabled}
                     value={field.value}
-                    defaultValue={pattern.location.id}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -190,11 +187,9 @@ function EditarPatronesBasicos({ pattern }: Props) {
                     </FormControl>
                     <SelectContent>
                       {locations.map((res) => (
-                        <>
-                          <SelectItem value={res.id} key={res.id}>
-                            {res.name}
-                          </SelectItem>
-                        </>
+                        <SelectItem value={res.id} key={res.id}>
+                          {res.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -215,23 +210,23 @@ function EditarPatronesBasicos({ pattern }: Props) {
 
           <Button
             type="submit"
-            disabled={false}
+            disabled={isLoading}
             className="mx-auto"
             style={{ display: isDisabled ? "none" : "block" }}
           >
             <Loader2
               className={
-                "mr-2 h-4 w-4 animate-spin " + (!false ? "hidden" : "")
+                "mr-2 h-4 w-4 animate-spin " + (isLoading ? "" : "hidden")
               }
             />
             Guardar Cambios
           </Button>
 
-          {error && (
+          {isError && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage ?? ""}</AlertDescription>
             </Alert>
           )}
         </form>

@@ -101,8 +101,8 @@ function EditarDatosComplementarios({ patron }: Props) {
     });
     router.push("/dashboard/patrones/consultar");
   }
-  if (patron.complementaryData === null) {
-    return <p>El patron no tiene datos compllemetarios</p>;
+  if (!patron.complementaryData) {
+    return <p>El patron no tiene datos complementarios</p>;
   }
   return (
     <>
