@@ -23,62 +23,61 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { Equipo } from "@/src/app/api/equipos/dominio";
-import {  useState } from "react";
-import { obtenerMarcas } from "../../../hooks/useMarca";
-import { editarEquipo } from "../../../hooks/useEquipo";
-
-import {
-  obtenerUbicaciones,
-} from "../../../hooks/useUbicaciones";
-
+import { EquipmentDetail } from "@/app/dashboard/equipos/types";
+import { useState } from "react";
+import { useGetAllBrands } from "../../../configuracion/marca/hook/useBrand";
+import { useUpdateEquipment } from "@/app/dashboard/equipos/hook/useEquipment";
+import { useGetAllLocations } from "../../../configuracion/ubicacion/hook/useLocation";
 import { useRouter } from "next/navigation";
+
 const formSchema = z.object({
-  codigo: z.string().min(2, { message: "codigo requerido" }),
-  descripcion: z.string().min(2, { message: "descripcion requerido" }),
-  modelo: z.string().min(2, { message: "modelo requerido" }),
-  serie: z.string().min(2, { message: "serie requerido" }),
-  marcaId: z.string().min(2, { message: "marca requerido" }),
-  ubicacionId: z.string().min(2, { message: "ubicacionId requerido" }),
+  code: z.string().min(2, { message: "code required" }),
+  description: z.string().min(2, { message: "description required" }),
+  model: z.string().min(2, { message: "model required" }),
+  serial: z.string().min(2, { message: "serial required" }),
+  brandId: z.string().min(2, { message: "brand required" }),
+  locationId: z.string().min(2, { message: "location required" }),
 });
 
 interface Props {
-  equipo: Equipo;
+  equipment: EquipmentDetail;
 }
 
-function EditarEquiposBasicos({ equipo }: Props) {
+function EditarEquiposBasicos({ equipment }: Props) {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      codigo: equipo.codigo,
-      descripcion: equipo.descripcion,
-      modelo: equipo.modelo,
-      serie: equipo.serie,
-      marcaId: equipo.marca_id,
-      ubicacionId: equipo.ubicacion_id,
+      code: equipment.code,
+      description: equipment.description,
+      model: equipment.model,
+      serial: equipment.serial,
+      brandId: equipment.brand.id,
+      locationId: equipment.location.id,
     },
   });
 
   const [isDisabled, setIsDisabled] = useState(true);
-  const { marcas } = obtenerMarcas();
-  const { ubicaciones } = obtenerUbicaciones();
-  const { editar, errorMsg, error } = editarEquipo();
+  const { brands } = useGetAllBrands();
+  const { locations } = useGetAllLocations();
+  const { update, errorMessage, isError, isLoading } = useUpdateEquipment();
 
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await editar({
-      codigo: values.codigo,
-      descripcion: values.descripcion,
-      modelo: values.modelo,
-      serie: values.serie,
-      marcaId: values.marcaId,
-      ubicacionId: values.ubicacionId,
+    await update({
+      code: equipment.code,
+      equipment: {
+        description: values.description,
+        model: values.model,
+        serial: values.serial,
+        brandId: values.brandId,
+        locationId: values.locationId,
+      },
     });
     form.reset();
     toast({
-      title: "Equipo se edito correctament",
+      title: "Equipo se editó correctamente",
       variant: "success",
     });
     router.push("/dashboard/equipos/consultar");
@@ -90,12 +89,12 @@ function EditarEquiposBasicos({ equipo }: Props) {
           <div className="grid grid-cols-2 grid-rows-1 gap-2">
             <FormField
               control={form.control}
-              name="codigo"
+              name="code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Codigo</FormLabel>
+                  <FormLabel>Código</FormLabel>
                   <FormControl>
-                    <Input disabled {...field} value={equipo?.codigo} />
+                    <Input disabled value={equipment.code} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -103,10 +102,10 @@ function EditarEquiposBasicos({ equipo }: Props) {
             />
             <FormField
               control={form.control}
-              name="descripcion"
+              name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descripcion</FormLabel>
+                  <FormLabel>Descripción</FormLabel>
                   <FormControl>
                     <Input disabled={isDisabled} {...field} />
                   </FormControl>
@@ -116,7 +115,7 @@ function EditarEquiposBasicos({ equipo }: Props) {
             />
             <FormField
               control={form.control}
-              name="modelo"
+              name="model"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Modelo</FormLabel>
@@ -129,7 +128,7 @@ function EditarEquiposBasicos({ equipo }: Props) {
             />
             <FormField
               control={form.control}
-              name="serie"
+              name="serial"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Serie</FormLabel>
@@ -143,7 +142,7 @@ function EditarEquiposBasicos({ equipo }: Props) {
 
             <FormField
               control={form.control}
-              name="marcaId"
+              name="brandId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Marca</FormLabel>
@@ -151,20 +150,17 @@ function EditarEquiposBasicos({ equipo }: Props) {
                     onValueChange={field.onChange}
                     disabled={isDisabled}
                     value={field.value}
-                    defaultValue={equipo.marca_id}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={"hola"} />
+                        <SelectValue placeholder={equipment.brand.name} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {marcas.map((res) => (
-                        <>
-                          <SelectItem value={res.id} key={res.id}>
-                            {res.descripcion}
-                          </SelectItem>
-                        </>
+                      {brands.map((brand) => (
+                        <SelectItem value={brand.id} key={brand.id}>
+                          {brand.description}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -175,28 +171,25 @@ function EditarEquiposBasicos({ equipo }: Props) {
 
             <FormField
               control={form.control}
-              name="ubicacionId"
+              name="locationId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ubicacion</FormLabel>
+                  <FormLabel>Ubicación</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     disabled={isDisabled}
                     value={field.value}
-                    defaultValue={equipo.ubicacion_id}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={equipo?.ubicacion?.nombre} />
+                        <SelectValue placeholder={equipment.location.name} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {ubicaciones.map((res) => (
-                        <>
-                          <SelectItem value={res.id} key={res.id}>
-                            {res.nombre}
-                          </SelectItem>
-                        </>
+                      {locations.map((location) => (
+                        <SelectItem value={location.id} key={location.id}>
+                          {location.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -217,23 +210,23 @@ function EditarEquiposBasicos({ equipo }: Props) {
 
           <Button
             type="submit"
-            disabled={false}
+            disabled={isLoading}
             className="mx-auto"
             style={{ display: isDisabled ? "none" : "block" }}
           >
             <Loader2
               className={
-                "mr-2 h-4 w-4 animate-spin " + (!false ? "hidden" : "")
+                "mr-2 h-4 w-4 animate-spin " + (isLoading ? "" : "hidden")
               }
             />
-            Guardar Cambios
+            Save Changes
           </Button>
 
-          {error && (
+          {isError && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage ?? ""}</AlertDescription>
             </Alert>
           )}
         </form>

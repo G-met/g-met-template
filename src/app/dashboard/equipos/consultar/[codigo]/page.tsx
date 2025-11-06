@@ -1,19 +1,16 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useObtenerEquipoPorCodigo } from "../../../hooks/useEquipo";
+import { useGetEquipmentByCode } from "../../hook/useEquipment";
 import { useParams } from "next/navigation";
 import EditarEquiposBasicos from "./basicos";
-import { useEffect } from "react";
-import Loading from "../../../loading";
 import EditarDatosmetrologicos from "./metrologicos";
 import EditarDatosComplementarios from "./complementarios";
+
 export default function Equipo() {
   const params = useParams<{ codigo: string }>();
-  const { obtener, equipo, isLoading } = useObtenerEquipoPorCodigo(params.codigo);
-  useEffect(() => {
-    obtener();
-  }, []);
+  const { equipment, isLoading } = useGetEquipmentByCode(params.codigo);
+
   return (
     <>
       <h2 className="text-center mb-4 font-semibold">Editar Equipo</h2>
@@ -23,18 +20,18 @@ export default function Equipo() {
           <TabsTrigger value="metrologicos">Metrologicos</TabsTrigger>
           <TabsTrigger value="complementarios">Complementarios</TabsTrigger>
         </TabsList>
-        {equipo === undefined ? (
+        {equipment === undefined ? (
           <p>Loading</p>
         ) : (
           <>
             <TabsContent value="basicos">
-              <EditarEquiposBasicos equipo={equipo} />
+              <EditarEquiposBasicos equipment={equipment} />
             </TabsContent>
             <TabsContent value="metrologicos">
-              <EditarDatosmetrologicos equipo={equipo} />
+              <EditarDatosmetrologicos equipo={equipment} />
             </TabsContent>
             <TabsContent value="complementarios">
-              <EditarDatosComplementarios equipo={equipo} />
+              <EditarDatosComplementarios equipo={equipment} />
             </TabsContent>
           </>
         )}

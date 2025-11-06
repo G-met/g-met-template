@@ -1,39 +1,48 @@
 "use client";
-import { useListarEquipos } from "../../hooks/useEquipo";
+import { useMemo, useState } from "react";
 import { columns } from "./columns";
-import { DataTable } from "@/components/data-table";
-import SearchForm from "@/components/serch-form";
-import { useEffect } from "react";
-import Paginador from "../../../../components/paginador";
-import { SelectContent, SelectItem } from "@/components/ui/select";
-import { queryValuesDTO } from "@/app/api/common/types";
-export default function ConstultarEquipos() {
-  const { obtenerEquipos, equipos, existeSiguientePagina, isLoading, page } =
-    useListarEquipos();
-  useEffect(() => {
-    obtenerEquipos();
-  }, []);
+import { useGetAllEquipments } from "../hook/useEquipment";
+import {
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { DataTablePagination } from "@/components/data-table-pagination";
+import { DataTableV2 } from "@/components/data-table-v2";
+import { DataTableFilterInput } from "@/components/data-table-filter-input";
 
-  const buscarPorTermino = async (args?: queryValuesDTO) => {
-    await obtenerEquipos(args);
-  };
+export default function ConstultarEquipos() {
+  const { equipments, isLoading } = useGetAllEquipments();
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const table = useReactTable({
+    data: equipments,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      columnFilters,
+    },
+  });
+
   return (
     <div className="container mx-auto py-10">
-      <SearchForm
-        buscarPorTermino={buscarPorTermino}
-        renderSelectOptions={() => (
-          <SelectContent>
-            <SelectItem value="codigo">Codigo</SelectItem>
-            <SelectItem value="descripcion">Descripción</SelectItem>
-          </SelectContent>
-        )}
-      />
-      <DataTable columns={columns} data={equipos} isLoading={isLoading} />
-      <Paginador
-        currentPage={page}
-        obtenervalores={obtenerEquipos}
-        existeSiguientePagina={existeSiguientePagina}
-      />
+      <h2 className="text-center mb-4 font-semibold">Consultar Equipos</h2>
+      <div className="flex items-center py-4">
+        <DataTableFilterInput
+          table={table}
+          columnId="code"
+          placeholder="Buscar por codigo"
+          className="max-w-sm"
+        />
+      </div>
+      <DataTableV2 columns={columns} table={table} isLoading={isLoading} />
+      <DataTablePagination table={table} />
     </div>
   );
 }
