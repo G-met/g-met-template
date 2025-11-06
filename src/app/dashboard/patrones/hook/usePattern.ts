@@ -59,8 +59,8 @@ export const useCreatePattern = () => {
 
 export const useUpdatePattern = () => {
   const { error, isError, mutateAsync, isPending } = useMutation({
-    mutationFn: ({ id, pattern }: { id: string; pattern: UpdatePattern }) =>
-      updatePattern(id, pattern),
+    mutationFn: ({ code, pattern }: { code: string; pattern: UpdatePattern }) =>
+      updatePattern(code, pattern),
     mutationKey: ["updatePattern"],
   });
 

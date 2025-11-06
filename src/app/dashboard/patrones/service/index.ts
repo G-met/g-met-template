@@ -52,9 +52,9 @@ export const updateComplementaryDataPattern = async (
 export const getPatternByCode = async (code: string) =>
   httpBaseV2.get<PatternDetail>(`/patterns/${code}`);
 
-export const updatePattern = async (id: string, pattern: UpdatePattern) => {
+export const updatePattern = async (code: string, pattern: UpdatePattern) => {
   const formData = createFormData(pattern);
-  return httpBaseV2.put<void>(`/patterns/${id}`, formData, {
+  return httpBaseV2.put<void>(`/patterns/${code}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

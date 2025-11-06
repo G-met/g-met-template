@@ -67,7 +67,7 @@ function EditarPatronesBasicos({ pattern }: Props) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     await update({
-      id: pattern.id,
+      code: pattern.code,
       pattern: {
         description: values.description,
         model: values.model,
