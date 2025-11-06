@@ -58,10 +58,15 @@ export const useCreatePattern = () => {
 };
 
 export const useUpdatePattern = () => {
+  const queryClient = useQueryClient();
   const { error, isError, mutateAsync, isPending } = useMutation({
     mutationFn: ({ code, pattern }: { code: string; pattern: UpdatePattern }) =>
       updatePattern(code, pattern),
     mutationKey: ["updatePattern"],
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["patterns"] });
+      queryClient.invalidateQueries({ queryKey: ["pattern", variables.code] });
+    },
   });
 
   return {
@@ -143,8 +148,9 @@ export const useUpdateMetrologicalDataPattern = () => {
       data: UpdateMetrologicalDataPattern;
     }) => updateMetrologicalDataPattern(patternCode, data),
     mutationKey: ["updateMetrologicalDataPattern"],
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["patterns"] });
+      queryClient.invalidateQueries({ queryKey: ["pattern", variables.patternCode] });
     },
   });
 
@@ -188,8 +194,9 @@ export const useUpdateComplementaryDataPattern = () => {
       data: UpdateComplementaryDataPattern;
     }) => updateComplementaryDataPattern(patternCode, data),
     mutationKey: ["updateComplementaryDataPattern"],
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["patterns"] });
+      queryClient.invalidateQueries({ queryKey: ["pattern", variables.patternCode] });
     },
   });
 
