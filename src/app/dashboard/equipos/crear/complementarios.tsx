@@ -17,7 +17,7 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { crearDatosComplementarios } from "../../hooks/useEquipo";
+import { useCreateComplementaryDataEquipment } from "../hook/useEquipment";
 import { cumple } from "@/src/app/api/equipos/dominio";
 import {
   Select,
@@ -46,7 +46,7 @@ const formSchema = z.object({
     .optional(),
 });
 function CrearDatosmetrologicos() {
-  const { crear, error, errorMsg, isLoading } = crearDatosComplementarios();
+  const { create, error, errorMessage, isLoading } = useCreateComplementaryDataEquipment();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,8 +65,15 @@ function CrearDatosmetrologicos() {
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await crear({
-      ...values,
+    await create({
+      specificationsDescription: values.descripcionEspecificaciones || "",
+      meetsInstallationSpecifications: values.cumpleEspecificacionInstalaciones === cumple.SI,
+      usesSoftware: values.utilizaSoftware === cumple.SI,
+      softwareDescription: values.descripcionSoftware || null,
+      softwareVersion: values.versionSoftware || null,
+      firmware: values.fireware || null,
+      observations: values.observaciones || null,
+      equipmentCode: values.codigo,
     });
 
     form.reset();
@@ -220,7 +227,7 @@ function CrearDatosmetrologicos() {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
         </form>

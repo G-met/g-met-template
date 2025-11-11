@@ -13,12 +13,7 @@ export interface Responsible {
   name: string;
 }
 
-export interface PatternType {
-  id: string;
-  name: string;
-}
-
-export interface PatternDetail {
+export interface EquipmentDetail {
   id: string;
   code: string;
   description: string;
@@ -27,7 +22,6 @@ export interface PatternDetail {
   brand: Brand;
   location: Location;
   responsible: Responsible;
-  patternType: PatternType;
   metrologicalData?: {
     id: string;
     emp: number;
@@ -47,9 +41,10 @@ export interface PatternDetail {
     firmware?: string | null;
     observations?: string | null;
   } | null;
+  documents?: Document[];
 }
 
-export interface PatternResponse {
+export interface EquipmentResponse {
   id: string;
   code: string;
   description: string;
@@ -75,7 +70,7 @@ export interface MetrologicalData {
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date | null;
-  patternId: string;
+  equipmentId: string;
 }
 
 export interface ComplementaryData {
@@ -87,32 +82,29 @@ export interface ComplementaryData {
   softwareVersion?: string | null;
   firmware?: string | null;
   observations?: string | null;
-  patternId: string;
+  equipmentId: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date | null;
 }
 
-export interface CreatePattern {
+export interface CreateEquipment {
   code: string;
   description: string;
   model: string;
   serial: string;
   brandId: string;
   locationId: string;
-  patternTypeId: string;
-  files: File[] | null;
-  lote?: string;
-  expirationDate?: string;
+  documents?: File[] | null;
 }
 
-export interface UpdatePattern {
-  description: string;
-  model: string;
-  files?: File[] | null;
+export interface UpdateEquipment {
+  description?: string;
+  model?: string;
   serial?: string;
   brandId?: string;
   locationId?: string;
+  documents?: File[] | null;
 }
 
 export interface CreateMetrologicalData {
@@ -134,17 +126,17 @@ export interface CreateComplementaryData {
   observations?: string | null;
 }
 
-export interface CreateMetrologicalDataPattern {
+export interface CreateMetrologicalDataEquipment {
   emp: number;
   scaleDivision: number;
   resolution: number;
   minimumRange: number;
   maximumRange: number;
-  nominalValue: number;
-  patternCode: string;
+  nominalValue?: number;
+  equipmentCode: string;
 }
 
-export interface UpdateMetrologicalDataPattern {
+export interface UpdateMetrologicalDataEquipment {
   emp?: number;
   scaleDivision?: number;
   resolution?: number;
@@ -153,7 +145,18 @@ export interface UpdateMetrologicalDataPattern {
   nominalValue?: number;
 }
 
-export interface CreateComplementaryDataPattern {
+export interface MetrologicalDataEquipmentResponse {
+  id: string;
+  emp: number;
+  scaleDivision: number;
+  resolution: number;
+  minimumRange: number;
+  maximumRange: number;
+  updatedAt: string;
+  equipmentCode: string;
+}
+
+export interface CreateComplementaryDataEquipment {
   specificationsDescription: string;
   meetsInstallationSpecifications: boolean;
   usesSoftware: boolean;
@@ -161,10 +164,10 @@ export interface CreateComplementaryDataPattern {
   softwareVersion?: string | null;
   firmware?: string | null;
   observations?: string | null;
-  patternId: string;
+  equipmentCode: string;
 }
 
-export interface UpdateComplementaryDataPattern {
+export interface UpdateComplementaryDataEquipment {
   specificationsDescription?: string;
   meetsInstallationSpecifications?: boolean;
   usesSoftware?: boolean;
@@ -172,14 +175,4 @@ export interface UpdateComplementaryDataPattern {
   softwareVersion?: string | null;
   firmware?: string | null;
   observations?: string | null;
-}
-
-export interface Location {
-  id: string;
-  // add other fields if needed
-}
-
-export interface Client {
-  id: string;
-  // add other fields if needed
 }

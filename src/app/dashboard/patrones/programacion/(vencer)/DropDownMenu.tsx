@@ -9,16 +9,15 @@ import { MoreHorizontal } from "lucide-react";
 
 interface Props {
   isCompleted: boolean;
-  programacionPatronId: string;
+  codeId: string;
 }
 
 import { DialogWrapper } from "@/components/dialogWrapper";
 import { FormEjecucionPatron } from "./form";
 import { useModalDropdown } from "@/app/dashboard/hooks/useModal";
-export const DropDownMenuEjecucionPatron = ({
-  isCompleted,
-  programacionPatronId,
-}: Props) => {
+import { useRouter } from "next/navigation";
+export const DropDownMenuEjecucionPatron = ({ isCompleted, codeId }: Props) => {
+  const router = useRouter();
   const {
     isOpenModal,
     clickDropdownItem,
@@ -26,6 +25,9 @@ export const DropDownMenuEjecucionPatron = ({
     detectDropdownClose,
     closeModal,
   } = useModalDropdown();
+  const navigateTakeData = () => {
+    router.push(`/dashboard/patrones/data-collection/${codeId}`);
+  };
   return (
     <>
       <DropdownMenu onOpenChange={detectDropdownClose}>
@@ -38,6 +40,9 @@ export const DropDownMenuEjecucionPatron = ({
           <DropdownMenuItem onClick={clickDropdownItem} disabled={isCompleted}>
             Ejecutar
           </DropdownMenuItem>
+          <DropdownMenuItem onClick={navigateTakeData}>
+            Toma datos
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       <DialogWrapper
@@ -48,7 +53,7 @@ export const DropDownMenuEjecucionPatron = ({
       >
         <FormEjecucionPatron
           closeModal={closeModal}
-          programacionPatronId={programacionPatronId}
+          programacionPatronId={codeId}
         />
       </DialogWrapper>
     </>
