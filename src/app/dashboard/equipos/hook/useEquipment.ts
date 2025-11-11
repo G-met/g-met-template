@@ -4,10 +4,18 @@ import {
   createEquipment,
   updateEquipment,
   getEquipmentByCode,
+  createMetrologicalDataEquipment,
+  updateMetrologicalDataEquipment,
+  createComplementaryDataEquipment,
+  updateComplementaryDataEquipment,
 } from "../service";
 import {
   CreateEquipment,
   UpdateEquipment,
+  CreateMetrologicalDataEquipment,
+  UpdateMetrologicalDataEquipment,
+  CreateComplementaryDataEquipment,
+  UpdateComplementaryDataEquipment,
 } from "../types";
 import { getErrorMessage } from "@/lib/helpers/getErrorMessage";
 
@@ -80,5 +88,101 @@ export const useGetEquipmentByCode = (code: string) => {
     errorMessage: getErrorMessage(error) ?? "",
     isError,
     isLoading,
+  };
+};
+
+export const useCreateMetrologicalDataEquipment = () => {
+  const queryClient = useQueryClient();
+  const { error, isError, mutateAsync, isPending } = useMutation({
+    mutationFn: (data: CreateMetrologicalDataEquipment) =>
+      createMetrologicalDataEquipment(data),
+    mutationKey: ["createMetrologicalDataEquipment"],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["equipments"] });
+    },
+  });
+
+  return {
+    create: mutateAsync,
+    error,
+    errorMessage: getErrorMessage(error) ?? "",
+    isError,
+    isLoading: isPending,
+  };
+};
+
+export const useUpdateMetrologicalDataEquipment = () => {
+  const queryClient = useQueryClient();
+  const { error, isError, mutateAsync, isPending } = useMutation({
+    mutationFn: ({
+      equipmentCode,
+      data,
+    }: {
+      equipmentCode: string;
+      data: UpdateMetrologicalDataEquipment;
+    }) => updateMetrologicalDataEquipment(equipmentCode, data),
+    mutationKey: ["updateMetrologicalDataEquipment"],
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["equipments"] });
+      queryClient.invalidateQueries({
+        queryKey: ["equipment", variables.equipmentCode],
+      });
+    },
+  });
+
+  return {
+    update: mutateAsync,
+    error,
+    errorMessage: getErrorMessage(error) ?? "",
+    isError,
+    isLoading: isPending,
+  };
+};
+
+export const useCreateComplementaryDataEquipment = () => {
+  const queryClient = useQueryClient();
+  const { error, isError, mutateAsync, isPending } = useMutation({
+    mutationFn: (data: CreateComplementaryDataEquipment) =>
+      createComplementaryDataEquipment(data),
+    mutationKey: ["createComplementaryDataEquipment"],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["equipments"] });
+    },
+  });
+
+  return {
+    create: mutateAsync,
+    error,
+    errorMessage: getErrorMessage(error) ?? "",
+    isError,
+    isLoading: isPending,
+  };
+};
+
+export const useUpdateComplementaryDataEquipment = () => {
+  const queryClient = useQueryClient();
+  const { error, isError, mutateAsync, isPending } = useMutation({
+    mutationFn: ({
+      equipmentCode,
+      data,
+    }: {
+      equipmentCode: string;
+      data: UpdateComplementaryDataEquipment;
+    }) => updateComplementaryDataEquipment(equipmentCode, data),
+    mutationKey: ["updateComplementaryDataEquipment"],
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["equipments"] });
+      queryClient.invalidateQueries({
+        queryKey: ["equipment", variables.equipmentCode],
+      });
+    },
+  });
+
+  return {
+    update: mutateAsync,
+    error,
+    errorMessage: getErrorMessage(error) ?? "",
+    isError,
+    isLoading: isPending,
   };
 };

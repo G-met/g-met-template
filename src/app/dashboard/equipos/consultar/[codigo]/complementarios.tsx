@@ -17,8 +17,9 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { editarDatosComplementarios } from "@/app/dashboard/hooks/useEquipo";
-import { Equipo, cumple } from "@/src/app/api/equipos/dominio";
+import { useUpdateComplementaryDataEquipment } from "../../hook/useEquipment";
+import { cumple } from "@/src/app/api/equipos/dominio";
+import { EquipmentDetail } from "../../types";
 import {
   Select,
   SelectContent,
@@ -29,44 +30,47 @@ import {
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 const formSchema = z.object({
-  codigo: z.string({ description: "codigo requerido" }),
-  descripcionEspecificaciones: z
+  code: z.string({ description: "codigo requerido" }),
+  specificationsDescription: z
     .string({
       description: "descripcionEspecificaciones requerido",
     })
     .optional(),
-  cumpleEspecificacionInstalaciones: z.nativeEnum(cumple),
-  utilizaSoftware: z.nativeEnum(cumple),
-  descripcionSoftware: z.string().optional(),
-  versionSoftware: z
+  meetsInstallationSpecifications: z.nativeEnum(cumple),
+  usesSoftware: z.nativeEnum(cumple),
+  softwareDescription: z.string().optional(),
+  softwareVersion: z
     .string({ description: "versionSoftware requerido" })
     .optional(),
-  fireware: z.string({ description: "fireware requerido" }).optional(),
-  observaciones: z
-    .string({ description: "observaciones requerido" })
-    .optional(),
+  firmware: z.string({ description: "fireware requerido" }).optional(),
+  observations: z.string({ description: "observaciones requerido" }).optional(),
 });
 
 interface Props {
-  equipo: Equipo;
+  equipment: EquipmentDetail;
 }
-function EditarDatosComplementarios({ equipo }: Props) {
-  const { editar, errorMsg, error, isLoading } = editarDatosComplementarios();
+function EditarDatosComplementarios({ equipment }: Props) {
+  const { update, errorMessage, error, isLoading } =
+    useUpdateComplementaryDataEquipment();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      codigo: equipo.codigo,
-      cumpleEspecificacionInstalaciones:
-        equipo.datos_complementarios?.cumple_especificacion_instalaciones,
-      descripcionEspecificaciones:
-        equipo.datos_complementarios?.descripcion_especificaciones ?? "",
-      descripcionSoftware:
-        equipo.datos_complementarios?.descripcion_software ?? "",
-      fireware: equipo.datos_complementarios?.fireware ?? "",
-      observaciones: equipo.datos_complementarios?.observaciones ?? "",
-      utilizaSoftware: equipo.datos_complementarios?.utiliza_software,
-      versionSoftware: equipo.datos_complementarios?.version_software ?? "",
+      code: equipment.code,
+      meetsInstallationSpecifications: equipment.complementaryData
+        ?.meetsInstallationSpecifications
+        ? cumple.SI
+        : cumple.NO,
+      specificationsDescription:
+        equipment.complementaryData?.specificationsDescription ?? "",
+      softwareDescription:
+        equipment.complementaryData?.softwareDescription ?? "",
+      firmware: equipment.complementaryData?.firmware ?? "",
+      observations: equipment.complementaryData?.observations ?? "",
+      usesSoftware: equipment.complementaryData?.usesSoftware
+        ? cumple.SI
+        : cumple.NO,
+      softwareVersion: equipment.complementaryData?.softwareVersion ?? "",
     },
   });
 
@@ -74,16 +78,18 @@ function EditarDatosComplementarios({ equipo }: Props) {
   const [isDisabled, setIsDisabled] = useState(true);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await editar({
-      codigo: values.codigo,
-      utilizaSoftware: values.utilizaSoftware,
-      cumpleEspecificacionInstalaciones:
-        values.cumpleEspecificacionInstalaciones,
-      descripcionEspecificaciones: values.descripcionEspecificaciones,
-      descripcionSoftware: values.descripcionSoftware,
-      fireware: values.fireware,
-      observaciones: values.observaciones,
-      versionSoftware: values.versionSoftware,
+    await update({
+      equipmentCode: values.code,
+      data: {
+        specificationsDescription: values.specificationsDescription || "",
+        meetsInstallationSpecifications:
+          values.meetsInstallationSpecifications === cumple.SI,
+        usesSoftware: values.usesSoftware === cumple.SI,
+        softwareDescription: values.softwareDescription || null,
+        softwareVersion: values.softwareVersion || null,
+        firmware: values.firmware || null,
+        observations: values.observations || null,
+      },
     });
     toast({
       title: "Dato complementarios se editaron correctamente",
@@ -91,8 +97,8 @@ function EditarDatosComplementarios({ equipo }: Props) {
     });
     router.push("/dashboard/equipos/consultar");
   }
-  if (equipo.datos_complementarios === null) {
-    return <p>El equipo no tiene datos compllemetarios</p>;
+  if (!equipment.complementaryData) {
+    return <p>El equipo no tiene datos complementarios</p>;
   }
   return (
     <>
@@ -101,12 +107,12 @@ function EditarDatosComplementarios({ equipo }: Props) {
           <div className="grid grid-cols-2 grid-rows-1 gap-2">
             <FormField
               control={form.control}
-              name="codigo"
+              name="code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Codigo Equipo</FormLabel>
                   <FormControl>
-                    <Input {...field} value={equipo?.codigo} disabled />
+                    <Input {...field} value={equipment?.code} disabled />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -114,7 +120,7 @@ function EditarDatosComplementarios({ equipo }: Props) {
             />
             <FormField
               control={form.control}
-              name="descripcionEspecificaciones"
+              name="specificationsDescription"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descripcion Especificaciones</FormLabel>
@@ -127,7 +133,7 @@ function EditarDatosComplementarios({ equipo }: Props) {
             />
             <FormField
               control={form.control}
-              name="versionSoftware"
+              name="softwareVersion"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Version software</FormLabel>
@@ -140,7 +146,7 @@ function EditarDatosComplementarios({ equipo }: Props) {
             />
             <FormField
               control={form.control}
-              name="cumpleEspecificacionInstalaciones"
+              name="meetsInstallationSpecifications"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cumple especificaciones instalaciones</FormLabel>
@@ -165,7 +171,7 @@ function EditarDatosComplementarios({ equipo }: Props) {
             />
             <FormField
               control={form.control}
-              name="utilizaSoftware"
+              name="usesSoftware"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Utiliza software</FormLabel>
@@ -190,7 +196,7 @@ function EditarDatosComplementarios({ equipo }: Props) {
             />
             <FormField
               control={form.control}
-              name="descripcionSoftware"
+              name="softwareDescription"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descripcion software</FormLabel>
@@ -207,10 +213,10 @@ function EditarDatosComplementarios({ equipo }: Props) {
             />
             <FormField
               control={form.control}
-              name="fireware"
+              name="firmware"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>fireware</FormLabel>
+                  <FormLabel>Firmware</FormLabel>
                   <FormControl>
                     <Input disabled={isDisabled} {...field} />
                   </FormControl>
@@ -220,7 +226,7 @@ function EditarDatosComplementarios({ equipo }: Props) {
             />
             <FormField
               control={form.control}
-              name="observaciones"
+              name="observations"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Observaciones</FormLabel>
@@ -258,7 +264,7 @@ function EditarDatosComplementarios({ equipo }: Props) {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
         </form>

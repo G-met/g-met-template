@@ -28,10 +28,10 @@ export default function Equipo() {
               <EditarEquiposBasicos equipment={equipment} />
             </TabsContent>
             <TabsContent value="metrologicos">
-              <EditarDatosmetrologicos equipo={equipment} />
+              <EditarDatosmetrologicos equipment={equipment} />
             </TabsContent>
             <TabsContent value="complementarios">
-              <EditarDatosComplementarios equipo={equipment} />
+              <EditarDatosComplementarios equipment={equipment} />
             </TabsContent>
           </>
         )}

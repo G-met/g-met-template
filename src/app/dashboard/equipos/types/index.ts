@@ -132,7 +132,7 @@ export interface CreateMetrologicalDataEquipment {
   resolution: number;
   minimumRange: number;
   maximumRange: number;
-  nominalValue: number;
+  nominalValue?: number;
   equipmentCode: string;
 }
 
@@ -145,6 +145,17 @@ export interface UpdateMetrologicalDataEquipment {
   nominalValue?: number;
 }
 
+export interface MetrologicalDataEquipmentResponse {
+  id: string;
+  emp: number;
+  scaleDivision: number;
+  resolution: number;
+  minimumRange: number;
+  maximumRange: number;
+  updatedAt: string;
+  equipmentCode: string;
+}
+
 export interface CreateComplementaryDataEquipment {
   specificationsDescription: string;
   meetsInstallationSpecifications: boolean;
@@ -153,7 +164,7 @@ export interface CreateComplementaryDataEquipment {
   softwareVersion?: string | null;
   firmware?: string | null;
   observations?: string | null;
-  equipmentId: string;
+  equipmentCode: string;
 }
 
 export interface UpdateComplementaryDataEquipment {

@@ -17,7 +17,7 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { useCreateMetrologicalDataPattern } from "../../patrones/hook/usePattern";
+import { useCreateMetrologicalDataEquipment } from "../hook/useEquipment";
 
 const formSchema = z.object({
   codigo: z.string({ description: "codigo requerido" }),
@@ -42,7 +42,7 @@ const formSchema = z.object({
 });
 
 function CrearDatosmetrologicos() {
-  const { create, error, errorMessage, isLoading } = useCreateMetrologicalDataPattern();
+  const { create, error, errorMessage, isLoading } = useCreateMetrologicalDataEquipment();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,7 +67,7 @@ function CrearDatosmetrologicos() {
       minimumRange: values.rangoMinimo,
       maximumRange: values.rangoMaximo,
       nominalValue: values.valorNominal,
-      patternCode: values.codigo
+      equipmentCode: values.codigo
     });
 
     form.reset();

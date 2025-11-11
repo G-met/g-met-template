@@ -4,6 +4,11 @@ import {
   CreateEquipment,
   UpdateEquipment,
   EquipmentDetail,
+  CreateMetrologicalDataEquipment,
+  UpdateMetrologicalDataEquipment,
+  CreateComplementaryDataEquipment,
+  UpdateComplementaryDataEquipment,
+  MetrologicalDataEquipmentResponse,
 } from "../types";
 import { createFormData } from "@/lib/helpers/formData";
 
@@ -33,3 +38,29 @@ export const updateEquipment = async (
     },
   });
 };
+
+export const createMetrologicalDataEquipment = async (
+  data: CreateMetrologicalDataEquipment
+) => httpBaseV2.post<MetrologicalDataEquipmentResponse>("/metrological-data-equipments", data);
+
+export const updateMetrologicalDataEquipment = async (
+  equipmentCode: string,
+  data: UpdateMetrologicalDataEquipment
+) =>
+  httpBaseV2.put<void>(
+    `/metrological-data-equipments/${equipmentCode}`,
+    data
+  );
+
+export const createComplementaryDataEquipment = async (
+  data: CreateComplementaryDataEquipment
+) => httpBaseV2.post<void>("/complementary-data-equipments", data);
+
+export const updateComplementaryDataEquipment = async (
+  equipmentCode: string,
+  data: UpdateComplementaryDataEquipment
+) =>
+  httpBaseV2.put<void>(
+    `/complementary-data-equipments/${equipmentCode}`,
+    data
+  );
