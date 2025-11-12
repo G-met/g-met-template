@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-typos */
 export class ActividadNoExiste extends Error {
   status: number;
   constructor() {
