@@ -25,8 +25,8 @@ import { obtenerUbicaciones } from "../../hooks/useUbicaciones";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { obtenerMarcas } from "../../hooks/useMarca";
-import { useCrearEquipo } from "../../hooks/useEquipo";
+import { useGetAllBrands } from "../../configuracion/marca/hook/useBrand";
+import { useCreateEquipment } from "../hook/useEquipment";
 import { validateFileListSize } from "@/app/api/common/files/filesSize";
 
 const formSchema = z.object({
@@ -45,9 +45,9 @@ const formSchema = z.object({
 });
 
 function CrearEquiposBasicos() {
-  const { marcas } = obtenerMarcas();
+  const { brands } = useGetAllBrands();
   const { ubicaciones } = obtenerUbicaciones();
-  const { crear, error, errorMsg, isLoading } = useCrearEquipo();
+  const { create, error, errorMessage, isLoading } = useCreateEquipment();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,14 +65,14 @@ function CrearEquiposBasicos() {
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await crear({
-      codigo: values.codigo,
-      descripcion: values.descripcion,
-      modelo: values.modelo,
-      serie: values.serie,
-      marcaId: values.marcaId,
-      ubicacionId: values.ubicacionId,
-      archivos: values.archivos,
+    await create({
+      code: values.codigo,
+      description: values.descripcion,
+      model: values.modelo,
+      serial: values.serie,
+      brandId: values.marcaId,
+      locationId: values.ubicacionId,
+      documents: values.archivos,
     });
     form.reset();
 
@@ -158,10 +158,10 @@ function CrearEquiposBasicos() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {marcas.map((res) => (
+                      {brands.map((res) => (
                         <>
                           <SelectItem value={res.id} key={res.id}>
-                            {res.descripcion}
+                            {res.description}
                           </SelectItem>
                         </>
                       ))}
@@ -237,7 +237,7 @@ function CrearEquiposBasicos() {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
         </form>

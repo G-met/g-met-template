@@ -10,34 +10,31 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Equipo } from "@/src/app/api/equipos/dominio";
 import Link from "next/link";
-import { EquipoInformacionBasicaDTO } from "@/app/api/equipos/application/dtos/obtenerEquipos.dto.output";
+import { EquipmentResponse } from "../types";
 import { SubMenuDocuments } from "../../components/SubMenuDocuments";
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 
-export const columns: ColumnDef<EquipoInformacionBasicaDTO>[] = [
+export const columns: ColumnDef<EquipmentResponse>[] = [
   {
-    accessorKey: "codigo",
+    accessorKey: "code",
     header: "codigo",
   },
   {
-    accessorKey: "descripcion",
+    accessorKey: "description",
     header: "Descripcón",
   },
   {
-    accessorKey: "marca",
+    accessorKey: "brandName",
     header: "Marca",
   },
   {
-    accessorKey: "responsable",
+    accessorKey: "responsible",
     header: "Responsable",
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const documentos = row.original?.documentos;
+      const documents = row.original?.documents;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -46,17 +43,13 @@ export const columns: ColumnDef<EquipoInformacionBasicaDTO>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <Link
-              href={`/dashboard/equipos/programar/${row.getValue("codigo")}`}
-            >
+            <Link href={`/dashboard/equipos/programar/${row.getValue("code")}`}>
               <DropdownMenuItem>Programar</DropdownMenuItem>
             </Link>
-            <Link
-              href={`/dashboard/equipos/consultar/${row.getValue("codigo")}`}
-            >
+            <Link href={`/dashboard/equipos/consultar/${row.getValue("code")}`}>
               <DropdownMenuItem>Ver Equipo</DropdownMenuItem>
             </Link>
-            <SubMenuDocuments documentos={documentos ?? []} />
+            <SubMenuDocuments documentos={documents ?? []} />
           </DropdownMenuContent>
         </DropdownMenu>
       );

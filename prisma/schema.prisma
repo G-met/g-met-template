@@ -4,8 +4,8 @@ generator client {
 
 generator dbml {
   provider              = "prisma-dbml-generator"
-  projectDatabaseType   = "PostgreSQL"
   includeRelationFields = "false"
+  projectDatabaseType   = "PostgreSQL"
 }
 
 datasource db {
@@ -199,17 +199,14 @@ model datos_metrologicos_patrones {
 }
 
 model tipo_patron {
-  id                  String    @id @default(cuid())
+  id                  String        @id @default(cuid())
   alias               String
   descripcion         String
-  fecha_creacion      DateTime  @default(now())
-  fecha_actualizacion DateTime  @updatedAt
+  fecha_creacion      DateTime      @default(now())
+  fecha_actualizacion DateTime      @updatedAt
   fecha_inactivacion  DateTime?
-  cliente_id          String
   patron              patron[]
-  cliente             cliente   @relation(fields: [cliente_id], references: [id])
-
-  @@index([cliente_id])
+  patron_lote         patron_lote[]
 }
 
 model datos_complementarios_equipo {
@@ -332,12 +329,12 @@ model cliente {
   marca                          marca[]
   PasswordResetToken             PasswordResetToken[]
   patron                         patron[]
+  patron_lote                    patron_lote[]
   programacion_equipos           ProgramacionEquipos[]
   programacion_patrones          ProgramacionPatrones[]
   Proveedor                      Proveedor[]
   responsable                    responsable[]
   tipo_actividad                 tipo_actividad[]
-  tipo_patron                    tipo_patron[]
   ubicacion                      ubicacion[]
   usuario                        usuario[]
   variable                       variable[]
@@ -396,29 +393,48 @@ model PasswordResetToken {
 }
 
 model patron {
-  id                            String                          @id
-  codigo                        String                          @unique @db.VarChar(20)
-  descripcion                   String                          @db.VarChar(60)
-  modelo                        String                          @db.VarChar(40)
-  serie                         String                          @db.VarChar(40)
-  marca_id                      String
-  fecha_creacion                DateTime                        @default(now())
-  fecha_actualizacion           DateTime                        @default(now()) @updatedAt
-  fecha_inactivacion            DateTime?
-  ubicacion_id                  String
-  datos_metrologicos_patronesId String?
-  cliente_id                    String
-  tipo_patron_id                String
-  documentos                    Json                            @default("[]")
-  datos_complementarios         datos_complementarios_patrones?
-  datos_metrologicos            datos_metrologicos_patrones?
-  cliente                       cliente                         @relation(fields: [cliente_id], references: [id])
-  marca                         marca                           @relation(fields: [marca_id], references: [id])
-  tipo_patron                   tipo_patron                     @relation(fields: [tipo_patron_id], references: [id])
-  ubicacion                     ubicacion                       @relation(fields: [ubicacion_id], references: [id])
-  programacion_patrones         ProgramacionPatrones[]
+  id                    String                          @id
+  codigo                String                          @unique @db.VarChar(20)
+  descripcion           String                          @db.VarChar(60)
+  modelo                String                          @db.VarChar(40)
+  serie                 String                          @db.VarChar(40)
+  marca_id              String
+  fecha_creacion        DateTime                        @default(now())
+  fecha_actualizacion   DateTime                        @updatedAt
+  fecha_inactivacion    DateTime?
+  ubicacion_id          String
+  cliente_id            String
+  tipo_patron_id        String
+  documentos            Json                            @default("[]")
+  datos_complementarios datos_complementarios_patrones?
+  datos_metrologicos    datos_metrologicos_patrones?
+  cliente               cliente                         @relation(fields: [cliente_id], references: [id])
+  marca                 marca                           @relation(fields: [marca_id], references: [id])
+  tipo_patron           tipo_patron                     @relation(fields: [tipo_patron_id], references: [id])
+  ubicacion             ubicacion                       @relation(fields: [ubicacion_id], references: [id])
+  patron_lote           patron_lote[]
+  programacion_patrones ProgramacionPatrones[]
 
   @@index([cliente_id])
+}
+
+model patron_lote {
+  id                  String      @id
+  lote                String      @db.VarChar(50)
+  fecha_vencimiento   DateTime    @db.Date
+  patron_id           String
+  tipo_patron_id      String
+  fecha_creacion      DateTime    @default(now())
+  fecha_actualizacion DateTime
+  fecha_inactivacion  DateTime?
+  cliente_id          String
+  cliente             cliente     @relation(fields: [cliente_id], references: [id])
+  patron              patron      @relation(fields: [patron_id], references: [id])
+  tipo_patron         tipo_patron @relation(fields: [tipo_patron_id], references: [id])
+
+  @@unique([cliente_id, lote, fecha_vencimiento])
+  @@index([cliente_id])
+  @@index([tipo_patron_id])
 }
 
 enum UserStatus {

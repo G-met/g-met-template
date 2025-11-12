@@ -1,6 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getPatterns, createPattern, createMetrologicalData, createComplementaryData } from "../service";
-import { CreatePattern, CreateMetrologicalData, CreateComplementaryData } from "../types";
+import {
+  getPatterns,
+  createPattern,
+  updatePattern,
+  createMetrologicalData,
+  createComplementaryData,
+  createMetrologicalDataPattern,
+  updateMetrologicalDataPattern,
+  createComplementaryDataPattern,
+  updateComplementaryDataPattern,
+  getPatternByCode,
+} from "../service";
+import {
+  CreatePattern,
+  UpdatePattern,
+  CreateMetrologicalData,
+  CreateComplementaryData,
+  CreateMetrologicalDataPattern,
+  UpdateMetrologicalDataPattern,
+  CreateComplementaryDataPattern,
+  UpdateComplementaryDataPattern,
+} from "../types";
 import { getErrorMessage } from "@/lib/helpers/getErrorMessage";
 
 export const useGetAllPatterns = () => {
@@ -37,6 +57,27 @@ export const useCreatePattern = () => {
   };
 };
 
+export const useUpdatePattern = () => {
+  const queryClient = useQueryClient();
+  const { error, isError, mutateAsync, isPending } = useMutation({
+    mutationFn: ({ code, pattern }: { code: string; pattern: UpdatePattern }) =>
+      updatePattern(code, pattern),
+    mutationKey: ["updatePattern"],
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["patterns"] });
+      queryClient.invalidateQueries({ queryKey: ["pattern", variables.code] });
+    },
+  });
+
+  return {
+    update: mutateAsync,
+    error,
+    errorMessage: getErrorMessage(error) ?? "",
+    isError,
+    isLoading: isPending,
+  };
+};
+
 export const useCreateMetrologicalData = () => {
   const queryClient = useQueryClient();
   const { error, isError, mutateAsync, isPending } = useMutation({
@@ -59,7 +100,8 @@ export const useCreateMetrologicalData = () => {
 export const useCreateComplementaryData = () => {
   const queryClient = useQueryClient();
   const { error, isError, mutateAsync, isPending } = useMutation({
-    mutationFn: (data: CreateComplementaryData) => createComplementaryData(data),
+    mutationFn: (data: CreateComplementaryData) =>
+      createComplementaryData(data),
     mutationKey: ["createComplementaryData"],
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["patterns"] });
@@ -72,5 +114,114 @@ export const useCreateComplementaryData = () => {
     errorMessage: getErrorMessage(error) ?? "",
     isError,
     isLoading: isPending,
+  };
+};
+
+export const useCreateMetrologicalDataPattern = () => {
+  const queryClient = useQueryClient();
+  const { error, isError, mutateAsync, isPending } = useMutation({
+    mutationFn: (data: CreateMetrologicalDataPattern) =>
+      createMetrologicalDataPattern(data),
+    mutationKey: ["createMetrologicalDataPattern"],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["patterns"] });
+    },
+  });
+
+  return {
+    create: mutateAsync,
+    error,
+    errorMessage: getErrorMessage(error) ?? "",
+    isError,
+    isLoading: isPending,
+  };
+};
+
+export const useUpdateMetrologicalDataPattern = () => {
+  const queryClient = useQueryClient();
+  const { error, isError, mutateAsync, isPending } = useMutation({
+    mutationFn: ({
+      patternCode,
+      data,
+    }: {
+      patternCode: string;
+      data: UpdateMetrologicalDataPattern;
+    }) => updateMetrologicalDataPattern(patternCode, data),
+    mutationKey: ["updateMetrologicalDataPattern"],
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["patterns"] });
+      queryClient.invalidateQueries({ queryKey: ["pattern", variables.patternCode] });
+    },
+  });
+
+  return {
+    update: mutateAsync,
+    error,
+    errorMessage: getErrorMessage(error) ?? "",
+    isError,
+    isLoading: isPending,
+  };
+};
+
+export const useCreateComplementaryDataPattern = () => {
+  const queryClient = useQueryClient();
+  const { error, isError, mutateAsync, isPending } = useMutation({
+    mutationFn: (data: CreateComplementaryDataPattern) =>
+      createComplementaryDataPattern(data),
+    mutationKey: ["createComplementaryDataPattern"],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["patterns"] });
+    },
+  });
+
+  return {
+    create: mutateAsync,
+    error,
+    errorMessage: getErrorMessage(error) ?? "",
+    isError,
+    isLoading: isPending,
+  };
+};
+
+export const useUpdateComplementaryDataPattern = () => {
+  const queryClient = useQueryClient();
+  const { error, isError, mutateAsync, isPending } = useMutation({
+    mutationFn: ({
+      patternCode,
+      data,
+    }: {
+      patternCode: string;
+      data: UpdateComplementaryDataPattern;
+    }) => updateComplementaryDataPattern(patternCode, data),
+    mutationKey: ["updateComplementaryDataPattern"],
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["patterns"] });
+      queryClient.invalidateQueries({ queryKey: ["pattern", variables.patternCode] });
+    },
+  });
+
+  return {
+    update: mutateAsync,
+    error,
+    errorMessage: getErrorMessage(error) ?? "",
+    isError,
+    isLoading: isPending,
+  };
+};
+
+export const useGetPatternByCode = (code: string) => {
+  const { data, error, isError, isLoading } = useQuery({
+    queryKey: ["pattern", code],
+    queryFn: () => getPatternByCode(code),
+    select: (response) => response.data,
+    enabled: !!code,
+  });
+
+  return {
+    pattern: data,
+    error,
+    errorMessage: getErrorMessage(error) ?? "",
+    isError,
+    isLoading,
   };
 };

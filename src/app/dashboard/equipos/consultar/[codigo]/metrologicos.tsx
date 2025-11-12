@@ -17,46 +17,46 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { Equipo } from "@/app/api/equipos/dominio";
+import { EquipmentDetail } from "../../types";
 import { useEffect, useState } from "react";
-import { editarDatosMetrologicos } from "@/app/dashboard/hooks/useEquipo";
+import { useUpdateMetrologicalDataEquipment } from "../../hook/useEquipment";
 import { useRouter } from "next/navigation";
 const formSchema = z.object({
-  codigo: z.string({ description: "codigo requerido" }),
+  code: z.string({ description: "codigo requerido" }),
   emp: z.coerce
     .string({ description: "emp requerido" })
     .transform((val) => Number(val)),
-  divisionEscala: z.coerce
+  scaleDivision: z.coerce
     .string({ description: "division_escala requerido" })
     .transform((val) => Number(val)),
-  resolucion: z.coerce
+  resolution: z.coerce
     .string({ description: "resolucion requerido" })
     .transform((val) => Number(val)),
-  rangoMinimo: z.coerce
+  minimumRange: z.coerce
     .string({ description: "rango_minimo requerido" })
     .transform((val) => Number(val)),
-  rangoMaximo: z.coerce
+  maximumRange: z.coerce
     .string({ description: "rango_maximo requerido" })
     .transform((val) => Number(val)),
 });
 interface Props {
-  equipo: Equipo;
+  equipment: EquipmentDetail;
 }
-function EditarDatosmetrologicos({ equipo }: Props) {
+function EditarDatosmetrologicos({ equipment }: Props) {
   const [isDisabled, setIsDisabled] = useState(true);
 
-  const { editar, error, errorMsg } = editarDatosMetrologicos();
+  const { update, error, errorMessage, isLoading } = useUpdateMetrologicalDataEquipment();
 
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      codigo: equipo.codigo,
-      divisionEscala: equipo.datos_metrologicos?.division_escala,
-      emp: equipo.datos_metrologicos?.emp,
-      rangoMaximo: equipo.datos_metrologicos?.rango_maximo,
-      rangoMinimo: equipo.datos_metrologicos?.rango_minimo,
-      resolucion: equipo.datos_metrologicos?.resolucion,
+      code: equipment.code,
+      scaleDivision: equipment.metrologicalData?.scaleDivision,
+      emp: equipment.metrologicalData?.emp,
+      maximumRange: equipment.metrologicalData?.maximumRange,
+      minimumRange: equipment.metrologicalData?.minimumRange,
+      resolution: equipment.metrologicalData?.resolution,
     },
   });
   useEffect(() => {}, []);
@@ -64,13 +64,15 @@ function EditarDatosmetrologicos({ equipo }: Props) {
   const { toast } = useToast();
   const router = useRouter();
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await editar({
-      codigo: values.codigo,
-      divisionEscala: values.divisionEscala,
-      emp: values.emp,
-      rangoMaximo: values.rangoMaximo,
-      rangoMinimo: values.rangoMinimo,
-      resolucion: values.resolucion,
+    await update({
+      equipmentCode: values.code,
+      data: {
+        scaleDivision: values.scaleDivision,
+        emp: values.emp,
+        maximumRange: values.maximumRange,
+        minimumRange: values.minimumRange,
+        resolution: values.resolution,
+      },
     });
 
     form.reset();
@@ -80,7 +82,7 @@ function EditarDatosmetrologicos({ equipo }: Props) {
     });
     router.push("/dashboard/equipos/consultar");
   }
-  if (equipo.datos_metrologicos?.division_escala === undefined) {
+  if (!equipment.metrologicalData) {
     return <p>El equipo no tiene datos metrologicos</p>;
   }
   return (
@@ -90,12 +92,12 @@ function EditarDatosmetrologicos({ equipo }: Props) {
           <div className="grid grid-cols-2 grid-rows-1 gap-2">
             <FormField
               control={form.control}
-              name="codigo"
+              name="code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Codigo Equipo</FormLabel>
                   <FormControl>
-                    <Input {...field} value={equipo?.codigo} disabled />
+                    <Input {...field} value={equipment?.code} disabled />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -103,7 +105,7 @@ function EditarDatosmetrologicos({ equipo }: Props) {
             />
             <FormField
               control={form.control}
-              name="divisionEscala"
+              name="scaleDivision"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Division de escala</FormLabel>
@@ -129,7 +131,7 @@ function EditarDatosmetrologicos({ equipo }: Props) {
             />
             <FormField
               control={form.control}
-              name="rangoMaximo"
+              name="maximumRange"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Rango Maximo</FormLabel>
@@ -142,7 +144,7 @@ function EditarDatosmetrologicos({ equipo }: Props) {
             />
             <FormField
               control={form.control}
-              name="rangoMinimo"
+              name="minimumRange"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Rango Minimo</FormLabel>
@@ -155,7 +157,7 @@ function EditarDatosmetrologicos({ equipo }: Props) {
             />
             <FormField
               control={form.control}
-              name="resolucion"
+              name="resolution"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Resolucion</FormLabel>
@@ -178,13 +180,13 @@ function EditarDatosmetrologicos({ equipo }: Props) {
 
           <Button
             type="submit"
-            disabled={false}
+            disabled={isLoading}
             className="mx-auto"
             style={{ display: isDisabled ? "none" : "block" }}
           >
             <Loader2
               className={
-                "mr-2 h-4 w-4 animate-spin " + (!false ? "hidden" : "")
+                "mr-2 h-4 w-4 animate-spin " + (!isLoading ? "hidden" : "")
               }
             />
             Guardar Cambios
@@ -194,7 +196,7 @@ function EditarDatosmetrologicos({ equipo }: Props) {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
         </form>

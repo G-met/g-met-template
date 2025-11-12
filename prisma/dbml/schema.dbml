@@ -140,7 +140,6 @@ Table tipo_patron {
   fecha_creacion DateTime [default: `now()`, not null]
   fecha_actualizacion DateTime [not null]
   fecha_inactivacion DateTime
-  cliente_id String [not null]
 }
 
 Table datos_complementarios_equipo {
@@ -268,13 +267,28 @@ Table patron {
   serie String [not null]
   marca_id String [not null]
   fecha_creacion DateTime [default: `now()`, not null]
-  fecha_actualizacion DateTime [default: `now()`, not null]
+  fecha_actualizacion DateTime [not null]
   fecha_inactivacion DateTime
   ubicacion_id String [not null]
-  datos_metrologicos_patronesId String
   cliente_id String [not null]
   tipo_patron_id String [not null]
   documentos Json [not null, default: '[]']
+}
+
+Table patron_lote {
+  id String [pk]
+  lote String [not null]
+  fecha_vencimiento DateTime [not null]
+  patron_id String [not null]
+  tipo_patron_id String [not null]
+  fecha_creacion DateTime [default: `now()`, not null]
+  fecha_actualizacion DateTime [not null]
+  fecha_inactivacion DateTime
+  cliente_id String [not null]
+
+  indexes {
+    (cliente_id, lote, fecha_vencimiento) [unique]
+  }
 }
 
 Enum UserStatus {
@@ -345,8 +359,6 @@ Ref: datos_metrologicos_patrones.cliente_id > cliente.id
 
 Ref: datos_metrologicos_patrones.patrones_id - patron.id
 
-Ref: tipo_patron.cliente_id > cliente.id
-
 Ref: datos_complementarios_equipo.cliente_id > cliente.id
 
 Ref: datos_complementarios_equipo.equipo_id - equipo.id
@@ -398,3 +410,9 @@ Ref: patron.marca_id > marca.id
 Ref: patron.tipo_patron_id > tipo_patron.id
 
 Ref: patron.ubicacion_id > ubicacion.id
+
+Ref: patron_lote.cliente_id > cliente.id
+
+Ref: patron_lote.patron_id > patron.id
+
+Ref: patron_lote.tipo_patron_id > tipo_patron.id
