@@ -25,3 +25,11 @@ export interface PatternScheduleResponse {
   alertStatus: AlertStatus;
   status: ScheduleStatus;
 }
+
+export interface CreatePatternSchedule {
+  activityId: string;
+  frequencyId: string;
+  patternId: string;
+  scheduledDate: string;
+  status: ScheduleStatus;
+}
