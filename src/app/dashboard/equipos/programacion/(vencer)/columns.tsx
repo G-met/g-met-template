@@ -5,54 +5,59 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/badge";
 import clsx from "clsx";
 
-import { EstadoProgramacion } from "@prisma/client";
-import {
-  EquipoProgramacionDto,
-  Estatus,
-} from "@/app/api/programacion-equipos/application/dto/listadoPatronesProgramados.dto";
 import { DropDownMenuEjecucionEquipo } from "./DropDownMenu";
+import { EquipmentScheduleResponse, AlertLevel, ScheduleStatus } from "../../types/equipmentSchedule.types";
 
-export const columns: ColumnDef<EquipoProgramacionDto>[] = [
+export const columns: ColumnDef<EquipmentScheduleResponse>[] = [
   {
-    accessorKey: "codigo",
-    header: "codigo",
+    accessorKey: "code",
+    header: "Código",
   },
   {
-    accessorKey: "descripcion",
-    header: "descripcion",
+    accessorKey: "description",
+    header: "Descripción",
   },
   {
-    accessorKey: "fechaProgramacion",
-    header: "Fecha programacion",
+    accessorKey: "scheduledDate",
+    header: "Fecha programación",
   },
   {
-    accessorKey: "actividad",
+    accessorKey: "activity",
     header: "Actividad",
   },
   {
-    accessorKey: "frecuencia",
+    accessorKey: "frequency",
     header: "Frecuencia",
   },
   {
-    accessorKey: "estado",
+    accessorKey: "status",
     header: "Estado",
   },
   {
-    accessorKey: "alertaEstado",
+    accessorKey: "alertStatus",
     header: "Tiempo disponible",
     cell: ({ row }) => {
-      //TODO: pasar esta logica a variantes
-      const estatus = row.getValue<Estatus>("alertaEstado");
+      const alertStatus = row.getValue<EquipmentScheduleResponse["alertStatus"]>("alertStatus");
+      const daysText = Math.abs(alertStatus.daysUntilDue);
+      
+      let description = "";
+      if (alertStatus.daysUntilDue < 0) {
+        description = "vencido";
+      } else if (alertStatus.daysUntilDue === 0) {
+        description = "Vence hoy";
+      } else {
+        description = `${daysText} días`;
+      }
+      
       return (
         <Badge
           className={clsx({
-            "bg-green-500": estatus.color === "success",
-            "bg-orange-500": estatus.color === "warning",
-            "bg-red-500": estatus.color === "danger",
-            "bg-red-700": estatus.color === "expired",
+            "bg-green-500": alertStatus.level === AlertLevel.ON_TIME,
+            "bg-orange-500": alertStatus.level === AlertLevel.WARNING,
+            "bg-red-700": alertStatus.level === AlertLevel.EXPIRED,
           })}
         >
-          {estatus.descripcion}
+          {description}
         </Badge>
       );
     },
@@ -60,8 +65,8 @@ export const columns: ColumnDef<EquipoProgramacionDto>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const isCompleted =
-        row.original.estado === EstadoProgramacion.COMPLETADO ? true : false;
+      const isCompleted = row.original.status === ScheduleStatus.COMPLETADO;
+
       return (
         <DropDownMenuEjecucionEquipo
           isCompleted={isCompleted}
