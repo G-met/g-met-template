@@ -35,51 +35,49 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/src/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { obtenerActividades } from "../../../hooks/useActividad";
-import { obtenerFrecuencias } from "../../../hooks/useFrecuencia";
-import {
-  crearProgramacionPatron,
-  obtenerPatronPorCodigo,
-} from "../../../hooks/usePatron";
+import { useGetAllActivities } from "../../../configuracion/actividad/hook/useActivity";
+import { useGetAllFrequencies } from "../../../configuracion/frecuencia/hook/useFrequency";
+import { useGetPatternByCode } from "../../hook/usePattern";
+import { useCreatePatternSchedule } from "../../hook/usePatternSchedule";
+import { ScheduleStatus } from "../../types/patternSchedule.types";
 
 const formSchema = z.object({
-  codigo: z.string(),
-  descripcion: z.string(),
-  actividad: z.string().min(2, { message: "actividad requerida" }),
-  frecuencia: z.string().min(2, { message: "frecuencia requerida" }),
-  fechaInicio: z.date({ required_error: "fechaInicio requerida" }),
+  code: z.string(),
+  description: z.string(),
+  activity: z.string().min(2, { message: "actividad requerida" }),
+  frequency: z.string().min(2, { message: "frecuencia requerida" }),
+  startDate: z.date({ required_error: "fechaInicio requerida" }),
 });
-export default function Programar() {
+export default function SchedulePattern() {
   const params = useParams<{ codigo: string }>();
   const router = useRouter();
 
   const { toast } = useToast();
-  const { obtener, patron } = obtenerPatronPorCodigo(params.codigo);
-  const { actividades } = obtenerActividades();
-  const { frecuencias } = obtenerFrecuencias();
-  const { crear, isLoading, error, errorMsg } = crearProgramacionPatron();
-  useEffect(() => {
-    obtener();
-  }, [obtener]);
+  const { pattern } = useGetPatternByCode(params.codigo);
+  const { activities } = useGetAllActivities();
+  const { frequencies } = useGetAllFrequencies();
+  const { create, isLoading, error, errorMessage } = useCreatePatternSchedule();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {},
   });
   useEffect(() => {
-    form.setValue("codigo", patron?.codigo!);
-    form.setValue("descripcion", patron?.descripcion!);
-  }, [form, patron]);
+    if (pattern) {
+      form.setValue("code", pattern.code);
+      form.setValue("description", pattern.description);
+    }
+  }, [form, pattern]);
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await crear({
-      actividadId: values.actividad,
-      codigo: values.codigo,
-      fechaProgramacion: values.fechaInicio,
-      frecuenciaId: values.frecuencia,
-      patronId: patron?.id!,
+    await create({
+      activityId: values.activity,
+      scheduledDate: values.startDate.toISOString(),
+      frequencyId: values.frequency,
+      patternId: pattern?.id!,
+      status: ScheduleStatus.PENDIENTE,
     });
     toast({
-      title: "patron se guardo correctamente",
+      title: "Pattern successfully saved",
       variant: "success",
     });
     router.push("/dashboard/patrones/programacion");
@@ -88,26 +86,26 @@ export default function Programar() {
   return (
     <>
       <h2 className="text-center mb-4 font-semibold">
-        Programacion de Equipos
+        Equipment Scheduling
       </h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="grid grid-cols-2 grid-rows-1 gap-2">
             <FormField
               control={form.control}
-              name="codigo"
+              name="code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Codigo</FormLabel>
                   <FormControl>
-                    <Input disabled {...field} value={patron?.codigo ?? ""} />
+                    <Input disabled {...field} value={pattern?.code ?? ""} />
                   </FormControl>
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
-              name="descripcion"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descripcion</FormLabel>
@@ -115,7 +113,7 @@ export default function Programar() {
                     <Input
                       disabled
                       {...field}
-                      value={patron?.descripcion ?? ""}
+                      value={pattern?.description ?? ""}
                     />
                   </FormControl>
                   <FormMessage />
@@ -125,7 +123,7 @@ export default function Programar() {
 
             <FormField
               control={form.control}
-              name="actividad"
+              name="activity"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Actividad</FormLabel>
@@ -136,10 +134,10 @@ export default function Programar() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {actividades.map((res) => (
+                      {activities.map((res) => (
                         <>
                           <SelectItem value={res.id} key={res.id}>
-                            {res.descripcion}
+                            {res.description}
                           </SelectItem>
                         </>
                       ))}
@@ -151,7 +149,7 @@ export default function Programar() {
             />
             <FormField
               control={form.control}
-              name="frecuencia"
+              name="frequency"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Frecuencia</FormLabel>
@@ -162,10 +160,10 @@ export default function Programar() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {frecuencias.map((res) => (
+                      {frequencies.map((res) => (
                         <>
                           <SelectItem value={res.id} key={res.id}>
-                            {res.descripcion}
+                            {res.description}
                           </SelectItem>
                         </>
                       ))}
@@ -178,7 +176,7 @@ export default function Programar() {
 
             <FormField
               control={form.control}
-              name="fechaInicio"
+              name="startDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Fecha inicial</FormLabel>
@@ -226,14 +224,14 @@ export default function Programar() {
                 "mr-2 h-4 w-4 animate-spin " + (!isLoading ? "hidden" : "")
               }
             />
-            Programa Patron
+            Schedule Pattern
           </Button>
 
           {error && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
         </form>

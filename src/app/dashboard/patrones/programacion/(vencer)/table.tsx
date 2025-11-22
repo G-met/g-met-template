@@ -1,26 +1,46 @@
 "use client";
+import { useState } from "react";
 import { columns } from "./columns";
-//import SearchForm from "@/components/serch-form";
-import { useEffect, useState } from "react";
-//import Paginador from "@/components/paginador";
-import { DataTable } from "@/components/data-table";
-import { obtenerProgramacionPatrones } from "../../../hooks/useProgramacionPatrones";
-import Paginador from "@/components/paginador";
+import { useGetAllPatternSchedules } from "../../hook/usePatternSchedule";
+import {
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { DataTableV2 } from "@/components/data-table-v2";
+import { DataTablePagination } from "@/components/data-table-pagination";
+import { DataTableFilterInput } from "@/components/data-table-filter-input";
+
 export default function ProgramacionPatrones() {
-  const { obtenerPatrones, patrones, isLoading, page, existePaginaSiguiente } =
-    obtenerProgramacionPatrones();
-  useEffect(() => {
-    obtenerPatrones();
-  }, []);
+  const { patternSchedules, isLoading } = useGetAllPatternSchedules();
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const table = useReactTable({
+    data: patternSchedules,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      columnFilters,
+    },
+  });
 
   return (
     <>
-      <DataTable columns={columns} data={patrones} isLoading={isLoading} />
-      <Paginador
-        currentPage={page}
-        obtenervalores={obtenerPatrones}
-        existeSiguientePagina={existePaginaSiguiente}
-      />
+      <div className="flex items-center py-4">
+        <DataTableFilterInput
+          table={table}
+          columnId="code"
+          placeholder="Buscar por código"
+          className="max-w-sm"
+        />
+      </div>
+      <DataTableV2 columns={columns} table={table} isLoading={isLoading} />
+      <DataTablePagination table={table} />
     </>
   );
 }
