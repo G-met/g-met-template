@@ -2,10 +2,6 @@
 import { useRouter, useParams } from "next/navigation";
 import React, { useEffect } from "react";
 import {
-  crearProgramacionEquipo,
-  useObtenerEquipoPorCodigo,
-} from "../../../hooks/useEquipo";
-import {
   Form,
   FormControl,
   FormDescription,
@@ -28,8 +24,11 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, CalendarIcon, Loader2 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { obtenerActividades } from "../../../hooks/useActividad";
-import { obtenerFrecuencias } from "../../../hooks/useFrecuencia";
+import { useGetAllActivities } from "../../../configuracion/actividad/hook/useActivity";
+import { useGetAllFrequencies } from "../../../configuracion/frecuencia/hook/useFrequency";
+import { useGetEquipmentByCode } from "../../hook/useEquipment";
+import { useCreateEquipmentSchedule } from "../../hook/useEquipmentSchedule";
+import { ScheduleStatus } from "../../types/equipmentSchedule.types";
 import {
   Popover,
   PopoverContent,
@@ -42,40 +41,39 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
 const formSchema = z.object({
-  codigo: z.string(),
-  descripcion: z.string(),
-  actividad: z.string().min(2, { message: "actividad requerida" }),
-  frecuencia: z.string().min(2, { message: "frecuencia requerida" }),
-  fechaInicio: z.date({ required_error: "fechaInicio requerida" }),
+  code: z.string(),
+  description: z.string(),
+  activity: z.string().min(2, { message: "actividad requerida" }),
+  frequency: z.string().min(2, { message: "frecuencia requerida" }),
+  startDate: z.date({ required_error: "fechaInicio requerida" }),
 });
-export default function Programar() {
+export default function ScheduleEquipment() {
   const params = useParams<{ codigo: string }>();
   const router = useRouter();
 
   const { toast } = useToast();
-  const { obtener, equipo } = useObtenerEquipoPorCodigo(params.codigo);
-  const { actividades } = obtenerActividades();
-  const { frecuencias } = obtenerFrecuencias();
-  const { crear, isLoading, error, errorMsg } = crearProgramacionEquipo();
-  useEffect(() => {
-    obtener();
-  }, []);
+  const { equipment } = useGetEquipmentByCode(params.codigo);
+  const { activities } = useGetAllActivities();
+  const { frequencies } = useGetAllFrequencies();
+  const { create, isLoading, error, errorMessage } = useCreateEquipmentSchedule();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {},
   });
   useEffect(() => {
-    form.setValue("codigo", equipo?.codigo!);
-    form.setValue("descripcion", equipo?.descripcion!);
-  }, [equipo]);
+    if (equipment) {
+      form.setValue("code", equipment.code);
+      form.setValue("description", equipment.description);
+    }
+  }, [form, equipment]);
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await crear({
-      actividadId: values.actividad,
-      codigo: values.codigo,
-      fechaProgramacion: values.fechaInicio.toISOString(),
-      frecuenciaId: values.frecuencia,
-      equipoId: equipo?.id!,
+    await create({
+      activityId: values.activity,
+      scheduledDate: values.startDate.toISOString(),
+      frequencyId: values.frequency,
+      equipmentId: equipment?.id!,
+      status: ScheduleStatus.PENDIENTE,
     });
     toast({
       title: "Equipo se guardo correctamente",
@@ -94,19 +92,19 @@ export default function Programar() {
           <div className="grid grid-cols-2 grid-rows-1 gap-2">
             <FormField
               control={form.control}
-              name="codigo"
+              name="code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Codigo</FormLabel>
                   <FormControl>
-                    <Input disabled {...field} value={equipo?.codigo ?? ""} />
+                    <Input disabled {...field} value={equipment?.code ?? ""} />
                   </FormControl>
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
-              name="descripcion"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descripcion</FormLabel>
@@ -114,7 +112,7 @@ export default function Programar() {
                     <Input
                       disabled
                       {...field}
-                      value={equipo?.descripcion ?? ""}
+                      value={equipment?.description ?? ""}
                     />
                   </FormControl>
                   <FormMessage />
@@ -124,7 +122,7 @@ export default function Programar() {
 
             <FormField
               control={form.control}
-              name="actividad"
+              name="activity"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Actividad</FormLabel>
@@ -135,10 +133,10 @@ export default function Programar() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {actividades.map((res) => (
+                      {activities.map((res) => (
                         <>
                           <SelectItem value={res.id} key={res.id}>
-                            {res.descripcion}
+                            {res.description}
                           </SelectItem>
                         </>
                       ))}
@@ -150,7 +148,7 @@ export default function Programar() {
             />
             <FormField
               control={form.control}
-              name="frecuencia"
+              name="frequency"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Frecuencia</FormLabel>
@@ -161,10 +159,10 @@ export default function Programar() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {frecuencias.map((res) => (
+                      {frequencies.map((res) => (
                         <>
                           <SelectItem value={res.id} key={res.id}>
-                            {res.descripcion}
+                            {res.description}
                           </SelectItem>
                         </>
                       ))}
@@ -177,7 +175,7 @@ export default function Programar() {
 
             <FormField
               control={form.control}
-              name="fechaInicio"
+              name="startDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Fecha inicial</FormLabel>
@@ -232,7 +230,7 @@ export default function Programar() {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
         </form>
