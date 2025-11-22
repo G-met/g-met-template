@@ -40,14 +40,14 @@ import { Input } from "@/components/ui/input";
 import { TipoEjecutor } from "@/app/api/common/types";
 import { ComboboxForm } from "./Combobox";
 import { useState } from "react";
-import { useListadoProvedores } from "@/app/dashboard/hooks/useProveedor";
-import { useListadoUsuarios } from "@/app/dashboard/hooks/useUsuario";
+import { useGetAllProviders } from "@/app/dashboard/configuracion/proveedor/hook/useProvider";
+import { useGetAllUsers } from "@/app/dashboard/configuracion/usuario/hook/useUser";
 import { Role } from "@/app/api/usuarios/dominio/entity";
 import { disabledDays } from "@/lib/helpers/dates";
 
 const FormSchema = z.object({
-  fechaEjecucion: z.date({ required_error: "fechaInicio requerida" }),
-  observaciones: z
+  executionDate: z.date({ required_error: "fechaInicio requerida" }),
+  observations: z
     .string()
     .min(10, {
       message: "observaciones must be at least 10 characters.",
@@ -55,51 +55,53 @@ const FormSchema = z.object({
     .max(160, {
       message: "observaciones must not be longer than 30 characters.",
     }),
-  archivos: z
+  files: z
     .any()
     .refine(validateFileListSize, {
       message: "Los archivos no deben pensar mas de 4 MB",
     })
     .optional(),
-  ejecutorId: z.string(),
-  tipoEjecutor: z.nativeEnum(TipoEjecutor),
+  executorId: z.string(),
+  executorType: z.nativeEnum(TipoEjecutor),
 });
 interface Props {
-  programacionPatronId: string;
+  schedulePatternId: string;
   closeModal: () => void;
 }
 
 export function FormEjecucionPatron({
-  programacionPatronId,
+  schedulePatternId,
   closeModal,
 }: Props) {
   const router = useRouter();
-  const { proveedores } = useListadoProvedores();
-  const listValuesProveedores = proveedores.map((proveedor) => ({
-    value: proveedor.id,
-    label: proveedor.nombre,
+  const { providers } = useGetAllProviders();
+  const providerListValues = providers.map((provider) => ({
+    value: provider.id,
+    label: provider.name,
   }));
 
-  const { usuarios } = useListadoUsuarios({
-    roles: [Role.Metrologo, Role.Auxiliar],
-  });
-  const listValuesUsuarios = usuarios.map((usuario) => ({
-    value: usuario.id,
-    label: usuario.nombre,
-  }));
-  const { crear, error, errorMsg, isLoading } = useCrearEjecucionPatron();
+  const { users } = useGetAllUsers();
+  const userListValues = users
+    .filter((user) => 
+      user.role === Role.Metrologo || user.role === Role.Auxiliar
+    )
+    .map((user) => ({
+      value: user.id,
+      label: `${user.firstName} ${user.lastName}`,
+    }));
+  const { crear: createExecution, error, errorMsg, isLoading } = useCrearEjecucionPatron();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    await crear({
-      ejecutorId: data.ejecutorId,
-      fechaEjecucion: data.fechaEjecucion.toISOString(),
-      observaciones: data.observaciones,
-      programacionPatronId: programacionPatronId,
-      archivos: data.archivos,
-      tipoEjecutor: data.tipoEjecutor,
+    await createExecution({
+      ejecutorId: data.executorId,
+      fechaEjecucion: data.executionDate.toISOString(),
+      observaciones: data.observations,
+      programacionPatronId: schedulePatternId,
+      archivos: data.files,
+      tipoEjecutor: data.executorType,
     });
     toast({
       title: "Patron ejecutado corrrectamente",
@@ -108,17 +110,17 @@ export function FormEjecucionPatron({
     closeModal();
     router.push("/dashboard/patrones/ejecucion");
   }
-  const [tipoProvider, setTipoProvider] = useState("");
-  const tipoProveedor = (field: (...event: any[]) => void, e: string) => {
-    field(e);
-    setTipoProvider(e);
+  const [executorType, setExecutorType] = useState("");
+  const handleExecutorTypeChange = (field: (...event: any[]) => void, value: string) => {
+    field(value);
+    setExecutorType(value);
   };
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="fechaEjecucion"
+          name="executionDate"
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Fecha Ejecucion</FormLabel>
@@ -162,12 +164,12 @@ export function FormEjecucionPatron({
 
         <FormField
           control={form.control}
-          name="tipoEjecutor"
+          name="executorType"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Tipo de ejecutor</FormLabel>
               <Select
-                onValueChange={(e) => tipoProveedor(field.onChange, e)}
+                onValueChange={(e) => handleExecutorTypeChange(field.onChange, e)}
                 value={field.value}
               >
                 <FormControl>
@@ -184,27 +186,27 @@ export function FormEjecucionPatron({
             </FormItem>
           )}
         />
-        {tipoProvider === TipoEjecutor.EXTERNO && (
+        {executorType === TipoEjecutor.EXTERNO && (
           <ComboboxForm
             form={form}
-            listValues={listValuesProveedores}
+            listValues={providerListValues}
             label="Proveedores"
-            name="ejecutorId"
+            name="executorId"
             placeholder="Seleccione un proveedor"
           />
         )}
-        {tipoProvider === TipoEjecutor.INTERNO && (
+        {executorType === TipoEjecutor.INTERNO && (
           <ComboboxForm
             form={form}
-            listValues={listValuesUsuarios}
+            listValues={userListValues}
             label="Usuarios"
-            name="ejecutorId"
+            name="executorId"
             placeholder="Seleccione un usuario"
           />
         )}
         <FormField
           control={form.control}
-          name="observaciones"
+          name="observations"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Observaciones</FormLabel>
@@ -222,7 +224,7 @@ export function FormEjecucionPatron({
 
         <FormField
           control={form.control}
-          name="archivos"
+          name="files"
           render={({ field: { value, onChange, ...fieldProps } }) => (
             <FormItem>
               <FormLabel>Archivos</FormLabel>
