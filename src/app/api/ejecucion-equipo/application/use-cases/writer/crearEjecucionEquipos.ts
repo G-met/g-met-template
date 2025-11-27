@@ -15,7 +15,7 @@ import { UsuarioService } from "../../../../usuarios/dominio/service/index";
 import { ProveedorService } from "../../../../proveedor/dominio/service/index";
 import { Usuario } from "@/app/api/usuarios/dominio/entity";
 import { Proveedor } from "@/app/api/proveedor/dominio/entity";
-import { Documentos, TipoEjecutor } from "@/app/api/common/types";
+import { Documentos, ExecutorType } from "@/app/api/common/types";
 
 export class CrearEjecucionEquipos {
   constructor(
@@ -29,7 +29,7 @@ export class CrearEjecucionEquipos {
   async execute(clienteId: string, dto: CrearEjecucionDTO) {
     let usuario: Usuario | undefined;
     let proveedor: Proveedor | undefined;
-    if (dto.tipoEjecutor === TipoEjecutor.INTERNO) {
+    if (dto.tipoEjecutor === ExecutorType.INTERNO) {
       usuario = await this.usuarioService.validarUsuarioPorId(dto.ejecutorId);
     } else {
       proveedor = await this.proveedorService.validarPorId(

@@ -10,13 +10,14 @@ import { MoreHorizontal } from "lucide-react";
 interface Props {
   isCompleted: boolean;
   codeId: string;
+  schedulePatternId: string;
 }
 
 import { DialogWrapper } from "@/components/dialogWrapper";
-import { FormEjecucionPatron } from "./form";
+import { PatternExecutionForm } from "./form";
 import { useModalDropdown } from "@/app/dashboard/hooks/useModal";
 import { useRouter } from "next/navigation";
-export const DropDownMenuEjecucionPatron = ({ isCompleted, codeId }: Props) => {
+export const DropDownMenuEjecucionPatron = ({ isCompleted, codeId, schedulePatternId }: Props) => {
   const router = useRouter();
   const {
     isOpenModal,
@@ -51,9 +52,9 @@ export const DropDownMenuEjecucionPatron = ({ isCompleted, codeId }: Props) => {
         title="Crear Ejecucion"
         description="Ingresa la informacion solicitada"
       >
-        <FormEjecucionPatron
+        <PatternExecutionForm
           closeModal={closeModal}
-          programacionPatronId={codeId}
+          schedulePatternId={schedulePatternId}
         />
       </DialogWrapper>
     </>

@@ -12,7 +12,7 @@ import {
 } from "@/app/api/programacion-patrones/domain/repository";
 import { IFilesAdaptor } from "@/app/api/common/files/saveFiles";
 import { randomUUID } from "crypto";
-import { Documentos, TipoEjecutor } from "@/app/api/common/types";
+import { Documentos, ExecutorType } from "@/app/api/common/types";
 import { UsuarioService } from "@/app/api/usuarios/dominio/service";
 import { ProveedorService } from "@/app/api/proveedor/dominio/service";
 import { Usuario } from "@/app/api/usuarios/dominio/entity";
@@ -30,7 +30,7 @@ export class CrearEjecucionPatrones {
   async execute(clienteId: string, dto: CrearEjecucionDTO) {
     let usuario: Usuario | undefined;
     let proveedor: Proveedor | undefined;
-    if (dto.tipoEjecutor === TipoEjecutor.INTERNO) {
+    if (dto.tipoEjecutor === ExecutorType.INTERNO) {
       usuario = await this.usuarioService.validarUsuarioPorId(dto.ejecutorId);
     } else {
       proveedor = await this.proveedorService.validarPorId(

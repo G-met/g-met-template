@@ -1,4 +1,4 @@
-import { Documentos, TipoEjecutor } from "@/app/api/common/types";
+import { Documentos, ExecutorType } from "@/app/api/common/types";
 import { Cliente } from "../../../cliente/dominio/entity";
 import { ProgramacionEquipos } from "@/app/api/equipos/dominio";
 import { Proveedor } from "@/app/api/proveedor/dominio/entity";
@@ -13,7 +13,7 @@ export class EjecucionEquipo {
   documentos: Documentos[];
   proveedor?: Proveedor;
   usuario?: Usuario;
-  tipoEjecutor: TipoEjecutor;
+  tipoEjecutor: ExecutorType;
 
   constructor(attributes: Partial<EjecucionEquipo>) {
     this.id = attributes.id ?? "";
@@ -25,6 +25,6 @@ export class EjecucionEquipo {
     this.documentos = attributes.documentos ?? [];
     this.proveedor = attributes.proveedor;
     this.usuario = attributes.usuario;
-    this.tipoEjecutor = attributes.tipoEjecutor ?? TipoEjecutor.INTERNO;
+    this.tipoEjecutor = attributes.tipoEjecutor ?? ExecutorType.INTERNO;
   }
 }

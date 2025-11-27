@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { EjecucionEquipo } from "../../dominio/entity";
 import { EjecucionEquipoWriteRepository } from "../../dominio/repository";
 import { Prisma } from "@prisma/client";
-import { Documentos, TipoEjecutor } from "@/app/api/common/types";
+import { Documentos, ExecutorType } from "@/app/api/common/types";
 
 export class EjecucionEquipoWriteRepositoryImp
   implements EjecucionEquipoWriteRepository
@@ -37,7 +37,7 @@ export class EjecucionEquipoWriteRepositoryImp
       id: res.id,
       observaciones: res.observaciones,
       documentos: res.documentos as Documentos[],
-      tipoEjecutor: res.tipoEjecutor as TipoEjecutor,
+      tipoEjecutor: res.tipoEjecutor as ExecutorType,
     };
   }
 }

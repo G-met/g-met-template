@@ -1,7 +1,7 @@
 import { Responsable } from "@/app/api/responsables/domain/entity";
 import { Cliente } from "../../../cliente/dominio/entity";
 import { ProgramacionPatrones } from "@/app/api/programacion-patrones/domain/entity";
-import { Documentos, TipoEjecutor } from "@/app/api/common/types";
+import { Documentos, ExecutorType } from "@/app/api/common/types";
 import { Proveedor } from "@/app/api/proveedor/dominio/entity";
 import { Usuario } from "@/app/api/usuarios/dominio/entity";
 
@@ -14,7 +14,7 @@ export class EjecucionPatron {
   documentos?: Documentos[];
   proveedor?: Proveedor;
   usuario?: Usuario;
-  tipoEjecutor: TipoEjecutor;
+  tipoEjecutor: ExecutorType;
 
   constructor(attributes: Partial<EjecucionPatron>) {
     this.id = attributes.id ?? "";
@@ -26,6 +26,6 @@ export class EjecucionPatron {
     this.documentos = attributes.documentos ?? [];
     this.proveedor = attributes.proveedor;
     this.usuario = attributes.usuario;
-    this.tipoEjecutor = attributes.tipoEjecutor ?? TipoEjecutor.INTERNO;
+    this.tipoEjecutor = attributes.tipoEjecutor ?? ExecutorType.INTERNO;
   }
 }

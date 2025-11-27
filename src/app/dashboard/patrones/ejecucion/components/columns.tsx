@@ -1,6 +1,5 @@
 "use client";
 
-import { ListarEjecucionDTO } from "@/app/api/ejecucion-patron/application/dto/listarEjecucionPatrones.dto";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,44 +13,45 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
+import { PatternExecutionResponse } from "../../types/patternExecution.types";
 
-export const columns: ColumnDef<ListarEjecucionDTO>[] = [
+export const columns: ColumnDef<PatternExecutionResponse>[] = [
   {
-    accessorKey: "codigo",
+    accessorKey: "code",
     header: "codigo",
   },
   {
-    accessorKey: "responsable",
+    accessorKey: "responsible",
     header: "responsable",
   },
   {
-    accessorKey: "observaciones",
+    accessorKey: "observations",
     header: "Observaciones",
     size: 200, // Establece un ancho fijo de 200px
     cell: ({ row }) => {
-      const observaciones = row.getValue("observaciones") as string;
+      const observations = row.getValue("observations") as string;
       return (
         <p
           className="max-w-xs max-h-[300px] overflow-y-auto"
           style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
         >
-          {observaciones}
+          {observations}
         </p>
       );
     },
   },
   {
-    accessorKey: "fechaEjecucion",
+    accessorKey: "executionDate",
     header: "fecha Ejecucion",
   },
   {
-    accessorKey: "patronDescripcion",
+    accessorKey: "patternDescription",
     header: "Descripcion del patron",
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const documentos = row.original?.documentos;
+      const documents = row.original?.documents;
 
       return (
         <DropdownMenu>
@@ -62,11 +62,11 @@ export const columns: ColumnDef<ListarEjecucionDTO>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuSub>
-              {documentos?.length ? (
+              {documents?.length ? (
                 <>
                   <DropdownMenuSubTrigger>Documentos</DropdownMenuSubTrigger>
                   <DropdownMenuSubContent>
-                    {documentos?.map((e) => (
+                    {documents?.map((e) => (
                       <>
                         <DropdownMenuItem>
                           <Link

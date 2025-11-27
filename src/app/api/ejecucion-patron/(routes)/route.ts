@@ -13,7 +13,7 @@ import { EjecucionPatronesReadRepositoryImp } from "../infrastructure/reader/eje
 import { ProgramacionPatronesRepositoryReadImp } from "../../programacion-patrones/infraestructure/read/programacionPatronesRepoImp";
 import { ProgramacionPatronesWriteRepoImp } from "../../programacion-patrones/infraestructure/write/programacionPatronesWriteRepoImp";
 import { SaveFiles } from "../../common/files/saveFiles";
-import { TipoEjecutor } from "../../common/types";
+import { ExecutorType } from "../../common/types";
 import { ProveedorReadRepositoryImp } from "../../proveedor/infrastructure/reader/proveedorReadRepositoryImp";
 import { ProveedorWriteRepositoryImp } from "../../proveedor/infrastructure/writer/proveedorWriteRepositoryImp";
 import { ProveedorService } from "../../proveedor/dominio/service";
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
       ejecutorId: formData.get("ejecutorId") as string,
       programacionPatronId: formData.get("programacionPatronId") as string,
       archivos: formData.getAll("archivos") as File[],
-      tipoEjecutor: formData.get("tipoEjecutor") as TipoEjecutor,
+      tipoEjecutor: formData.get("tipoEjecutor") as ExecutorType,
     };
     validarCrearEjecucionPatron(body);
     const session = await auth();

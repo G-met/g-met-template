@@ -41,7 +41,7 @@ import { useListadoUsuarios } from "../../../../hooks/useUsuario";
 import { ComboboxForm } from "./Combobox";
 import { useState } from "react";
 import { Role } from "@/app/api/usuarios/dominio/entity";
-import { TipoEjecutor } from "@/app/api/common/types";
+import { ExecutorType } from "@/app/api/common/types";
 import { disabledDays } from "@/lib/helpers/dates";
 const FormSchema = z.object({
   fechaEjecucion: z.date({ required_error: "fechaInicio requerida" }),
@@ -60,7 +60,7 @@ const FormSchema = z.object({
     })
     .optional(),
   ejecutorId: z.string(),
-  tipoEjecutor: z.nativeEnum(TipoEjecutor),
+  tipoEjecutor: z.nativeEnum(ExecutorType),
 });
 type FormValues = z.infer<typeof FormSchema>;
 interface Props {
@@ -177,15 +177,15 @@ export function FormEjecucionEquipo({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value={TipoEjecutor.EXTERNO}>Externo</SelectItem>
-                  <SelectItem value={TipoEjecutor.INTERNO}>Interno</SelectItem>
+                  <SelectItem value={ExecutorType.EXTERNO}>Externo</SelectItem>
+                  <SelectItem value={ExecutorType.INTERNO}>Interno</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
             </FormItem>
           )}
         />
-        {tipoProvider === TipoEjecutor.EXTERNO && (
+        {tipoProvider === ExecutorType.EXTERNO && (
           <ComboboxForm
             form={form}
             listValues={listValuesProveedores}
@@ -194,7 +194,7 @@ export function FormEjecucionEquipo({
             placeholder="Seleccione un proveedor"
           />
         )}
-        {tipoProvider === TipoEjecutor.INTERNO && (
+        {tipoProvider === ExecutorType.INTERNO && (
           <ComboboxForm
             form={form}
             listValues={listValuesUsuarios}

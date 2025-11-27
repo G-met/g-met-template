@@ -33,11 +33,11 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useCrearEjecucionPatron } from "@/app/dashboard/hooks/useEjecucionPatron";
+import { useCreatePatternExecution } from "@/app/dashboard/patrones/hook/usePatternExecution";
 import { useRouter } from "next/navigation";
 import { validateFileListSize } from "@/app/api/common/files/filesSize";
 import { Input } from "@/components/ui/input";
-import { TipoEjecutor } from "@/app/api/common/types";
+import { ExecutorType } from "@/app/api/common/types";
 import { ComboboxForm } from "./Combobox";
 import { useState } from "react";
 import { useGetAllProviders } from "@/app/dashboard/configuracion/proveedor/hook/useProvider";
@@ -62,56 +62,61 @@ const FormSchema = z.object({
     })
     .optional(),
   executorId: z.string(),
-  executorType: z.nativeEnum(TipoEjecutor),
+  executorType: z.nativeEnum(ExecutorType),
 });
 interface Props {
   schedulePatternId: string;
   closeModal: () => void;
 }
 
-export function FormEjecucionPatron({
-  schedulePatternId,
-  closeModal,
-}: Props) {
+export function PatternExecutionForm({ schedulePatternId, closeModal }: Props) {
   const router = useRouter();
   const { providers } = useGetAllProviders();
-  const providerListValues = providers.map((provider) => ({
+  const providerOptions = providers.map((provider) => ({
     value: provider.id,
     label: provider.name,
   }));
 
   const { users } = useGetAllUsers();
-  const userListValues = users
-    .filter((user) => 
-      user.role === Role.Metrologo || user.role === Role.Auxiliar
+  const userOptions = users
+    .filter(
+      (user) => user.role === Role.Metrologo || user.role === Role.Auxiliar
     )
     .map((user) => ({
       value: user.id,
       label: `${user.firstName} ${user.lastName}`,
     }));
-  const { crear: createExecution, error, errorMsg, isLoading } = useCrearEjecucionPatron();
+  const {
+    create,
+    error,
+    errorMessage,
+    isLoading,
+  } = useCreatePatternExecution();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    await createExecution({
-      ejecutorId: data.executorId,
-      fechaEjecucion: data.executionDate.toISOString(),
-      observaciones: data.observations,
-      programacionPatronId: schedulePatternId,
+    await create({
+      executorId: data.executorId,
+      executionDate: data.executionDate.toISOString(),
+      observations: data.observations,
+      patternScheduleId: schedulePatternId,
       archivos: data.files,
-      tipoEjecutor: data.executorType,
+      executorType: data.executorType,
     });
     toast({
-      title: "Patron ejecutado corrrectamente",
+      title: "Patrón ejecutado correctamente",
       variant: "success",
     });
     closeModal();
     router.push("/dashboard/patrones/ejecucion");
   }
-  const [executorType, setExecutorType] = useState("");
-  const handleExecutorTypeChange = (field: (...event: any[]) => void, value: string) => {
+  const [executorType, setExecutorType] = useState<ExecutorType | "">("");
+  const handleExecutorTypeChange = (
+    field: (value: ExecutorType) => void,
+    value: ExecutorType
+  ) => {
     field(value);
     setExecutorType(value);
   };
@@ -169,7 +174,9 @@ export function FormEjecucionPatron({
             <FormItem>
               <FormLabel>Tipo de ejecutor</FormLabel>
               <Select
-                onValueChange={(e) => handleExecutorTypeChange(field.onChange, e)}
+                onValueChange={(e) =>
+                  handleExecutorTypeChange(field.onChange, e as ExecutorType)
+                }
                 value={field.value}
               >
                 <FormControl>
@@ -178,27 +185,27 @@ export function FormEjecucionPatron({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value={TipoEjecutor.EXTERNO}>Externo</SelectItem>
-                  <SelectItem value={TipoEjecutor.INTERNO}>Interno</SelectItem>
+                  <SelectItem value={ExecutorType.EXTERNO}>Externo</SelectItem>
+                  <SelectItem value={ExecutorType.INTERNO}>Interno</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
             </FormItem>
           )}
         />
-        {executorType === TipoEjecutor.EXTERNO && (
+        {executorType === ExecutorType.EXTERNO && (
           <ComboboxForm
             form={form}
-            listValues={providerListValues}
+            listValues={providerOptions}
             label="Proveedores"
             name="executorId"
             placeholder="Seleccione un proveedor"
           />
         )}
-        {executorType === TipoEjecutor.INTERNO && (
+        {executorType === ExecutorType.INTERNO && (
           <ComboboxForm
             form={form}
-            listValues={userListValues}
+            listValues={userOptions}
             label="Usuarios"
             name="executorId"
             placeholder="Seleccione un usuario"
@@ -256,7 +263,7 @@ export function FormEjecucionPatron({
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{errorMsg}</AlertDescription>
+          <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       )}
     </Form>

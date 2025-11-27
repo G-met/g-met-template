@@ -18,7 +18,7 @@ import { UsuarioReadRepositoryImp } from "../../usuarios/infrastructure/read/usu
 import { UsuarioWriteRepositoryImp } from "../../usuarios/infrastructure/write/usuarioWriteRepositoryImp";
 import { ProveedorReadRepositoryImp } from "../../proveedor/infrastructure/reader/proveedorReadRepositoryImp";
 import { ProveedorWriteRepositoryImp } from "../../proveedor/infrastructure/writer/proveedorWriteRepositoryImp";
-import { TipoEjecutor } from "../../common/types";
+import { ExecutorType } from "../../common/types";
 import {
   AgregarArchivosEjecucionDTO,
   validarAgregarArchivos,
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
       ejecutorId: formData.get("ejecutorId") as string,
       programacionEquipoId: formData.get("programacionEquipoId") as string,
       archivos: formData.getAll("archivos") as File[],
-      tipoEjecutor: formData.get("tipoEjecutor") as TipoEjecutor,
+      tipoEjecutor: formData.get("tipoEjecutor") as ExecutorType,
     };
 
     const dto = validarCrearEjecucionEquipo(body);

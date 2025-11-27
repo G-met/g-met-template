@@ -1,5 +1,5 @@
 import { validateFileListSize } from "@/app/api/common/files/filesSize";
-import { TipoEjecutor } from "@/app/api/common/types";
+import { ExecutorType } from "@/app/api/common/types";
 import * as z from "zod";
 
 export interface CrearEjecucionDTO {
@@ -8,7 +8,7 @@ export interface CrearEjecucionDTO {
   programacionEquipoId: string;
   archivos?: File[];
   ejecutorId: string;
-  tipoEjecutor: TipoEjecutor;
+  tipoEjecutor: ExecutorType;
 }
 
 export const schema = z.object({
@@ -19,7 +19,7 @@ export const schema = z.object({
     message: "Los archivos no deben pensar mas de 4 MB",
   }),
   ejecutorId: z.string({ description: "ejecutorId" }),
-  tipoEjecutor: z.nativeEnum(TipoEjecutor),
+  tipoEjecutor: z.nativeEnum(ExecutorType),
 });
 export const validarCrearEjecucionEquipo = (ejecucion: CrearEjecucionDTO) => {
   return schema.parse(ejecucion);

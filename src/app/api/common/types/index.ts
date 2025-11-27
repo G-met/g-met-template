@@ -23,7 +23,7 @@ export interface Documentos {
   url?: string;
 }
 
-export enum TipoEjecutor {
+export enum ExecutorType {
   INTERNO = "INTERNO",
   EXTERNO = "EXTERNO",
 }
