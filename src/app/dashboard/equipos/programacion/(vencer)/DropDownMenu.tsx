@@ -9,7 +9,7 @@ import { MoreHorizontal } from "lucide-react";
 
 interface Props {
   isCompleted: boolean;
-  programacionEquipoId: string;
+  equipmentScheduleId: string;
 }
 
 import { DialogWrapper } from "@/components/dialogWrapper";
@@ -17,7 +17,7 @@ import { FormEjecucionEquipo } from "./form";
 import { useModalDropdown } from "@/app/dashboard/hooks/useModal";
 export const DropDownMenuEjecucionEquipo = ({
   isCompleted,
-  programacionEquipoId,
+  equipmentScheduleId,
 }: Props) => {
   const {
     isOpenModal,
@@ -49,7 +49,7 @@ export const DropDownMenuEjecucionEquipo = ({
       >
         <FormEjecucionEquipo
           closeModal={closeModal}
-          programacionEquipoId={programacionEquipoId}
+          equipmentScheduleId={equipmentScheduleId}
         />
       </DialogWrapper>
     </>

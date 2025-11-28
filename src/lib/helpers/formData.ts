@@ -4,11 +4,20 @@ export const createFormData = <T extends Record<string, any>>(
   const formData = new FormData();
 
   for (const [key, value] of Object.entries(data)) {
-    if (value && key === "archivos") {
-      for (const archivo of value) {
-        formData.append("archivos", archivo);
+    // Handle file arrays
+    if (value && key === "files") {
+      if (value instanceof FileList) {
+        // Handle FileList
+        Array.from(value).forEach((file) => {
+          formData.append(key, file);
+        });
+      } else if (Array.isArray(value)) {
+        // Handle array of files
+        value.forEach((file) => {
+          formData.append(key, file);
+        });
       }
-    } else if (value !== undefined && value !== null) {
+    } else if (value !== undefined && value !== null && value !== "") {
       formData.append(key, value as string);
     }
   }
