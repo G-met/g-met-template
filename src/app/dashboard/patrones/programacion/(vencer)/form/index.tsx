@@ -35,15 +35,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useCreatePatternExecution } from "@/app/dashboard/patrones/hook/usePatternExecution";
 import { useRouter } from "next/navigation";
-import { validateFileListSize } from "@/app/api/common/files/filesSize";
+import { validateFileListSize } from "@/app/dashboard/common/files/filesSize";
 import { Input } from "@/components/ui/input";
-import { ExecutorType } from "@/app/api/common/types";
+import { ExecutorType } from "@/app/dashboard/common/types";
 import { ComboboxForm } from "./Combobox";
 import { useState } from "react";
 import { useGetAllProviders } from "@/app/dashboard/configuracion/proveedor/hook/useProvider";
 import { useGetAllUsers } from "@/app/dashboard/configuracion/usuario/hook/useUser";
-import { Role } from "@/app/api/usuarios/dominio/entity";
 import { disabledDays } from "@/lib/helpers/dates";
+import { Role } from "@/app/dashboard/configuracion/usuario/types";
 
 const FormSchema = z.object({
   executionDate: z.date({ required_error: "fechaInicio requerida" }),
@@ -86,12 +86,8 @@ export function PatternExecutionForm({ schedulePatternId, closeModal }: Props) {
       value: user.id,
       label: `${user.firstName} ${user.lastName}`,
     }));
-  const {
-    create,
-    error,
-    errorMessage,
-    isLoading,
-  } = useCreatePatternExecution();
+  const { create, error, errorMessage, isLoading } =
+    useCreatePatternExecution();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });

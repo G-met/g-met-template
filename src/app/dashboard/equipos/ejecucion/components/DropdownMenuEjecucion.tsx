@@ -20,7 +20,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { DialogFooter, DialogHeader } from "@/components/ui/dialog";
-import { Documentos } from "@/app/api/common/types";
+import { Documentos } from "@/app/dashboard/common/types";
 import { FormEjecucionEquipo } from "./form";
 
 interface Props {
@@ -28,10 +28,10 @@ interface Props {
   ejecucionEquipoId: string;
 }
 const DropdownMenuEjecucion = ({ documentos, ejecucionEquipoId }: Props) => {
-  const [open, SetOpen] = useState(false);
-  const closeModal = () => SetOpen(false);
+  const [open, setOpen] = useState(false);
+  const closeModal = () => setOpen(false);
   return (
-    <Dialog open={open} onOpenChange={SetOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DropdownMenu>
         <DropdownMenuTrigger>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -44,14 +44,14 @@ const DropdownMenuEjecucion = ({ documentos, ejecucionEquipoId }: Props) => {
               <>
                 <DropdownMenuSubTrigger>Documentos</DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
-                  {documentos?.map((e) => (
-                    <DropdownMenuItem key={e.url}>
+                  {documentos?.map((doc) => (
+                    <DropdownMenuItem key={doc.url}>
                       <Link
                         rel="noopener noreferrer"
                         target="_blank"
-                        href={e.url ?? ""}
+                        href={doc.url ?? ""}
                       >
-                        {e.name}
+                        {doc.name}
                       </Link>
                     </DropdownMenuItem>
                   ))}
@@ -71,7 +71,7 @@ const DropdownMenuEjecucion = ({ documentos, ejecucionEquipoId }: Props) => {
           <DialogTitle>Subir archivos ejecucion de equipos</DialogTitle>
           <FormEjecucionEquipo
             closeModal={closeModal}
-            ejecucionEquipoId={ejecucionEquipoId}
+            equipmentExecutionId={ejecucionEquipoId}
           />
         </DialogHeader>
       </DialogContent>

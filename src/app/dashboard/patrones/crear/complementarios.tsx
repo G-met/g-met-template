@@ -17,8 +17,8 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { crearDatosComplementarios } from "../../hooks/usePatron";
-import { cumple } from "@/src/app/api/equipos/dominio";
+import { useCreateComplementaryDataPattern } from "../hook/usePattern";
+import { Cumple } from "@/app/dashboard/common/types";
 import {
   Select,
   SelectContent,
@@ -27,48 +27,54 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const formSchema = z
-  .object({
-    codigo: z.string({ description: "codigo requerido" }),
-    descripcionEspecificaciones: z
-      .string({
-        description: "descripcionEspecificaciones requerido",
-      })
-      .optional(),
-    cumpleEspecificacionInstalaciones: z.nativeEnum(cumple),
-    utilizaSoftware: z.nativeEnum(cumple),
-    descripcionSoftware: z.string().optional(),
-    versionSoftware: z
-      .string({ description: "versionSoftware requerido" })
-      .optional(),
-    fireware: z.string({ description: "fireware requerido" }).optional(),
-    observaciones: z
-      .string({ description: "observaciones requerido" })
-      .optional(),
-  })
-function CrearDatosmetrologicos() {
-  const { crear, error, errorMsg, isLoading } = crearDatosComplementarios();
+const formSchema = z.object({
+  code: z.string({ description: "code required" }),
+  specificationsDescription: z
+    .string({
+      description: "specificationsDescription required",
+    })
+    .optional(),
+  meetsInstallationSpecifications: z.nativeEnum(Cumple),
+  usesSoftware: z.nativeEnum(Cumple),
+  softwareDescription: z.string().optional(),
+  softwareVersion: z
+    .string({ description: "softwareVersion required" })
+    .optional(),
+  firmware: z.string({ description: "firmware required" }).optional(),
+  observations: z
+    .string({ description: "observations required" })
+    .optional(),
+});
+function CreateComplementaryData() {
+  const { create, error, errorMessage, isLoading } =
+    useCreateComplementaryDataPattern();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      codigo: "",
-      cumpleEspecificacionInstalaciones: cumple.NO,
-      descripcionEspecificaciones: "",
-      descripcionSoftware: "",
-      fireware: "",
-      observaciones: "",
-      utilizaSoftware: cumple.NO,
-      versionSoftware: "",
+      code: "",
+      meetsInstallationSpecifications: Cumple.NO,
+      specificationsDescription: "",
+      softwareDescription: "",
+      firmware: "",
+      observations: "",
+      usesSoftware: Cumple.NO,
+      softwareVersion: "",
     },
   });
 
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    
-    await crear({
-      ...values,
+    await create({
+      patternId: values.code,
+      specificationsDescription: values.specificationsDescription ?? "",
+      meetsInstallationSpecifications: values.meetsInstallationSpecifications === Cumple.SI,
+      usesSoftware: values.usesSoftware === Cumple.SI,
+      softwareDescription: values.softwareDescription,
+      softwareVersion: values.softwareVersion,
+      firmware: values.firmware,
+      observations: values.observations,
     });
 
     form.reset();
@@ -84,7 +90,7 @@ function CrearDatosmetrologicos() {
           <div className="grid grid-cols-2 grid-rows-1 gap-2">
             <FormField
               control={form.control}
-              name="codigo"
+              name="code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Codigo Patron</FormLabel>
@@ -97,7 +103,7 @@ function CrearDatosmetrologicos() {
             />
             <FormField
               control={form.control}
-              name="descripcionEspecificaciones"
+              name="specificationsDescription"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descripcion Especificaciones</FormLabel>
@@ -113,7 +119,7 @@ function CrearDatosmetrologicos() {
             />
             <FormField
               control={form.control}
-              name="versionSoftware"
+              name="softwareVersion"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Version software</FormLabel>
@@ -129,7 +135,7 @@ function CrearDatosmetrologicos() {
             />
             <FormField
               control={form.control}
-              name="cumpleEspecificacionInstalaciones"
+              name="meetsInstallationSpecifications"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cumple especificaciones instalaciones</FormLabel>
@@ -140,8 +146,8 @@ function CrearDatosmetrologicos() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={cumple.NO}>No</SelectItem>
-                      <SelectItem value={cumple.SI}>Si</SelectItem>
+                      <SelectItem value={Cumple.NO}>No</SelectItem>
+                      <SelectItem value={Cumple.SI}>Si</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -150,7 +156,7 @@ function CrearDatosmetrologicos() {
             />
             <FormField
               control={form.control}
-              name="utilizaSoftware"
+              name="usesSoftware"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Utiliza software</FormLabel>
@@ -161,8 +167,8 @@ function CrearDatosmetrologicos() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={cumple.NO}>No</SelectItem>
-                      <SelectItem value={cumple.SI}>Si</SelectItem>
+                      <SelectItem value={Cumple.NO}>No</SelectItem>
+                      <SelectItem value={Cumple.SI}>Si</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -171,7 +177,7 @@ function CrearDatosmetrologicos() {
             />
             <FormField
               control={form.control}
-              name="descripcionSoftware"
+              name="softwareDescription"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descripcion software</FormLabel>
@@ -184,7 +190,7 @@ function CrearDatosmetrologicos() {
             />
             <FormField
               control={form.control}
-              name="fireware"
+              name="firmware"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>fireware</FormLabel>
@@ -197,7 +203,7 @@ function CrearDatosmetrologicos() {
             />
             <FormField
               control={form.control}
-              name="observaciones"
+              name="observations"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Observaciones</FormLabel>
@@ -222,7 +228,7 @@ function CrearDatosmetrologicos() {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
         </form>
@@ -231,4 +237,4 @@ function CrearDatosmetrologicos() {
   );
 }
 
-export default CrearDatosmetrologicos;
+export default CreateComplementaryData;

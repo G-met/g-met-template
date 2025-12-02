@@ -14,40 +14,40 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import { useAgregarArchivosEjecucion } from "@/app/dashboard/hooks/useEjecucionEquipo";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
-import { validateFileListSize } from "@/app/api/common/files/filesSize";
+import { validateFileListSize } from "@/app/dashboard/common/files/filesSize";
 import { toast } from "@/components/ui/use-toast";
+import { useUploadFilesToEquipmentExecution } from "../../../hook/useEquipmentExecution";
 const FormSchema = z.object({
-  archivos: z
+  files: z
     .any()
     .refine((value) => value.length > 0, {
       message: "Debe enviar al menos un archivo",
     })
     .refine(validateFileListSize, {
-      message: "Los archivos no deben pensar mas de 4 MB",
+      message: "Los archivos no deben pesar más de 4 MB",
     }),
 });
 type FormValues = z.infer<typeof FormSchema>;
 interface Props {
-  ejecucionEquipoId: string;
+  equipmentExecutionId: string;
   closeModal: () => void;
 }
 
-export function FormEjecucionEquipo({ ejecucionEquipoId, closeModal }: Props) {
-  const { subir, error, errorMsg, isLoading } = useAgregarArchivosEjecucion();
+export function FormEjecucionEquipo({ equipmentExecutionId, closeModal }: Props) {
+  const { uploadFiles, errorMessage, isLoading, isError } = useUploadFilesToEquipmentExecution();
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      archivos: [],
+      files: [],
     },
   });
 
   async function onSubmit(data: FormValues) {
-    await subir({
-      archivos: data.archivos,
-      ejecucionId: ejecucionEquipoId,
+    await uploadFiles({
+      files: Array.from(data.files),
+      code: equipmentExecutionId,
     });
     toast({
       title: "Los archivos se han subido correctamente",
@@ -61,7 +61,7 @@ export function FormEjecucionEquipo({ ejecucionEquipoId, closeModal }: Props) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="archivos"
+          name="files"
           render={({ field: { value, onChange, ...fieldProps } }) => (
             <FormItem>
               <FormLabel>Archivos</FormLabel>
@@ -89,11 +89,11 @@ export function FormEjecucionEquipo({ ejecucionEquipoId, closeModal }: Props) {
           Ejecutar
         </Button>
       </form>
-      {error && (
+      {isError && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{errorMsg}</AlertDescription>
+          <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       )}
     </Form>

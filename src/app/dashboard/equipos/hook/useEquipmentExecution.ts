@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getEquipmentExecutions, createEquipmentExecution } from "../service/equipmentExecution.service";
-import { EquipmentExecutionResponse, CreateEquipmentExecution } from "../types/equipmentExecution.types";
+import { getEquipmentExecutions, createEquipmentExecution, uploadFilesToEquipmentExecution } from "../service/equipmentExecution.service";
+import { EquipmentExecutionResponse, CreateEquipmentExecution, UploadFilesToEquipmentExecution } from "../types/equipmentExecution.types";
 import { getErrorMessage } from "@/lib/helpers/getErrorMessage";
 
 export const useGetAllEquipmentExecutions = () => {
@@ -31,6 +31,25 @@ export const useCreateEquipmentExecution = () => {
 
   return {
     create: mutateAsync,
+    error,
+    errorMessage: getErrorMessage(error) ?? "",
+    isError,
+    isLoading: isPending,
+  };
+};
+
+export const useUploadFilesToEquipmentExecution = () => {
+  const queryClient = useQueryClient();
+  const { error, isError, mutateAsync, isPending } = useMutation({
+    mutationFn: (data: UploadFilesToEquipmentExecution) => uploadFilesToEquipmentExecution(data),
+    mutationKey: ["uploadFilesToEquipmentExecution"],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["equipment-executions"] });
+    },
+  });
+
+  return {
+    uploadFiles: mutateAsync,
     error,
     errorMessage: getErrorMessage(error) ?? "",
     isError,

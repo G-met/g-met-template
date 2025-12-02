@@ -1,4 +1,4 @@
-import { ExecutorType } from "@/app/api/common/types";
+import { ExecutorType } from "@/app/dashboard/common/types";
 
 export interface EquipmentExecutionDocument {
   name: string;
@@ -21,4 +21,9 @@ export interface CreateEquipmentExecution {
   executorId: string;
   executorType: ExecutorType;
   files?: File[];
+}
+
+export interface UploadFilesToEquipmentExecution {
+  code: string;
+  files: File[];
 }

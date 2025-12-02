@@ -35,13 +35,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { validateFileListSize } from "@/app/api/common/files/filesSize";
+import { validateFileListSize } from "@/app/dashboard/common/files/filesSize";
 import { useGetAllProviders } from "@/app/dashboard/configuracion/proveedor/hook/useProvider";
 import { useGetAllUsers } from "@/app/dashboard/configuracion/usuario/hook/useUser";
 import { ComboboxForm } from "./Combobox";
 import { useState } from "react";
-import { Role } from "@/app/api/usuarios/dominio/entity";
-import { ExecutorType } from "@/app/api/common/types";
+import { ExecutorType, Role } from "@/app/dashboard/common/types";
 import { disabledDays } from "@/lib/helpers/dates";
 import { useCreateEquipmentExecution } from "../../../hook/useEquipmentExecution";
 

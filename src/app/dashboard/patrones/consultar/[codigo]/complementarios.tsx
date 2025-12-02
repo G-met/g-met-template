@@ -28,7 +28,7 @@ import {
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PatternDetail } from "@/app/dashboard/patrones/types";
-import { cumple } from "@/app/api/patrones/dominio";
+import { Cumple } from "@/app/dashboard/common/types";
 const formSchema = z.object({
   code: z.string({ description: "code required" }),
   specificationsDescription: z
@@ -36,8 +36,8 @@ const formSchema = z.object({
       description: "specifications description required",
     })
     .optional(),
-  meetsInstallationSpecifications: z.nativeEnum(cumple),
-  usesSoftware: z.nativeEnum(cumple),
+  meetsInstallationSpecifications: z.nativeEnum(Cumple),
+  usesSoftware: z.nativeEnum(Cumple),
   softwareDescription: z.string().optional(),
   softwareVersion: z
     .string({ description: "software version required" })
@@ -60,14 +60,14 @@ function EditarDatosComplementarios({ patron }: Props) {
     defaultValues: {
       code: patron.code,
       meetsInstallationSpecifications:
-        patron.complementaryData?.meetsInstallationSpecifications ? cumple.SI : cumple.NO,
+        patron.complementaryData?.meetsInstallationSpecifications ? Cumple.SI : Cumple.NO,
       specificationsDescription:
         patron.complementaryData?.specificationsDescription ?? "",
       softwareDescription:
         patron.complementaryData?.softwareDescription ?? "",
       firmware: patron.complementaryData?.firmware ?? "",
       observations: patron.complementaryData?.observations ?? "",
-      usesSoftware: patron.complementaryData?.usesSoftware ? cumple.SI : cumple.NO,
+      usesSoftware: patron.complementaryData?.usesSoftware ? Cumple.SI : Cumple.NO,
       softwareVersion: patron.complementaryData?.softwareVersion ?? "",
     },
   });
@@ -87,8 +87,8 @@ function EditarDatosComplementarios({ patron }: Props) {
       patternCode: patron.code,
       data: {
         specificationsDescription: values.specificationsDescription || undefined,
-        meetsInstallationSpecifications: values.meetsInstallationSpecifications === cumple.SI,
-        usesSoftware: values.usesSoftware === cumple.SI,
+        meetsInstallationSpecifications: values.meetsInstallationSpecifications === Cumple.SI,
+        usesSoftware: values.usesSoftware === Cumple.SI,
         softwareDescription: values.softwareDescription || null,
         softwareVersion: values.softwareVersion || null,
         firmware: values.firmware || null,
@@ -165,8 +165,8 @@ function EditarDatosComplementarios({ patron }: Props) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={cumple.NO}>No</SelectItem>
-                      <SelectItem value={cumple.SI}>Si</SelectItem>
+                      <SelectItem value={Cumple.NO}>No</SelectItem>
+                      <SelectItem value={Cumple.SI}>Si</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -190,8 +190,8 @@ function EditarDatosComplementarios({ patron }: Props) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={cumple.NO}>No</SelectItem>
-                      <SelectItem value={cumple.SI}>Si</SelectItem>
+                      <SelectItem value={Cumple.NO}>No</SelectItem>
+                      <SelectItem value={Cumple.SI}>Si</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

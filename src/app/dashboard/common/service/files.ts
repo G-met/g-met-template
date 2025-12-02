@@ -1,4 +1,4 @@
-import { Documentos } from "@/app/api/common/types";
+import { Documentos } from "@/app/dashboard/common/types";
 import { httpBaseV2 } from "@/app/config/api-base-v2";
 import { createFormData } from "@/lib/helpers/formData";
 import { DocumentsFiles } from "../../../../../../gmet-api/src/common/files/files.adaptor";

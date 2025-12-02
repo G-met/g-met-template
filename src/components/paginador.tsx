@@ -1,5 +1,5 @@
 "use client";
-import { queryValuesDTO } from "@/app/api/common/types";
+import { queryValuesDTO } from "@/app/dashboard/common/types";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 

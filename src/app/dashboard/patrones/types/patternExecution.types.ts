@@ -1,4 +1,4 @@
-import { ExecutorType } from "@/app/api/common/types";
+import { ExecutorType } from "@/app/dashboard/common/types";
 
 export interface PatternExecutionDocument {
   name: string;

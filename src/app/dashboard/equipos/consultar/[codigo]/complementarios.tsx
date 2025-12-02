@@ -18,7 +18,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useUpdateComplementaryDataEquipment } from "../../hook/useEquipment";
-import { cumple } from "@/src/app/api/equipos/dominio";
+import { Cumple } from "@/app/dashboard/common/types";
 import { EquipmentDetail } from "../../types";
 import {
   Select,
@@ -36,8 +36,8 @@ const formSchema = z.object({
       description: "descripcionEspecificaciones requerido",
     })
     .optional(),
-  meetsInstallationSpecifications: z.nativeEnum(cumple),
-  usesSoftware: z.nativeEnum(cumple),
+  meetsInstallationSpecifications: z.nativeEnum(Cumple),
+  usesSoftware: z.nativeEnum(Cumple),
   softwareDescription: z.string().optional(),
   softwareVersion: z
     .string({ description: "versionSoftware requerido" })
@@ -59,8 +59,8 @@ function EditarDatosComplementarios({ equipment }: Props) {
       code: equipment.code,
       meetsInstallationSpecifications: equipment.complementaryData
         ?.meetsInstallationSpecifications
-        ? cumple.SI
-        : cumple.NO,
+        ? Cumple.SI
+        : Cumple.NO,
       specificationsDescription:
         equipment.complementaryData?.specificationsDescription ?? "",
       softwareDescription:
@@ -68,8 +68,8 @@ function EditarDatosComplementarios({ equipment }: Props) {
       firmware: equipment.complementaryData?.firmware ?? "",
       observations: equipment.complementaryData?.observations ?? "",
       usesSoftware: equipment.complementaryData?.usesSoftware
-        ? cumple.SI
-        : cumple.NO,
+        ? Cumple.SI
+        : Cumple.NO,
       softwareVersion: equipment.complementaryData?.softwareVersion ?? "",
     },
   });
@@ -83,8 +83,8 @@ function EditarDatosComplementarios({ equipment }: Props) {
       data: {
         specificationsDescription: values.specificationsDescription || "",
         meetsInstallationSpecifications:
-          values.meetsInstallationSpecifications === cumple.SI,
-        usesSoftware: values.usesSoftware === cumple.SI,
+          values.meetsInstallationSpecifications === Cumple.SI,
+        usesSoftware: values.usesSoftware === Cumple.SI,
         softwareDescription: values.softwareDescription || null,
         softwareVersion: values.softwareVersion || null,
         firmware: values.firmware || null,
@@ -161,8 +161,8 @@ function EditarDatosComplementarios({ equipment }: Props) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={cumple.NO}>No</SelectItem>
-                      <SelectItem value={cumple.SI}>Si</SelectItem>
+                      <SelectItem value={Cumple.NO}>No</SelectItem>
+                      <SelectItem value={Cumple.SI}>Si</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -186,8 +186,8 @@ function EditarDatosComplementarios({ equipment }: Props) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={cumple.NO}>No</SelectItem>
-                      <SelectItem value={cumple.SI}>Si</SelectItem>
+                      <SelectItem value={Cumple.NO}>No</SelectItem>
+                      <SelectItem value={Cumple.SI}>Si</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
