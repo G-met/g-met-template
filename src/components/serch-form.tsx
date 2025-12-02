@@ -11,7 +11,7 @@ import {
 import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { queryValuesDTO } from "@/app/api/common/types";
+import { queryValuesDTO } from "@/app/dashboard/common/types";
 import { ReactNode } from "react";
 
 const formSchema = z.object({

@@ -23,8 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEditarProveedor } from "../../hooks/useProveedor";
-import { Role } from "@/app/api/usuarios/dominio/entity";
+import { Role } from "@/app/dashboard/common/types";
 import { useCreateUser } from "./hook/useUser";
 
 interface Props {
@@ -63,32 +62,16 @@ export function UsuarioForm({
   const { toast } = useToast();
   const { isError, isLoading, createUser, error, errorMessage } =
     useCreateUser();
-  const {
-    editar,
-    isLoading: isLoadingEdit,
-    errorMsg: erroMsgEdit,
-  } = useEditarProveedor();
+  
   async function onSubmit(values: FormValues) {
-    if (isEditing) {
-      // await editar({
-      //   id: proveedorDto?.id ?? "",
-      //   direccion: values.direccion,
-      //   email: values.email,
-      //   nombre: values.nombre,
-      //   numeroIdentificacion: values.numeroIdentificacion,
-      //   telefono: values.telefono,
-      //   tipoIdetificacion: values.tipoIdetificacion as Identificacion,
-      // });
-    } else {
-      await createUser({
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        position: values.position,
-        role: values.role as Role,
-        idCode: values.idCode, // Assuming 'nombre' is used as idCode, adjust as necessary
-      });
-    }
+    await createUser({
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      position: values.position,
+      role: values.role as Role,
+      idCode: values.idCode,
+    });
 
     if (closeModal) {
       closeModal();
@@ -224,13 +207,13 @@ export function UsuarioForm({
         </div>
         <Button
           type="submit"
-          disabled={!isValidRole || isLoadingEdit || isLoading}
+          disabled={!isValidRole || isLoading}
           className="mx-auto"
         >
           <Loader2
             className={
               "mr-2 h-4 w-4 animate-spin " +
-              (isLoading || isLoadingEdit ? "" : "hidden")
+              (isLoading ? "" : "hidden")
             }
           />
           {labelform}
@@ -240,7 +223,7 @@ export function UsuarioForm({
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{erroMsgEdit || errorMessage}</AlertDescription>
+            <AlertDescription>{errorMessage}</AlertDescription>
           </Alert>
         )}
       </form>

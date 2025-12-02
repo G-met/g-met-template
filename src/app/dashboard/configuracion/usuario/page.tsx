@@ -9,8 +9,8 @@ import { useState } from "react";
 import { DialogWrapper } from "@/components/dialogWrapper";
 import { UsuarioForm } from "./form";
 import { useGetAllUsers } from "./hook/useUser";
-import { Role } from "@/app/api/usuarios/dominio/entity";
 import { useIsAuthorized } from "../../../../hooks/useIsAuthorized";
+import { Role } from "@/app/dashboard/common/types";
 
 export default function Usuario() {
   const [isOpenModal, setIsOpenModal] = useState(false);

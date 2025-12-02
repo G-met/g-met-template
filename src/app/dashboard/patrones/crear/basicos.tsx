@@ -24,7 +24,7 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, CalendarIcon, Loader2 } from "lucide-react";
-import { validateFileListSize } from "@/app/api/common/files/filesSize";
+import { validateFileListSize } from "@/app/dashboard/common/files/filesSize";
 import { useCreatePattern } from "@/app/dashboard/patrones/hook/usePattern";
 import { useGetAllBrands } from "@/app/dashboard/configuracion/marca/hook/useBrand";
 import { useGetAllLocations } from "@/app/dashboard/configuracion/ubicacion/hook/useLocation";

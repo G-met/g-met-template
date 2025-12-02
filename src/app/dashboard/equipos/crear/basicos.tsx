@@ -21,13 +21,13 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { obtenerUbicaciones } from "../../hooks/useUbicaciones";
+import { useGetAllLocations } from "../../configuracion/ubicacion/hook/useLocation";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useGetAllBrands } from "../../configuracion/marca/hook/useBrand";
 import { useCreateEquipment } from "../hook/useEquipment";
-import { validateFileListSize } from "@/app/api/common/files/filesSize";
+import { validateFileListSize } from "@/app/dashboard/common/files/filesSize";
 
 const formSchema = z.object({
   codigo: z.string().min(2, { message: "codigo requerido" }),
@@ -46,7 +46,7 @@ const formSchema = z.object({
 
 function CrearEquiposBasicos() {
   const { brands } = useGetAllBrands();
-  const { ubicaciones } = obtenerUbicaciones();
+  const { locations } = useGetAllLocations();
   const { create, error, errorMessage, isLoading } = useCreateEquipment();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -184,10 +184,10 @@ function CrearEquiposBasicos() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {ubicaciones.map((res) => (
+                      {locations.map((res) => (
                         <>
                           <SelectItem value={res.id} key={res.id}>
-                            {res.nombre}
+                            {res.name}
                           </SelectItem>
                         </>
                       ))}

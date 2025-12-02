@@ -1,3 +1,4 @@
+"use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -31,21 +32,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useCrearEjecucionEquipo } from "@/app/dashboard/hooks/useEjecucionEquipo";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { validateFileListSize } from "@/app/api/common/files/filesSize";
-import { useListadoProvedores } from "../../../../hooks/useProveedor";
-import { useListadoUsuarios } from "../../../../hooks/useUsuario";
+import { validateFileListSize } from "@/app/dashboard/common/files/filesSize";
+import { useGetAllProviders } from "@/app/dashboard/configuracion/proveedor/hook/useProvider";
+import { useGetAllUsers } from "@/app/dashboard/configuracion/usuario/hook/useUser";
 import { ComboboxForm } from "./Combobox";
 import { useState } from "react";
-import { Role } from "@/app/api/usuarios/dominio/entity";
-import { TipoEjecutor } from "@/app/api/common/types";
+import { ExecutorType, Role } from "@/app/dashboard/common/types";
 import { disabledDays } from "@/lib/helpers/dates";
+import { useCreateEquipmentExecution } from "../../../hook/useEquipmentExecution";
+
 const FormSchema = z.object({
-  fechaEjecucion: z.date({ required_error: "fechaInicio requerida" }),
-  observaciones: z
+  executionDate: z.date({ required_error: "fechaInicio requerida" }),
+  observations: z
     .string()
     .min(10, {
       message: "Observaciones minimo 10 caracteres",
@@ -53,73 +54,78 @@ const FormSchema = z.object({
     .max(160, {
       message: "Observaciones maximo 160 caracteres.",
     }),
-  archivos: z
+  files: z
     .any()
     .refine(validateFileListSize, {
       message: "Los archivos no deben pensar mas de 4 MB",
     })
     .optional(),
-  ejecutorId: z.string(),
-  tipoEjecutor: z.nativeEnum(TipoEjecutor),
+  executorId: z.string(),
+  executorType: z.nativeEnum(ExecutorType),
 });
-type FormValues = z.infer<typeof FormSchema>;
+
 interface Props {
-  programacionEquipoId: string;
+  equipmentScheduleId: string;
   closeModal: () => void;
 }
 
 export function FormEjecucionEquipo({
-  programacionEquipoId,
+  equipmentScheduleId,
   closeModal,
 }: Props) {
-  const { proveedores } = useListadoProvedores();
-  const listValuesProveedores = proveedores.map((proveedor) => ({
-    value: proveedor.id,
-    label: proveedor.nombre,
+  const router = useRouter();
+  const { providers } = useGetAllProviders();
+  const providerOptions = providers.map((provider) => ({
+    value: provider.id,
+    label: provider.name,
   }));
 
-  const { usuarios } = useListadoUsuarios({
-    roles: [Role.Metrologo, Role.Auxiliar],
-  });
-  const listValuesUsuarios = usuarios.map((usuario) => ({
-    value: usuario.id,
-    label: usuario.nombre,
-  }));
-  const { crear, error, errorMsg, isLoading } = useCrearEjecucionEquipo();
-  const form = useForm<FormValues>({
+  const { users } = useGetAllUsers();
+  const userOptions = users
+    .filter(
+      (user) => user.role === Role.Metrologo || user.role === Role.Auxiliar
+    )
+    .map((user) => ({
+      value: user.id,
+      label: `${user.firstName} ${user.lastName}`,
+    }));
+  const { create, error, errorMessage, isLoading } =
+    useCreateEquipmentExecution();
+  const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
-  const router = useRouter();
-  const [tipoProvider, setTipoProvider] = useState("");
-  const tipoProveedor = (field: (...event: any[]) => void, e: string) => {
-    field(e);
-    setTipoProvider(e);
-  };
-
-  async function onSubmit(data: FormValues) {
-    await crear({
-      ejecutorId: data.ejecutorId,
-      fechaEjecucion: data.fechaEjecucion.toISOString(),
-      observaciones: data.observaciones,
-      programacionEquipoId: programacionEquipoId,
-      archivos: data.archivos,
-      tipoEjecutor: data.tipoEjecutor,
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    await create({
+      executorId: data.executorId,
+      executionDate: data.executionDate.toISOString(),
+      observations: data.observations,
+      equipmentScheduleId: equipmentScheduleId,
+      files: data.files,
+      executorType: data.executorType,
     });
     toast({
-      title: "Equipo ejecutado corrrectamente",
+      title: "Equipo ejecutado correctamente",
       variant: "success",
     });
-    router.push("/dashboard/equipos/ejecucion");
     closeModal();
+    router.push("/dashboard/equipos/ejecucion");
   }
+  const [executorType, setExecutorType] = useState<ExecutorType | "">("");
+  const handleExecutorTypeChange = (
+    field: (value: ExecutorType) => void,
+    value: ExecutorType
+  ) => {
+    field(value);
+    setExecutorType(value);
+  };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="fechaEjecucion"
+          name="executionDate"
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Fecha Ejecucion</FormLabel>
@@ -147,9 +153,9 @@ export function FormEjecucionEquipo({
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
+                    disabled={disabledDays}
                     initialFocus
                     locale={es}
-                    disabled={disabledDays}
                   />
                 </PopoverContent>
               </Popover>
@@ -163,12 +169,14 @@ export function FormEjecucionEquipo({
 
         <FormField
           control={form.control}
-          name="tipoEjecutor"
+          name="executorType"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Tipo de ejecutor</FormLabel>
               <Select
-                onValueChange={(e) => tipoProveedor(field.onChange, e)}
+                onValueChange={(e) =>
+                  handleExecutorTypeChange(field.onChange, e as ExecutorType)
+                }
                 value={field.value}
               >
                 <FormControl>
@@ -177,36 +185,35 @@ export function FormEjecucionEquipo({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value={TipoEjecutor.EXTERNO}>Externo</SelectItem>
-                  <SelectItem value={TipoEjecutor.INTERNO}>Interno</SelectItem>
+                  <SelectItem value={ExecutorType.EXTERNO}>Externo</SelectItem>
+                  <SelectItem value={ExecutorType.INTERNO}>Interno</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
             </FormItem>
           )}
         />
-        {tipoProvider === TipoEjecutor.EXTERNO && (
+        {executorType === ExecutorType.EXTERNO && (
           <ComboboxForm
             form={form}
-            listValues={listValuesProveedores}
+            listValues={providerOptions}
             label="Proveedores"
-            name="ejecutorId"
+            name="executorId"
             placeholder="Seleccione un proveedor"
           />
         )}
-        {tipoProvider === TipoEjecutor.INTERNO && (
+        {executorType === ExecutorType.INTERNO && (
           <ComboboxForm
             form={form}
-            listValues={listValuesUsuarios}
+            listValues={userOptions}
             label="Usuarios"
-            name="ejecutorId"
+            name="executorId"
             placeholder="Seleccione un usuario"
           />
         )}
-
         <FormField
           control={form.control}
-          name="observaciones"
+          name="observations"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Observaciones</FormLabel>
@@ -221,9 +228,10 @@ export function FormEjecucionEquipo({
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
-          name="archivos"
+          name="files"
           render={({ field: { value, onChange, ...fieldProps } }) => (
             <FormItem>
               <FormLabel>Archivos</FormLabel>
@@ -255,7 +263,7 @@ export function FormEjecucionEquipo({
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{errorMsg}</AlertDescription>
+          <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       )}
     </Form>

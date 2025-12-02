@@ -1,12 +1,46 @@
 "use client";
+import { useState } from "react";
 import { columns } from "./columns";
-import { DataTable } from "@/components/data-table";
-import { useObtenerEjecucionPatrones } from "@/app/dashboard/hooks/useEjecucionPatron";
+import { useGetAllPatternExecutions } from "../../hook/usePatternExecution";
+import {
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { DataTableV2 } from "@/components/data-table-v2";
+import { DataTablePagination } from "@/components/data-table-pagination";
+import { DataTableFilterInput } from "@/components/data-table-filter-input";
+
 export default function EjecucionPatrones() {
-  const { ejecuciones, isLoading } = useObtenerEjecucionPatrones();
+  const { patternExecutions, isLoading } = useGetAllPatternExecutions();
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const table = useReactTable({
+    data: patternExecutions,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      columnFilters,
+    },
+  });
+
   return (
     <>
-      <DataTable isLoading={isLoading} columns={columns} data={ejecuciones} />
+      <div className="flex items-center py-4">
+        <DataTableFilterInput
+          table={table}
+          columnId="codigo"
+          placeholder="Buscar por código"
+          className="max-w-sm"
+        />
+      </div>
+      <DataTableV2 columns={columns} table={table} isLoading={isLoading} />
+      <DataTablePagination table={table} />
     </>
   );
 }

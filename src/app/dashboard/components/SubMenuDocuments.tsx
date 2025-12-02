@@ -1,4 +1,4 @@
-import { Documentos } from "@/app/api/common/types";
+import { Documentos } from "@/app/dashboard/common/types";
 import {
     DropdownMenuItem,
   DropdownMenuSub,

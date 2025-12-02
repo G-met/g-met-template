@@ -1,4 +1,4 @@
-import { Role } from "@/app/api/usuarios/dominio/entity";
+import { Role } from "@/app/dashboard/common/types";
 import { isRoleAuthorized } from "@/lib/auth/roles-guard";
 import { useUser } from "@clerk/nextjs";
 

@@ -18,7 +18,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useCreateComplementaryDataEquipment } from "../hook/useEquipment";
-import { cumple } from "@/src/app/api/equipos/dominio";
+import { Cumple } from "@/app/dashboard/common/types";
 import {
   Select,
   SelectContent,
@@ -34,8 +34,8 @@ const formSchema = z.object({
       description: "descripcionEspecificaciones requerido",
     })
     .optional(),
-  cumpleEspecificacionInstalaciones: z.nativeEnum(cumple),
-  utilizaSoftware: z.nativeEnum(cumple),
+  cumpleEspecificacionInstalaciones: z.nativeEnum(Cumple),
+  utilizaSoftware: z.nativeEnum(Cumple),
   descripcionSoftware: z.string().optional(),
   versionSoftware: z
     .string({ description: "versionSoftware requerido" })
@@ -52,12 +52,12 @@ function CrearDatosmetrologicos() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       codigo: "",
-      cumpleEspecificacionInstalaciones: cumple.NO,
+      cumpleEspecificacionInstalaciones: Cumple.NO,
       descripcionEspecificaciones: "",
       descripcionSoftware: "",
       fireware: "",
       observaciones: "",
-      utilizaSoftware: cumple.NO,
+      utilizaSoftware: Cumple.NO,
       versionSoftware: "",
     },
   });
@@ -67,8 +67,8 @@ function CrearDatosmetrologicos() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     await create({
       specificationsDescription: values.descripcionEspecificaciones || "",
-      meetsInstallationSpecifications: values.cumpleEspecificacionInstalaciones === cumple.SI,
-      usesSoftware: values.utilizaSoftware === cumple.SI,
+      meetsInstallationSpecifications: values.cumpleEspecificacionInstalaciones === Cumple.SI,
+      usesSoftware: values.utilizaSoftware === Cumple.SI,
       softwareDescription: values.descripcionSoftware || null,
       softwareVersion: values.versionSoftware || null,
       firmware: values.fireware || null,
@@ -142,8 +142,8 @@ function CrearDatosmetrologicos() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={cumple.NO}>No</SelectItem>
-                      <SelectItem value={cumple.SI}>Si</SelectItem>
+                      <SelectItem value={Cumple.NO}>No</SelectItem>
+                      <SelectItem value={Cumple.SI}>Si</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -163,8 +163,8 @@ function CrearDatosmetrologicos() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={cumple.NO}>No</SelectItem>
-                      <SelectItem value={cumple.SI}>Si</SelectItem>
+                      <SelectItem value={Cumple.NO}>No</SelectItem>
+                      <SelectItem value={Cumple.SI}>Si</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

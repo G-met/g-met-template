@@ -70,7 +70,7 @@ export const columns: ColumnDef<EquipmentScheduleResponse>[] = [
       return (
         <DropDownMenuEjecucionEquipo
           isCompleted={isCompleted}
-          programacionEquipoId={row.original.id}
+          equipmentScheduleId={row.original.id}
         />
       );
     },

@@ -71,6 +71,7 @@ export const columns: ColumnDef<PatternScheduleResponse>[] = [
         <DropDownMenuEjecucionPatron
           isCompleted={isCompleted}
           codeId={row.original.code}
+          schedulePatternId={row.original.id}
         />
       );
     },
